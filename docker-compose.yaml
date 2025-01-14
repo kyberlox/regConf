@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgresql
+    environment:
+      POSTGRES_DB: "pdb"
+      POSTGRES_USER: "kyberlox"
+      POSTGRES_PASSWORD: "4179"
+    volumes:
+      - ./pSQL/data:/var/lib/postgresql/data
+      #- ./pSQL/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 5432:5432
+    networks:
+        - app-network
+  
+  fastapi:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    image: ToDo/python
+    container_name: fastapi
+    volumes:
+      - ./code:/data/ToDo
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    depends_on:
+      # `fastapi`Because the service (container) needs to be started first`depends_on`Is specified
+      - fastapi
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d/
+      - ./code:/data/ToDo
+    networks:
+      - app-network
+
+
+
+networks:
+  app-network:
+    driver: bridge
