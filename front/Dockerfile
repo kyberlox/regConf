@@ -3,4 +3,4 @@ COPY . /app
 WORKDIR /app
 RUN npm install && npm run build
 WORKDIR /app/dist
-CMD [ "npm", "run", "dev" ]
+CMD [ "npm run dev" ]
