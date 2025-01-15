@@ -1,0 +1,142 @@
+[
+    {
+        "id": 84,
+        "name": "Материал крышки",
+        "type": "auto",
+        "inputName": "coverMaterial",
+        "value": null
+    },
+    {
+        "id": 85,
+        "name": "Материал колпака",
+        "type": "auto",
+        "inputName": "capMaterial",
+        "value": null
+    },
+    {
+        "id": 86,
+        "name": "Материал втулки направляющей",
+        "type": "auto",
+        "inputName": "guideBushingMaterial",
+        "value": null
+    },
+    {
+        "id": 87,
+        "name": "Материал штока",
+        "type": "auto",
+        "inputName": "stemMaterial",
+        "value": null
+    },
+    {
+        "id": 88,
+        "name": "Материал сильфона",
+        "type": "auto",
+        "inputName": "bellowsMaterial",
+        "value": null
+    },
+    {
+        "id": 89,
+        "name": "Сильфон по ГОСТ 55019-2012",
+        "type": "auto",
+        "inputName": "bellowsGOST",
+        "value": null
+    },
+    {
+        "id": 90,
+        "name": "Фильтр",
+        "type": "auto",
+        "inputName": "filter",
+        "value": null
+    },
+    {
+        "id": 91,
+        "name": "Мембрана (Лаборатория МПУ)",
+        "type": "auto",
+        "inputName": "membrane",
+        "value": null
+    },
+    {
+        "id": 92,
+        "name": "Узел крепления мембраны (Лаборатория МПУ)",
+        "type": "auto",
+        "inputName": "membraneAttachment",
+        "value": null
+    },
+    {
+        "id": 93,
+        "name": "Поворотная заглушка на входе",
+        "type": "auto",
+        "inputName": "inputRotaryPlug",
+        "value": null
+    },
+    {
+        "id": 94,
+        "name": "Поворотная заглушка на выходе",
+        "type": "auto",
+        "inputName": "outputRotaryPlug",
+        "value": null
+    },
+    {
+        "id": 95,
+        "name": "Диаметр седла клапана, мм",
+        "type": "auto",
+        "inputName": "valveSeatDiameter",
+        "value": null
+    },
+    {
+        "id": 96,
+        "name": "Номер пружины",
+        "type": "auto",
+        "inputName": "springNumber",
+        "value": null
+    },
+    {
+        "id": 97,
+        "name": "Диапазон настройки,атм.",
+        "type": "auto",
+        "inputName": "settingRange",
+        "value": null
+    },
+    {
+        "id": 98,
+        "name": "Коэффициент расхода",
+        "type": "auto",
+        "inputName": "flowCoefficient",
+        "value": null
+    },
+    {
+        "id": 99,
+        "name": "Площадь под покраску, м2",
+        "type": "auto",
+        "inputName": "paintArea",
+        "value": null
+    },
+    {
+        "id": 100,
+        "name": "Масса клапана, кг",
+        "type": "auto",
+        "inputName": "valveWeight",
+        "value": null
+    },
+    {
+        "id": 101,
+        "name": "Точность настройки, не более",
+        "type": "auto",
+        "inputName": "settingAccuracy",
+        "value": null
+    },
+    {
+        "id": 102,
+        "name": "Заготовка корпуса",
+        "type": "auto",
+        "inputName": "bodyBlank",
+        "value": null
+    },
+    {
+        "id": 103,
+        "name": "Время срабатывания, сек",
+        "type": "auto",
+        "inputName": "responseTime",
+        "value": null
+    }
+]

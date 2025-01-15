@@ -67,6 +67,9 @@ class Raschet:
             elif ((Ppo / Pn) > 1.15) and ((Ppo / Pn) <= 1.2):
                 #Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.23) и (Д.24)
                 pass
+            
+            #показатель изоэнтропии
+            n = dt["adiabatic_index"] / dt["compressibility_factor"]
 
             Bkr = (2/(n+1))**(n/(n-1))
             #определим режим истечения
