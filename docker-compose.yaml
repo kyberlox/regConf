@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 
 services:
 
@@ -21,10 +21,10 @@ services:
     build:
       context: ./python
       dockerfile: Dockerfile
-    image: ToDo/python
+    image: app/python
     container_name: fastapi
     volumes:
-      - ./code:/data/ToDo
+      - ./code:/data/app
     ports:
       - 8000:8000
     depends_on:
@@ -38,11 +38,12 @@ services:
     depends_on:
       # `fastapi`Because the service (container) needs to be started first`depends_on`Is specified
       - fastapi
+      - frontend
     ports:
       - "80:80"
     volumes:
       - ./nginx/:/etc/nginx/conf.d/
-      - ./code:/data/ToDo
+      - ./front/:/app/
     networks:
       - app-network
 
@@ -52,7 +53,7 @@ services:
       context: ./front
       dockerfile: Dockerfile
     volumes:
-      - ./front:/app
+      - ./front/:/app/
     ports:
       - 5173:5173
     networks:

@@ -1,6 +1,19 @@
-FROM node:20.17-alpine AS build
-COPY . /app
+FROM node:20.17-alpine AS build-stage
+# Установить рабочий каталог в контейнере
 WORKDIR /app
-RUN npm install && npm run build
+
+# Скопировать файлы package.json и package-lock.json
+COPY package*.json ./
+
+# Установить зависимости
+RUN npm install
+
+# Скопировать остальную часть кода приложения
+COPY . .
+
+# Собрать приложение
+RUN npm run build
+
 WORKDIR /app/dist
-CMD [ "npm run dev" ]
+
+CMD ["npm", "run", "preview"]

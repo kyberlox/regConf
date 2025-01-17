@@ -1,7 +1,8 @@
-from fastapi import FastAPI, File, UploadFile, Body, Response, Cookie
+from fastapi import FastAPI, File, UploadFile, Body, Response, Cookie, Request
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import HTTPException
 
@@ -19,6 +20,9 @@ from sqlalchemy import create_engine, MetaData, Column, Integer, Text, Float
 import psycopg2
 
 import json
+
+templates = Jinja2Templates(directory="templates") 
+
 
 
 
@@ -74,6 +78,8 @@ db = SessionLocal()
 
 app = FastAPI()
 
+
+
 origins = [
     "http://localhost:8000",
     "http://reg.conf"
@@ -87,13 +93,22 @@ app.add_middleware(
     allow_headers=["Content-Type", "Accept", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest"],
 )
 
+#app.mount("/", StaticFiles(directory="../front/dist", html=True), name="static")
 
 
+
+'''
 @app.get("/")
 def root():
     return RedirectResponse("/docs")
-
+'''
+    
 #тут будет вывод визуала
+'''
+@app.get("/")
+def root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+'''
 
 #миграция и таблицы эксель
 @app.get("/migration")

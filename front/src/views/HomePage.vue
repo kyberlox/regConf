@@ -11,7 +11,7 @@
                     <div class="engine-card__body">
                         <h5 class="engine-card__title">{{ item.title }}</h5>
                         <p class="engine-card__description">
-                            {{ item.description }}
+                            {{ item.description}}
                         </p>
                     </div>
                 </RouterLink>
