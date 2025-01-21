@@ -1,7 +1,7 @@
 import math
 from math import sqrt, log, exp, pi, log10
 
-def mixture(envs : dict):
+def mixture(envs : list):
     result = {
         "name" : "",
         "environment" : "",
@@ -17,13 +17,24 @@ def mixture(envs : dict):
     }
 
     env_type = set()
-    for env in envs["environment"]:
-        env_type.add(env)
+    for env in envs:
+        env_type.add(env["environment"])
+
+    material = set()
+    for env in envs:
+        material.add(env['material'])
+    
+    if len(material) > 1:
+        ln = 0
+        for mat in material:
+            if len(mat) > ln:
+                ln = len(mat)
+                result["material"] = mat
 
     #проверка типа среды смеси
     if len(env_type) == 1: #если среда однородная
-        if "Жидкость" in env_type: #если среда - жидкость
-            result["environment"] = env_type
+        result["environment"] = env_type.pop()
+        if result["environment"] == "Жидкость": #если среда - жидкость
             ch_den = 0
             zn_den = 0
             pre_viscosity = 0
@@ -36,13 +47,37 @@ def mixture(envs : dict):
                 pre_viscosity += log10(env["viscosity"]) * r
 
             result["density"] = ch_den/zn_den
-            result["viscosity"]
-            #result["isobaric_capacity"]
+            result["viscosity"] = 10**(pre_viscosity)
 
-        elif "Газ" in env_type: #если мреда - газ
-            pass
+            #добавить подбор материала result["material"]
+            if "Морская вода" in result["name"]:
+                result["material"] = "12Х18Н12М3ТЛ"
+            elif ("Масло подсолнечное" in result["name"]) or ("Лимонная кислота" in result["name"]) or ("Молочная кислота" in result["name"]):
+                result["material"] = "12Х18Н9ТЛ"
+
+        elif result["environment"] == "Газ": #если среда - газ
+            viscosity_сh = 0
+            viscosity_zn = 0
+            pre_M = 0
+            adiabatic_index_ch = 0
+            adiabatic_index_zn = 0
+            for env in envs:
+                r = env["r"]
+                result["name"] += f"{env['name']}:{r} "
+                M_i = env["molar_mass"]
+                u_i = env["viscosity"]
+                pre_M += M_i * r
+                viscosity_сh += u_i * r * sqrt(M_i)
+                viscosity_zn += r * sqrt(M_i)
+                adiabatic_index_ch += env['isobaric_capacity'] * r
+                adiabatic_index_zn += env['isochoric_capacity'] * r
+                
+            result["molar_mass"] = pre_M #/100
+            result["viscosity"] = viscosity_сh / viscosity_zn
+            result["adiabatic_index"] = adiabatic_index_ch / adiabatic_index_zn
     
-    #добавить подбор материала result["material"]
+    
+     
     
     
 
@@ -113,7 +148,8 @@ def Raschet(dt):
             pass
             
         #показатель изоэнтропии
-        n = dt["adiabatic_index"] / dt["compressibility_factor"]
+        #dt["isobaric_capacity"] / dt["isochoric_capacity"] = dt["adiabatic_index"]
+        n = dt["adiabatic_index"] #/ dt["compressibility_factor"]
 
         Bkr = (2/(n+1))**(n/(n-1))
         #определим режим истечения

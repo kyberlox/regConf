@@ -6,7 +6,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import HTTPException
 
-from Raschet import Raschet
+from Raschet import Raschet, mixture
 
 import openpyxl
 from openpyxl import load_workbook
