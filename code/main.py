@@ -21,9 +21,6 @@ import psycopg2
 
 import json
 
-templates = Jinja2Templates(directory="templates") 
-
-
 
 
 def DB_exec(command):
@@ -82,6 +79,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:8000",
+    "http://localhost:5173",
     "http://reg.conf"
 ]
 
@@ -191,11 +189,17 @@ def get_table():
     return environments
 
 #подбор смесей
+@app.post("/get_compound")
+def get_compound(data = Body()):
+    #Сортируем данные [{"id" : 0, "r" : 0}, ...]
+    #Проверки
+    #Дополнение даных из БД
+    #Параметры смеси
+    pass
 
 #получение осатльных параметров
 @app.post("/get_pressure")
-def get_pressure(jsn = Body()):
-    data = json.loads(jsn)
+def get_pressure(data = Body()):
     for key in data.keys():
         if ((data[key] == "") or (data[key] == None)):
             return {"error" : "incorrect value", "key" : key, "value" : data[key]}
