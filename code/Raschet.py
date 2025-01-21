@@ -76,6 +76,8 @@ def mixture(envs : list):
             result["viscosity"] = viscosity_сh / viscosity_zn
             result["adiabatic_index"] = adiabatic_index_ch / adiabatic_index_zn
     
+    return result
+    
     
      
     
