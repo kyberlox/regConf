@@ -59,15 +59,15 @@ services:
     networks:
       - app-network
     
-  #certbot:
-    #image: certbot/certbot
-    #depends_on:
-      #- nginx
-    #container_name: certbot
-    #volumes:
-      #- ./certbot/etc-letsencrypt:/etc/letsencrypt
-      #- ./front/:/var/www/html
-    #command: certonly --webroot --webroot-path=/var/www/html --email aleks.timofeev.00@yandex.ru --agree-tos --no-eff-email -d emk.org.ru
+  certbot:
+    image: certbot/certbot
+    depends_on:
+      - nginx
+    container_name: certbot
+    volumes:
+      - ./certbot/etc-letsencrypt:/etc/letsencrypt
+      - ./front/:/var/www/html
+    command: certonly --webroot --webroot-path=/var/www/html --email aleks.timofeev.00@yandex.ru --agree-tos --no-eff-email -d emk.org.ru
 
 
 
