@@ -1,0 +1,286 @@
+[
+    {
+        "id": 1,
+        "name": "Тип предохранительного клапана:",
+        "type": "RadioType",
+        "inputName": "execution",
+        "value": "",
+        "answers": [
+            {
+                "name": "Пилотный",
+                "value": "Н"
+            },
+            {
+                "name": "Пружинный",
+                "value": "В"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Агрегатное состояние несущей рабочей среды:",
+        "type": "RadioType",
+        "inputName": "environmentType",
+        "value": "",
+        "answers": [
+            {
+                "name": "Газ",
+                "value": "gas"
+            },
+            {
+                "name": "Жидкость",
+                "value": "liquid"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Выбор сред:",
+        "type": "oneLineType",
+        "value": [],
+        "inner": [
+            [
+                {
+                    "id": 3.1,
+                    "name": "",
+                    "type": "SelectType",
+                    "inputName": "execution",
+                    "value": "",
+                    "answers": []
+                },
+                {
+                    "id": 3.2,
+                    "name": "",
+                    "type": "TextType",
+                    "inputName": "percent",
+                    "placeholder": "Укажите процент",
+                    "value": ""
+                }
+            ]
+        ]
+    },
+    {
+        "name": "Сумма процентов сред:",
+        "type": "DisabledType",
+        "inputName": "envSumm",
+        "value": ""
+    },
+    {
+        "id": 4,
+        "name": "Наличие растворенной среды в другом агрегатном состоянии:",
+        "type": "CheckboxType",
+        "inputName": "nalsred",
+        "answers": [
+            {
+                "name": "Да",
+                "value": "Н"
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "name": "Другое агрегатное состояние:",
+        "type": "oneLineType",
+        "inner": [
+            [
+                {
+                    "id": "",
+                    "name": "",
+                    "type": "SelectType",
+                    "inputName": "execution2",
+                    "answers": [
+                        {
+                            "name": "Тест среда",
+                            "value": "Н"
+                        }
+                    ]
+                },
+                {
+                    "id": "",
+                    "name": "",
+                    "type": "TextType",
+                    "inputName": "percent2",
+                    "placeholder": "Укажите процент"
+                }
+            ]
+        ]
+    },
+    {
+        "name": "Сумма газовой и жидкой фазы:",
+        "type": "DisabledType",
+        "inputName": "secondEnvSumm",
+        "value": "100"
+    },
+    {
+        "id": 6,
+        "name": "Давление настройки:",
+        "type": "oneLineType",
+        "modifiers": [
+            "inputBeforeSelect",
+            "noAddButton"
+        ],
+        "inner": [
+            [
+                {
+                    "id": "",
+                    "name": "",
+                    "type": "TextType",
+                    "inputName": "davlenie-znachenie",
+                    "placeholder": "Укажите значение"
+                },
+                {
+                    "id": "",
+                    "name": "",
+                    "type": "SelectType",
+                    "inputName": "davlenie-velichina",
+                    "answers": [
+                        {
+                            "name": "Мпа",
+                            "value": "Н"
+                        },
+                        {
+                            "name": "Кпа",
+                            "value": "Н"
+                        }
+                    ]
+                }
+            ]
+        ]
+    },
+    {
+        "id": 7,
+        "name": "Противодавление статическое или до срабатывания, (изб.):",
+        "inputName": "protivodavleniestatic",
+        "type": "TextType"
+    },
+    {
+        "id": 8,
+        "name": "Противодавление динамическое(во время срабатывания), (изб.):",
+        "inputName": "protivodavleniedinamyc",
+        "type": "TextType"
+    },
+    {
+        "id": 9,
+        "name": "сильфон на пружинные ПК по требованию ОЛ:",
+        "inputName": "silfon",
+        "type": "CheckboxType",
+        "answers": [
+            {
+                "name": "Да",
+                "value": "Н"
+            }
+        ]
+    },
+    {
+        "id": 10,
+        "name": "Количество одновременно работающих клапанов, шт.:",
+        "inputName": "numClapan",
+        "type": "TextType"
+    },
+    {
+        "id": 11,
+        "name": "Наличие разрывной мембраны на входе:",
+        "inputName": "razrMembr",
+        "type": "CheckboxType",
+        "answers": [
+            {
+                "name": "Да",
+                "value": "Н"
+            }
+        ]
+    },
+    {
+        "name": "Давление начала открытия с противодавлением, (изб.):",
+        "type": "DisabledType",
+        "inputName": "secondEnvSumm",
+        "value": ""
+    },
+    {
+        "name": "Давление полного открытия с противодавлением, (изб.):",
+        "type": "DisabledType",
+        "inputName": "secondEnvSumm",
+        "value": ""
+    },
+    {
+        "name": "Давление настройки без противодавления, (изб.):",
+        "type": "DisabledType",
+        "inputName": "secondEnvSumm",
+        "value": ""
+    },
+    {
+        "name": "Давление начала открытия без противодавления, (изб.):",
+        "type": "DisabledType",
+        "inputName": "secondEnvSumm",
+        "value": ""
+    },
+    {
+        "name": "Давление полного открытия без противодавления, (изб.):",
+        "type": "DisabledType",
+        "inputName": "secondEnvSumm",
+        "value": ""
+    },
+    {
+        "id": 12,
+        "name": "Тип присоединения",
+        "inputName": "connectionType",
+        "type": "SelectType",
+        "answers": [
+            {
+                "name": "1 тип",
+                "value": "Н"
+            },
+            {
+                "name": "2 тип",
+                "value": "Н"
+            }
+        ]
+    },
+    {
+        "id": 13,
+        "name": "Узел подрыва:",
+        "inputName": "explosion",
+        "type": "CheckboxType",
+        "answers": [
+            {
+                "name": "Да",
+                "value": "Н"
+            }
+        ]
+    },
+    {
+        "id": 14,
+        "name": "Наличие поворотных заглушек:",
+        "inputName": "rotationstumps",
+        "type": "CheckboxType",
+        "answers": [
+            {
+                "name": "Да",
+                "value": "Н"
+            }
+        ]
+    },
+    {
+        "id": 15,
+        "name": "Наличие термочехла:",
+        "inputName": "thermochehl",
+        "type": "CheckboxType",
+        "answers": [
+            {
+                "name": "Да",
+                "value": "Н"
+            }
+        ]
+    },
+    {
+        "id": 16,
+        "name": "Наличие в рабочей среде абразивных частиц:",
+        "inputName": "abrasive",
+        "type": "CheckboxType",
+        "answers": [
+            {
+                "name": "Да",
+                "value": "Н"
+            }
+        ]
+    }
+]
