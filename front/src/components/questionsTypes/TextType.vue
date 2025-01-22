@@ -2,19 +2,19 @@
     <input class="card-body__input"
            :name="question.inputName"
            :placeholder="question.placeholder"
-           @input="sendFormBack({ [question.inputName]: $event.target.value })" />
+           @input="saveNewValue(question.inputName, $event.target.value)" />
 </template>
 
 <script>
 export default {
     props: ["question"],
-    emits: ["sendFormBack"],
+    emits: ["saveNewValue"],
     setup(props, { emit }) {
-        const sendFormBack = (radioValue) => {
-            emit("sendFormBack", radioValue);
+        const saveNewValue = (name, value) => {
+            emit("saveNewValue", name, value);
         }
         return {
-            sendFormBack
+            saveNewValue
         }
     }
 }

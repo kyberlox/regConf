@@ -29,5 +29,6 @@ coverage
 
 *.tsbuildinfo
 
-
+!regulatorTestBuild/front/
+!regulatorTestBuild/front/**
 Dockerfile

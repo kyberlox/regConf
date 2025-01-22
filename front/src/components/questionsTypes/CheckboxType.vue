@@ -2,7 +2,7 @@
     <div v-for="questionInfo in question.answers"
          :key="questionInfo.value"
          class="form-check">
-        <input @change="sendFormBack({ [question.inputName + questionInfo.value]: true })"
+        <input @change="saveNewValue($event, question.inputName)"
                :name="question.inputName"
                :type="'checkbox'"
                :id="question.inputName + questionInfo.value"
@@ -13,15 +13,16 @@
 </template>
 
 <script>
+import { ref } from 'vue';
 export default {
     props: ["question"],
-    emits: ["sendFormBack"],
+    emits: ["saveNewValue"],
     setup(props, { emit }) {
-        const sendFormBack = (radioValue) => {
-            emit("sendFormBack", radioValue);
+        const saveNewValue = (event, name) => {
+            emit("saveNewValue", name, event.target.checked);
         }
         return {
-            sendFormBack
+            saveNewValue
         }
     }
 }

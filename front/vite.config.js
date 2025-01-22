@@ -11,12 +11,16 @@ export default defineConfig({
     VueDevTools(),
   ],
   server: {
-    host:"0.0.0.0",
-    port:5173
+    host: "0.0.0.0",
+    port: 5173
   },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  define: {
+    'API_URL': JSON.stringify('http://localhost:8000')
   }
+
 })

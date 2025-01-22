@@ -2,10 +2,17 @@
     <div class="helper__wrapper">
         <div class="helper">
             <p>Помощь</p>
+
             <div class="helper__content">
-                <div class="helper__message">
-                    {{ message }}
-                </div>
+                <TransitionGroup name="slide-down">
+                    <div class="helper__message"
+                         v-for="(message, index) in messages"
+                         :key="'message' + index"
+                         @click="goToQuestion(message.inputName)">
+                        {{ message.text }}
+                    </div>
+                </TransitionGroup>
+
             </div>
         </div>
         <div class="helper__close-icon__wrapper">
@@ -20,22 +27,21 @@ import Cancel from "@/assets/icons/Cancel.vue";
 import { useHelperStore } from "@/store/helper";
 import { computed } from "vue";
 export default {
-    props: {
-        questions: {
-            type: Array,
-            required: true
-        }
-    },
     components: {
         Cancel,
     },
-    emits: ["closeCalcParams"],
+    emits: ["closeCalcParams", "goToQuestion"],
     setup(props, { emit }) {
         const helperStore = useHelperStore();
+        const goToQuestion = (name) => {
+            if (name)
+                emit('goToQuestion', name)
+        }
         return {
             closeCalcParams: () => emit("closeCalcParams"),
+            goToQuestion,
             isLoading: false,
-            message: computed(() => helperStore.getMessage)
+            messages: computed(() => helperStore.getMessages)
         }
     }
 }

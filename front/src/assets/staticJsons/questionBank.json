@@ -3,7 +3,8 @@
     "id": 1,
     "name": "Тип предохранительного клапана:",
     "type": "RadioType",
-    "inputName": "execution",
+    "inputName": "clapanType",
+    "value": null,
     "answers": [
       {
         "name": "Пилотный",
@@ -19,123 +20,176 @@
     "id": 2,
     "name": "Агрегатное состояние несущей рабочей среды:",
     "type": "RadioType",
-    "inputName": "agregat",
+    "inputName": "environmentType",
+    "value": null,
     "answers": [
       {
         "name": "Газ",
-        "value": "Н"
+        "value": "gas"
       },
       {
         "name": "Жидкость",
-        "value": "В"
+        "value": "liquid"
       }
     ]
   },
   {
     "id": 3,
-    "name": "Выбор сред:",
+    "name": "Мольная доля состава рабочей среды, %:",
     "type": "oneLineType",
+    "inputName": "environment",
+    "value": [],
     "inner": [
       [
         {
-          "id": "",
+          "id": 3.1,
           "name": "",
           "type": "SelectType",
-          "inputName": "execution",
-          "answers": [
-            {
-              "name": "Тест среда",
-              "value": "Н"
-            }
-          ]
+          "inputName": "environmentName",
+          "value": null,
+          "answers": []
         },
         {
-          "id": "",
+          "id": 3.2,
           "name": "",
           "type": "TextType",
-          "inputName": "percent",
-          "placeholder": "Укажите процент"
+          "inputName": "environmentPercent",
+          "placeholder": "Укажите процент",
+          "value": null
         }
       ]
     ]
   },
   {
     "id": 4,
-    "name": "Сумма:",
-    "type": "DisabledType",
-    "inputName": "envSumm",
-    "value": "100"
-  },
-  {
-    "id": 4,
     "name": "Наличие растворенной среды в другом агрегатном состоянии:",
     "type": "CheckboxType",
-    "inputName": "nalsred",
+    "inputName": "isSecondEnv",
     "answers": [
       {
         "name": "Да",
-        "value": "Н"
+        "value": "Н",
+        "checkToHide": 5
       }
     ]
   },
   {
     "id": 5,
-    "name": "Другое агрегатное состояние:",
+    "name": "Другое агрегатное состояние, %:",
     "type": "oneLineType",
+    "inputName": "secondEnv",
+    "hidden": true,
+    "value": [],
     "inner": [
       [
         {
-          "id": "",
+          "id": 5.1,
           "name": "",
           "type": "SelectType",
-          "inputName": "execution2",
-          "answers": [
-            {
-              "name": "Тест среда",
-              "value": "Н"
-            }
-          ]
+          "inputName": "environmentName",
+          "value": null,
+          "answers": []
         },
         {
-          "id": "",
+          "id": 5.2,
           "name": "",
           "type": "TextType",
-          "inputName": "percent2",
-          "placeholder": "Укажите процент"
+          "inputName": "environmentPercent",
+          "placeholder": "Укажите процент",
+          "value": null
         }
       ]
     ]
   },
   {
     "id": 6,
+    "name": "Суммарная доля состава рабочей среды, %:",
+    "type": "DisabledType",
+    "inputName": "envSumm",
+    "value": null
+  },
+  {
+    "id": 7,
+    "name": "Сумма газовой и жидкой фазы, %:",
+    "type": "DisabledType",
+    "inputName": "bothEnvSumm",
+    "hidden": "true",
+    "value": null
+  },
+  {
+    "id": 8,
+    "name": "Молекулярная масса:",
+    "type": "DisabledType",
+    "inputName": "molecular_weight",
+    "value": null
+  },
+  {
+    "id": 9,
+    "name": "Плотность жидкости:",
+    "type": "DisabledType",
+    "inputName": "density",
+    "value": null
+  },
+  {
+    "id": 10,
+    "name": "Материал:",
+    "type": "DisabledType",
+    "inputName": "material",
+    "value": null
+  },
+  {
+    "id": 11,
+    "name": "Вязкость:",
+    "type": "DisabledType",
+    "inputName": "viscosity",
+    "value": null
+  },
+  {
+    "id": 12,
     "name": "Давление настройки:",
+    "inputName": "Pn",
     "type": "oneLineType",
     "modifiers": [
       "inputBeforeSelect",
       "noAddButton"
     ],
+    "value": [],
     "inner": [
       [
         {
-          "id": "",
+          "id": 12.1,
           "name": "",
           "type": "TextType",
-          "inputName": "davlenie-znachenie",
-          "placeholder": "Укажите значение"
+          "inputName": "pnValue",
+          "placeholder": "Укажите значение",
+          "value": null
         },
         {
-          "id": "",
+          "id": 12.2,
           "name": "",
           "type": "SelectType",
-          "inputName": "davlenie-velichina",
+          "inputName": "pnUnit",
+          "value": null,
           "answers": [
             {
               "name": "Мпа",
-              "value": "Н"
+              "value": "mpa"
             },
             {
               "name": "Кпа",
-              "value": "Н"
+              "value": "kpa"
+            },
+            {
+              "name": "Па",
+              "value": "Pa"
+            },
+            {
+              "name": "бар",
+              "value": "bar"
+            },
+            {
+              "name": "кгс/см2",
+              "value": "kgs"
             }
           ]
         }
@@ -143,412 +197,101 @@
     ]
   },
   {
-    "id": 7,
-    "name": "Противодавление статическое или до срабатывания, (изб.):",
-    "inputName": "protivodavleniestatic",
-    "type": "TextType"
-  },
-  {
-    "id": 8,
-    "name": "Противодавление динамическое(во время срабатывания), (изб.):",
-    "inputName": "protivodavleniedinamyc",
-    "type": "TextType"
-  },
-  {
-    "id": 9,
-    "name": "сильфон на пружинные ПК по требованию ОЛ:",
-    "inputName": "silfon",
-    "type": "CheckboxType",
-    "answers": [
-      {
-        "name": "Да",
-        "value": "Н"
-      }
-    ]
-  },
-  {
-    "id": 10,
-    "name": "Количество одновременно работающих клапанов, шт.:",
-    "inputName": "numClapan",
-    "type": "TextType"
-  },
-  {
-    "id": 11,
-    "name": "Наличие разрывной мембраны на входе:",
-    "inputName": "razrMembr",
-    "type": "CheckboxType",
-    "answers": [
-      {
-        "name": "Да",
-        "value": "Н"
-      }
-    ]
-  },
-  {
-    "id": 12,
-    "name": "Тип присоединения",
-    "inputName": "connectionType",
-    "type": "SelectType",
-    "answers": [
-      {
-        "name": "1 тип",
-        "value": "Н"
-      },
-      {
-        "name": "2 тип",
-        "value": "Н"
-      }
-    ]
-  },
-  {
     "id": 13,
-    "name": "Узел подрыва:",
-    "inputName": "explosion",
-    "type": "CheckboxType",
-    "answers": [
-      {
-        "name": "Да",
-        "value": "Н"
-      }
-    ]
+    "name": "Противодавление статическое:",
+    "inputName": "Pp",
+    "type": "TextType",
+    "value": null
   },
   {
     "id": 14,
-    "name": "Наличие поворотных заглушек:",
-    "inputName": "rotationstumps",
-    "type": "CheckboxType",
-    "answers": [
-      {
-        "name": "Да",
-        "value": "Н"
-      }
-    ]
+    "name": "Динамическое противодавление:",
+    "inputName": "Pp_din",
+    "type": "TextType",
+    "value": null
   },
   {
     "id": 15,
-    "name": "Наличие термочехла:",
-    "inputName": "thermochehl",
-    "type": "CheckboxType",
-    "answers": [
-      {
-        "name": "Да",
-        "value": "Н"
-      }
-    ]
+    "name": "Максимальный аварийный расход жидкости и газа (кг/час):",
+    "inputName": "Gab",
+    "type": "TextType",
+    "value": null
   },
   {
     "id": 16,
-    "name": "Наличие в рабочей среде абразивных частиц:",
-    "inputName": "abrasive",
-    "type": "CheckboxType",
-    "answers": [
-      {
-        "name": "Да",
-        "value": "Н"
-      }
-    ]
-  },
-  {
-    "id": 11,
-    "name": "Тип блока управления:",
-    "inputName": "controle-blocks-series",
-    "type": "SelectType",
-    "answers": [
-      {
-        "name": "Электронный модуль датчиков Э0",
-        "value": "Э0"
-      },
-      {
-        "name": "Встроенный интеллектуальный модуль управления с пускателем Э1",
-        "value": "Э1"
-      },
-      {
-        "name": "Электронный интеллектуальный модуль управления для искробезопасных приводов Э1S",
-        "value": "Э1S"
-      },
-      {
-        "name": "Электронный блок концевых выключателей без пускателя Э2",
-        "value": "Э2"
-      },
-      {
-        "name": "Механический блок концевых выключателей без пускателя М1",
-        "value": "М1"
-      }
-    ]
-  },
-  {
-    "id": 12,
-    "name": "Вариант температурного исполнения:",
-    "inputName": "climatic-modification",
-    "type": "RadioType",
-    "answers": [
-      {
-        "name": "-25°C/+60°C - 100% при 25°C - (У1)",
-        "value": "1"
-      },
-      {
-        "name": "-40°C/+60°C - 100% при 25°C - (У1)",
-        "value": "2"
-      },
-      {
-        "name": "-60°C/+60°C - 100% при 25°C - (УХЛ1)",
-        "value": "3"
-      },
-      {
-        "name": "-10°C/+60°C - 100% при 45°C - (Т1)",
-        "value": "4"
-      },
-      {
-        "name": "-40°C/+40°C - 100% при 25°C - (М1)",
-        "value": "5"
-      },
-      {
-        "name": "-40°C/+40°C - 98% при 25°C - (М5.1)",
-        "value": "6"
-      }
-    ]
-  },
-  {
-    "id": 13,
-    "name": "Направление вращения выходного вала:",
-    "inputName": "rotating",
-    "type": "RadioType",
-    "answers": [
-      {
-        "name": "Закрывание по часовой стрелке",
-        "value": "1"
-      },
-      {
-        "name": "Закрывание против часовой стрелке",
-        "value": "2"
-      }
-    ]
-  },
-  {
-    "id": 14,
-    "name": "Степень защиты от проникновения пыли и воды:",
-    "inputName": "protection",
-    "type": "RadioType",
-    "answers": [
-      {
-        "name": "IP67",
-        "value": "1"
-      },
-      {
-        "name": "IP68",
-        "value": "2"
-      }
-    ]
-  },
-  {
-    "id": 15,
-    "name": "Цвет окраски:",
-    "inputName": "color",
-    "type": "RadioType",
-    "answers": [
-      {
-        "name": "Серый",
-        "value": "1"
-      },
-      {
-        "name": "По спецификации заказа",
-        "value": "2",
-        "hiddenInput": {
-          "none": true,
-          "name": "Ralcolor",
-          "placeholder": "В RAL"
-        }
-      }
-    ]
-  },
-  {
-    "id": 16,
-    "name": "Электрическое подключение:",
-    "inputName": "connectionForEp4",
-    "type": "RadioType",
-    "answers": [
-      {
-        "name": "Заглушки на местах трех кабельный вводов, штепсельное подключение внутри привода",
-        "value": "0"
-      },
-      {
-        "name": "Кабельные вводы, 3 штуки, клеммное подключение внутри привода",
-        "value": "1",
-        "info": "Поставляется с двумя кабельными вводами под кабели без брони диаметром 16-17 мм и одним кабельным вводом под кабель без брони диаметром 10.5-12 мм.",
-        "hiddenInfo": true
-      },
-      {
-        "name": "Кабельные вводы, 3 штуки, штепсельное подключение внутри привода",
-        "value": "2",
-        "info": "Поставляется с двумя кабельными вводами под кабели без брони диаметром 16-17 мм и одним кабельным вводом под кабель без брони диаметром 10.5-12 мм.",
-        "hiddenInfo": true
-      },
-      {
-        "name": "Заглушки на местах кабельных вводов, клеммное подключение внутри привода",
-        "value": "4"
-      }
-    ]
+    "name": "Количество параллельно установленных и одновременно работающих клапанов (шт):",
+    "inputName": "N",
+    "type": "TextType",
+    "value": null
   },
   {
     "id": 17,
-    "name": "Требования по подключаемым кабелям:",
-    "inputName": "cabelsType",
+    "name": "Мембранно-предохранительное устройство:",
+    "inputName": "Pre_Kc",
     "type": "CheckboxType",
+    "value": null,
     "answers": [
       {
-        "name": "Бронированный",
-        "value": "0",
-        "hiddenInput": [
-          {
-            "name": "protCabelNum",
-            "placeholder": "Введите кол-во",
-            "none": true
-          },
-          {
-            "name": "protCabelInput",
-            "placeholder": "Укажите диаметр по броне",
-            "none": true
-          }
-        ]
-      },
-      {
-        "name": "Под металлорукавом",
-        "value": "1",
-        "hiddenInput": [
-          {
-            "name": "metalNum",
-            "placeholder": "Введите кол-во",
-            "none": true
-          },
-          {
-            "name": "metalInput",
-            "placeholder": "Укажите диаметр по броне",
-            "none": true
-          }
-        ]
-      },
-      {
-        "name": "Под бронированным в металлорукаве",
-        "value": "2",
-        "hiddenInput": [
-          {
-            "name": "protectMetalNum",
-            "placeholder": "Введите кол-во",
-            "none": true
-          },
-          {
-            "name": "protectMetalInput",
-            "placeholder": "Укажите диаметр по броне",
-            "none": true
-          }
-        ]
-      },
-      {
-        "name": "Заглушки",
-        "value": "4",
-        "hiddenInput": [
-          {
-            "name": "stubs",
-            "placeholder": "Введите кол-во",
-            "none": true
-          }
-        ]
+        "name": "Да",
+        "value": "Н",
+        "checkToHide": 5
       }
     ]
   },
   {
     "id": 18,
-    "name": "Специальное исполнение:",
-    "inputName": "special",
-    "type": "CheckboxType",
-    "answers": [
-      {
-        "name": "Для применения в установках с повышенным уровнем вибрации, в частности, в компрессорных установках",
-        "value": "К"
-      },
-      {
-        "name": "Исполнение с тормозом обратного хода",
-        "value": "Т"
-      },
-      {
-        "name": "Исполнение для энергетики",
-        "value": "Э"
-      }
-    ]
+    "name": "Давление начала открытия с противодавлением:",
+    "type": "DisabledType",
+    "inputName": "Pno",
+    "value": null
   },
   {
     "id": 19,
-    "name": "Дополнительные аксессуары:",
-    "inputName": "additionalAccessories",
-    "type": "CheckboxType",
-    "answers": [
-      {
-        "name": "Защитный колпак",
-        "value": "К",
-        "hiddenInput": {
-          "name": "stockForCap",
-          "placeholder": "Укажите вылет штока арматуры в мм."
-        }
-      },
-      {
-        "name": "Механический указатель",
-        "value": "Т",
-        "hiddenInput": {
-          "name": "stockForPointer",
-          "placeholder": "Укажите ход штока арматуры в мм."
-        }
-      },
-      {
-        "name": "Исполнение для энергетики",
-        "value": "Э"
-      }
-    ]
+    "name": "Давление начала открытия с противодавлением:",
+    "type": "DisabledType",
+    "inputName": "Ppo",
+    "value": null
   },
   {
     "id": 20,
-    "name": "Модуль прямоходный:",
-    "inputName": "mpCheck",
-    "type": "CheckboxType",
-    "answers": [
-      {
-        "name": "Добавить",
-        "value": "1"
-      }
-    ]
+    "name": "Давление начала открытия с противодавлением:",
+    "type": "DisabledType",
+    "inputName": "P1",
+    "value": null
   },
   {
     "id": 21,
-    "name": "Наибольший ход, мм:",
-    "inputName": "maxStepMp",
-    "type": "SelectType",
-    "answers": []
+    "name": "Давление начала открытия с противодавлением:",
+    "type": "DisabledType",
+    "inputName": "P2",
+    "value": null
   },
   {
     "id": 22,
-    "name": "Ход штока модуля за один оборот привода, мм:",
-    "inputName": "roundMomentMp",
-    "type": "SelectType",
-    "answers": []
+    "name": "Давление начала открытия с противодавлением:",
+    "type": "DisabledType",
+    "inputName": "Kw",
+    "value": null
   },
   {
     "id": 23,
-    "name": "Крутящий момент привода при настройке от 40% до 100%, кН:",
-    "inputName": "roundMomentInterval",
-    "type": "SelectType",
-    "answers": []
+    "name": "Давление начала открытия с противодавлением:",
+    "type": "DisabledType",
+    "inputName": "Gideal",
+    "value": null
   },
   {
     "id": 24,
-    "name": "Диапазон усилий на штоке модуля при настройке привода на крутящий момент:",
-    "inputName": "stepForOne",
-    "type": "SelectType",
-    "answers": []
+    "name": "Давление начала открытия с противодавлением:",
+    "type": "DisabledType",
+    "inputName": "pre_DN",
+    "value": null
   },
   {
     "id": 25,
-    "name": "Скорость хода штока при выбранной частоте вращения привода(об/мин), мм/с(мм/мин):",
-    "inputName": "vStepStockSet",
-    "type": "SelectType",
-    "answers": []
+    "name": "Давление начала открытия с противодавлением:",
+    "type": "DisabledType",
+    "inputName": "DN",
+    "value": null
   }
 ]

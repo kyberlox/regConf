@@ -2,7 +2,7 @@
     <div v-for="questionInfo in question.answers"
          :key="questionInfo.value"
          class="form-check">
-        <input @change="sendFormBack({ [question.inputName]: questionInfo.value })"
+        <input @click="saveNewValue(question.inputName, questionInfo.value)"
                :name="question.inputName"
                :type="'radio'"
                :id="question.inputName + questionInfo.value"
@@ -16,13 +16,13 @@
 <script>
 export default {
     props: ["question"],
-    emits: ["sendFormBack"],
+    emits: ["saveNewValue"],
     setup(props, { emit }) {
-        const sendFormBack = (radioValue) => {
-            emit("sendFormBack", radioValue);
+        const saveNewValue = (name, value) => {
+            emit("saveNewValue", name, value);
         }
         return {
-            sendFormBack
+            saveNewValue
         }
     }
 }

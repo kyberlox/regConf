@@ -2,42 +2,42 @@
     <EngineMark />
     <div class="summary">
         <div class="summary__container"
-             :class="{ 'summary__container--open': showAutoParams }">
+             :class="{ 'summary__container--open': showHelper }">
             <div v-for="item in mainQuestions"
                  :key="item.id"
-                 class="summary__card card mb-4">
-                <CardCommon :question="item" />
+                 :ref="el => questionRefs[item.inputName] = el">
+                <CardCommon class="summary__card card mb-4"
+                            :class="{ 'hidden': item.hidden }"
+                            :question="item" />
             </div>
         </div>
 
         <transition name="slide">
-            <SideHelper @closeCalcParams="showAutoParams = false"
-                        v-if="showAutoParams"
-                        :questions="autoParamsChanged" />
+            <SideHelper @closeCalcParams="showHelper = false"
+                        v-if="showHelper"
+                        @goToQuestion="goToQuestion" />
             <ArrowLeft v-else
-                       @click="showAutoParams = true"
+                       @click="showHelper = true"
                        class="summary__arrow-icon" />
         </transition>
     </div>
-    <Passport :showAutoParams="showAutoParams" />
+    <Passport />
+    <FormHandler />
 </template>
 
 <script>
-import { ref, computed } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
+import { useHelperStore } from "@/store/helper";
+import { useEnvModuleStore } from "@/store/envModule";
+import { useQuestionsStore } from "@/store/questions";
 
 import ArrowLeft from "@/assets/icons/ArrowLeft.vue";
 import EngineMark from "../components/common/EngineMark.vue";
 import Passport from "../components/common/FormEndPassport.vue";
-
-import questionsPp from "@/assets/staticJsons/questionBank.json";
-import routesToParams from "@/assets/staticJsons/routesToParams.json";
-import autoParams from '@/assets/staticJsons/autoParams.json';
-
-import Api from "@/utils/Api";
-
-import { checkBeforeFetchParam } from "@/utils/checkBeforeFetchParam";
 import CardCommon from "@/components/common/CardCommon.vue";
 import SideHelper from "@/components/common/SideHelper.vue";
+import FormHandler from "@/components/FormHandler.vue";
+import Api from "@/utils/Api";
 
 export default {
     components: {
@@ -46,52 +46,66 @@ export default {
         SideHelper,
         ArrowLeft,
         CardCommon,
+        FormHandler
     },
+
     setup() {
-        const mainQuestions = computed(() => questionsPp.filter((item) => item.type !== "auto"));
+        const helperStore = useHelperStore();
+        const envModuleStore = useEnvModuleStore();
+        const questionsStore = useQuestionsStore();
 
-        const autoParamsChanged = ref(autoParams);
+        const showHelper = ref(true);
+        const questionRefs = ref({});
+        const mainQuestions = computed(() => questionsStore.questions);
+        const errors = computed(() => helperStore.getMessages);
 
-        const showAutoParams = ref(true);
+        const goToQuestion = (name) => {
+            questionRefs.value[name]?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        };
 
-        const answers = ref([]);
+        const handleErrorHighlight = (newErrors) => {
+            Object.values(questionRefs.value).forEach(element => {
+                element.classList.remove('card--error-highlight');
+            });
 
-        const getInfoToObject = (data) => {
-            let key = Object.keys(data)[0];
+            if (newErrors.length > 1) {
+                const target = newErrors[newErrors.length - 1].inputName;
+                if (target) {
+                    questionRefs.value[target]?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                    questionRefs.value[target]?.classList.add('card--error-highlight');
+                }
 
-            if (!Object.keys(answers.value).includes(key)) {
-                answers.value = {
-                    ...answers.value,
-                    [key]: data[key],
-                };
-            } else if (answers.value[key] == data[key]) {
-                delete answers.value[key];
-            }
-            else {
-                answers.value[key] = data[key];
+                newErrors.forEach(error => {
+                    if (error.id !== 0 && questionRefs.value[error.inputName]) {
+                        questionRefs.value[error.inputName].classList.add('card--error-highlight');
+                    }
+                });
             }
         };
 
-        const callback = async (arrayTarget) => {
-            autoParamsChanged.value.find((item) => item.inputName == arrayTarget).isLoading = true;
-            const response = await Api.get(routesToParams.execution);
-            autoParamsChanged.value.find((item) => item.inputName == Object.keys(response)[0]).value = Object.values(response)[0];
-            autoParamsChanged.value.find((item) => item.inputName == arrayTarget).isLoading = false;
-        }
+        watch(() => [...errors.value], handleErrorHighlight, { deep: true });
 
-        const calcTemperature = ['execution', 'workingMode'];
-
-        checkBeforeFetchParam(calcTemperature, answers, callback, 'coverMaterial');
+        onMounted(async () => {
+            try {
+                const data = await Api.get(API_URL + '/get_table');
+                envModuleStore.setEnvValues(data);
+            } catch (error) {
+                console.error('Failed to fetch table data:', error);
+            }
+        });
 
         return {
-            showAutoParams,
+            showHelper,
             mainQuestions,
-            answers,
-            calcTemperature,
-            getInfoToObject,
-            autoParams,
-            autoParamsChanged,
-        }
+            goToQuestion,
+            questionRefs,
+        };
     }
-}
+};
 </script>
