@@ -1,6 +1,8 @@
 import math
 from math import sqrt, log, exp, pi, log10
 
+
+
 def mixture(envs : list):
     result = {
         "name" : "",
@@ -78,10 +80,7 @@ def mixture(envs : list):
     
     return result
     
-    
-     
-    
-    
+ 
 
 def Raschet(dt):
     P_atm = 0.101320

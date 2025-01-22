@@ -2,7 +2,6 @@ from fastapi import FastAPI, File, UploadFile, Body, Response, Cookie, Request
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse, HTMLResponse
-from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import HTTPException
 
@@ -87,26 +86,11 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "DELETE", "PUT"], #"OPTIONS", "PATH"],
+    allow_methods=["GET", "POST", "DELETE", "PUT", "OPTIONS", "PATH"],
     allow_headers=["Content-Type", "Accept", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest"],
 )
 
 #app.mount("/", StaticFiles(directory="../front/dist", html=True), name="static")
-
-
-
-'''
-@app.get("/")
-def root():
-    return RedirectResponse("/docs")
-'''
-    
-#тут будет вывод визуала
-'''
-@app.get("/")
-def root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-'''
 
 #миграция и таблицы эксель
 @app.get("/migration")
@@ -192,29 +176,33 @@ def get_table():
 @app.post("/get_compound")
 def get_compound(data = Body()):
     environments = []
-    lines = db.query(Table).all()
-    for line in lines:
-        for env in data:
-            ID = env["id"]
-            r = env["r"]
-            if line.id == ID:
-                environment = {
-                    "id" : line.id,
-                    "name" : line.name,
-                    "environment" : line.environment,
-                    "molecular_weight" : line.molecular_weight,
-                    "density" : line.density,
-                    "material" : line.material,
-                    "viscosity" : line.viscosity,
-                    "isobaric_capacity" : line.isobaric_capacity,
-                    "molar_mass" : line.molar_mass,
-                    "isochoric_capacity" : line.isochoric_capacity,
-                    "adiabatic_index" : line.adiabatic_index,
-                    "compressibility_factor" : line.compressibility_factor,
-                    "r" : r
-                }
-                    
-                environments.append(environment)
+    if len(data) > 1:
+        lines = db.query(Table).all()
+        for line in lines:
+            for env in data:
+                ID = env["id"]
+                r = env["r"]
+                if line.id == ID:
+                    environment = {
+                        "id" : line.id,
+                        "name" : line.name,
+                        "environment" : line.environment,
+                        "molecular_weight" : line.molecular_weight,
+                        "density" : line.density,
+                        "material" : line.material,
+                        "viscosity" : line.viscosity,
+                        "isobaric_capacity" : line.isobaric_capacity,
+                        "molar_mass" : line.molar_mass,
+                        "isochoric_capacity" : line.isochoric_capacity,
+                        "adiabatic_index" : line.adiabatic_index,
+                        "compressibility_factor" : line.compressibility_factor,
+                        "r" : r
+                    }
+                        
+                    environments.append(environment)
+
+    elif len(data) == 1:
+        environments = data
     return mixture(environments)
 
 #получение осатльных параметров
