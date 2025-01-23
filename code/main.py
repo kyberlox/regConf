@@ -176,33 +176,30 @@ def get_table():
 @app.post("/get_compound")
 def get_compound(data = Body()):
     environments = []
-    if len(data) > 1:
-        lines = db.query(Table).all()
-        for line in lines:
-            for env in data:
-                ID = env["id"]
-                r = env["r"]
-                if line.id == ID:
-                    environment = {
-                        "id" : line.id,
-                        "name" : line.name,
-                        "environment" : line.environment,
-                        "molecular_weight" : line.molecular_weight,
-                        "density" : line.density,
-                        "material" : line.material,
-                        "viscosity" : line.viscosity,
-                        "isobaric_capacity" : line.isobaric_capacity,
-                        "molar_mass" : line.molar_mass,
-                        "isochoric_capacity" : line.isochoric_capacity,
-                        "adiabatic_index" : line.adiabatic_index,
-                        "compressibility_factor" : line.compressibility_factor,
-                        "r" : r
-                    }
+    lines = db.query(Table).all()
+    for line in lines:
+        for env in data:
+            ID = env["id"]
+            r = env["r"]
+            if line.id == ID:
+                environment = {
+                    "id" : line.id,
+                    "name" : line.name,
+                    "environment" : line.environment,
+                    "molecular_weight" : line.molecular_weight,
+                    "density" : line.density,
+                    "material" : line.material,
+                    "viscosity" : line.viscosity,
+                    "isobaric_capacity" : line.isobaric_capacity,
+                    "molar_mass" : line.molar_mass,
+                    "isochoric_capacity" : line.isochoric_capacity,
+                    "adiabatic_index" : line.adiabatic_index,
+                    "compressibility_factor" : line.compressibility_factor,
+                    "r" : r
+                }
                         
-                    environments.append(environment)
+                environments.append(environment)
 
-    elif len(data) == 1:
-        environments = data
     return mixture(environments)
 
 #получение осатльных параметров

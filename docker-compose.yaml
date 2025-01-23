@@ -31,22 +31,7 @@ services:
       - postgres
     networks:
       - app-network
-
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
-    depends_on:
-      # `fastapi`Because the service (container) needs to be started first`depends_on`Is specified
-      - fastapi
-      - frontend
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx/:/etc/nginx/conf.d/
-      - ./front/:/app/
-    networks:
-      - app-network
-
+  
   frontend:
     container_name: vue
     build:
@@ -58,16 +43,31 @@ services:
       - 5173:5173
     networks:
       - app-network
-    
-  certbot:
-    image: certbot/certbot
+
+nginx:
+    image: nginx:alpine
+    container_name: nginx
     depends_on:
-      - nginx
-    container_name: certbot
+      # `fastapi`Because the service (container) needs to be started first`depends_on`Is specified
+      - fastapi
+      - vue
+    ports:
+      - "80:80"
     volumes:
-      - ./certbot/etc-letsencrypt:/etc/letsencrypt
-      - ./front/:/var/www/html
-    command: certonly --webroot --webroot-path=/var/www/html --email aleks.timofeev.00@yandex.ru --agree-tos --no-eff-email -d emk.org.ru
+      - ./nginx/:/etc/nginx/conf.d/
+      - ./frontend/:/app/
+    networks:
+      - app-network
+    
+  #certbot:
+    #image: certbot/certbot
+    #depends_on:
+      #- nginx
+    #container_name: certbot
+    #volumes:
+      #- ./certbot/etc-letsencrypt:/etc/letsencrypt
+      #- ./front/:/var/www/html
+    #command: certonly --webroot --webroot-path=/var/www/html --email aleks.timofeev.00@yandex.ru --agree-tos --no-eff-email -d emk.org.ru
 
 
 

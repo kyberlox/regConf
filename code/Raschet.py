@@ -22,16 +22,15 @@ def mixture(envs : list):
     for env in envs:
         env_type.add(env["environment"])
 
-    material = set()
+    material = []
     for env in envs:
-        material.add(env['material'])
+        material.append(env['material'])
     
-    if len(material) > 1:
-        ln = 0
-        for mat in material:
-            if len(mat) > ln:
-                ln = len(mat)
-                result["material"] = mat
+    ln = 0
+    for mat in material:
+        if len(mat) > ln:
+            ln = len(mat)
+            result["material"] = mat
 
     #проверка типа среды смеси
     if len(env_type) == 1: #если среда однородная
