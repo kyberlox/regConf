@@ -19,7 +19,7 @@ services:
   
   fastapi:
     build:
-      context: ./code
+      context: ./python
       dockerfile: Dockerfile
     image: app/python
     container_name: fastapi
