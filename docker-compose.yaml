@@ -44,18 +44,18 @@ services:
     networks:
       - app-network
 
-nginx:
+  nginx:
     image: nginx:alpine
     container_name: nginx
     depends_on:
       # `fastapi`Because the service (container) needs to be started first`depends_on`Is specified
       - fastapi
-      - vue
+      - frontend
     ports:
       - "80:80"
     volumes:
       - ./nginx/:/etc/nginx/conf.d/
-      - ./frontend/:/app/
+      - ./front/:/app/
     networks:
       - app-network
     
