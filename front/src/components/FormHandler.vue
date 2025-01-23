@@ -10,6 +10,7 @@ import { changeToMpa } from "@/utils/changeToMpa";
 import Api from "@/utils/Api";
 export default {
     setup() {
+
         const questionsStore = useQuestionsStore();
         const helperStore = useHelperStore();
         const envModuleStore = useEnvModuleStore();
@@ -19,10 +20,10 @@ export default {
             return {
                 environmentType: questions.value.find((e) => e.inputName == 'environmentType'),
                 environment: questions.value.find((e) => e.inputName == 'environment'),
-                envSumm: questions.value.find((e) => e.inputName == 'envSumm'),
+                envSumm: questions.value.find((e) => e.inputName == 'envAnswersGroup').answers.find((e) => e.inputName == 'envSumm'),
                 isSecondEnv: questions.value.find((e) => e.inputName == 'isSecondEnv'),
                 secondEnv: questions.value.find((e) => e.inputName == 'secondEnv'),
-                bothEnvSumm: questions.value.find((e) => e.inputName == 'bothEnvSumm')
+                bothEnvSumm: questions.value.find((e) => e.inputName == 'envAnswersGroup').answers.find((e) => e.inputName == 'bothEnvSumm')
             }
         })
         const paramsToGetPressure = computed(() => {
@@ -60,17 +61,20 @@ export default {
             const targetQuestion = isSecondEnv ? paramsToGetCompound.value.secondEnv : paramsToGetCompound.value.environment;
 
             helperStore.deleteErrorMessage(hiddenInput);
+
             let sum = 0;
             targetQuestion.value.map((i) => {
                 if (i && i.value) {
                     isSecondEnv ? sum += Number(i.value) + paramsToGetCompound.value.envSumm.value :
                         sum += Number(i.value);
-                    questionsStore.setQuestionValue(targetInput, sum)
+                    questionsStore.setQuestionValue(targetInput, sum, 'inputGroup', false, 'envAnswersGroup')
                 }
             })
             if (targetQuestion.value.length > 0) {
                 if (sum !== 100) {
                     helperStore.setErrorMessage(targetInput);
+                    console.log(targetInput);
+
                     return false;
                 }
                 else {
@@ -102,7 +106,7 @@ export default {
                 ).then(data => {
                     envModuleStore.setAfterGetCompoundValue(data);
                     envParamsToGet.map((key) => {
-                        questionsStore.setQuestionValue(key, data[key]);
+                        questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'pressureAnswersGroup');
                     })
                 })
             };

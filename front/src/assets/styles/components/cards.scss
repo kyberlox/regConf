@@ -87,6 +87,50 @@
         background-color: rgba(255, 68, 68, 0.05);
         transition: 0.2s box-shadow;
     }
+
+    &__results {
+        &-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        &__result {
+            &-block {
+                flex: 1 1 300px;
+                padding: 20px;
+                background: white;
+                border-radius: 12px;
+                // box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                border: 2px solid rgba(0, 0, 0, 0.1);
+            }
+
+            &-title {
+                color: #373636;
+                font-size: 1rem;
+                margin-bottom: 8px;
+            }
+
+            &-value {
+                &__number {
+                    font-size: 30px;
+                    // font-weight: 600;
+                    color: #434242;
+                    display: flex;
+                    align-items: center;
+                    height: 48px;
+                    padding: 0 12px;
+                    white-space: nowrap;
+                    background: rgba(219, 220, 221, 0.5411764706);
+                    border-radius: 8px;
+                }
+            }
+        }
+    }
+
 }
 
 .form {

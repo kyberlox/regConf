@@ -16,11 +16,13 @@ export const useHelperStore = defineStore('helper', {
                 },
                 {
                     id: 2,
+                    inputGroup: 'envAnswersGroup',
                     inputName: 'envSumm',
                     text: 'Сумма объемных долей компонентов должна быть равна 100%'
                 },
                 {
                     id: 2.1,
+                    inputGroup: 'envAnswersGroup',
                     inputName: 'bothEnvSumm',
                     text: 'Сумма объемных долей по двум агрегатным состояниям должна быть равна 100%'
                 },
@@ -157,6 +159,7 @@ export const useHelperStore = defineStore('helper', {
                     text: 'Не делаем из-за низкого давления настройки'
                 }
             ],
+            errorsRef: [],
         };
     },
 
@@ -165,6 +168,8 @@ export const useHelperStore = defineStore('helper', {
             this.messages = DEFAULT_MESSAGE;
         },
         setErrorMessage(name) {
+            console.log(name);
+
             const existingMessage = this.messages.find(item => item.inputName === name);
             const newError = this.errors.find(item => item.inputName === name);
 
@@ -174,10 +179,20 @@ export const useHelperStore = defineStore('helper', {
         },
         deleteErrorMessage(index) {
             this.messages = this.messages.filter((item) => item.inputName != index);
+        },
+        pushToRefGroup(refs) {
+            const filteredRefs = Object.fromEntries(
+                Object.entries(refs).filter(([key]) => key !== 'envAnswersGroup')
+            );
+
+            if (Object.keys(filteredRefs).length > 0) {
+                Object.assign(this.errorsRef, filteredRefs);
+            }
         }
     },
 
     getters: {
         getMessages: (state) => state.messages,
+        getQuestionsRef: (state) => state.errorsRef,
     },
 });

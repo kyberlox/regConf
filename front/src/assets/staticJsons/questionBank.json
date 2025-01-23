@@ -103,46 +103,52 @@
   },
   {
     "id": 6,
-    "name": "Суммарная доля состава рабочей среды, %:",
-    "type": "DisabledType",
-    "inputName": "envSumm",
-    "value": null
-  },
-  {
-    "id": 7,
-    "name": "Сумма газовой и жидкой фазы, %:",
-    "type": "DisabledType",
-    "inputName": "bothEnvSumm",
-    "hidden": "true",
-    "value": null
-  },
-  {
-    "id": 8,
-    "name": "Молекулярная масса:",
-    "type": "DisabledType",
-    "inputName": "molecular_weight",
-    "value": null
-  },
-  {
-    "id": 9,
-    "name": "Плотность жидкости:",
-    "type": "DisabledType",
-    "inputName": "density",
-    "value": null
-  },
-  {
-    "id": 10,
-    "name": "Материал:",
-    "type": "DisabledType",
-    "inputName": "material",
-    "value": null
-  },
-  {
-    "id": 11,
-    "name": "Вязкость:",
-    "type": "DisabledType",
-    "inputName": "viscosity",
-    "value": null
+    "inputName": "envAnswersGroup",
+    "type": "inputGroup",
+    "answers": [
+      {
+        "id": 6.1,
+        "name": "Суммарная доля состава рабочей среды, %:",
+        "inputName": "envSumm",
+        "hidden": false,
+        "value": null
+      },
+      {
+        "id": 6.2,
+        "name": "Сумма газовой и жидкой фазы, %:",
+        "inputName": "bothEnvSumm",
+        "hidden": true,
+        "value": null
+      },
+      {
+        "id": 6.3,
+        "name": "Молекулярная масса:",
+        "inputName": "molecular_weight",
+        "hidden": false,
+        "value": null
+      },
+      {
+        "id": 6.4,
+        "name": "Плотность жидкости:",
+        "inputName": "density",
+        "hidden": false,
+        "value": null
+      },
+      {
+        "id": 6.5,
+        "name": "Материал:",
+        "inputName": "material",
+        "hidden": false,
+        "value": null
+      },
+      {
+        "id": 6.6,
+        "name": "Вязкость:",
+        "inputName": "viscosity",
+        "hidden": false,
+        "value": null
+      }
+    ]
   },
   {
     "id": 12,
@@ -240,58 +246,65 @@
   },
   {
     "id": 18,
-    "name": "Давление начала открытия с противодавлением:",
-    "type": "DisabledType",
-    "inputName": "Pno",
-    "value": null
-  },
-  {
-    "id": 19,
-    "name": "Давление начала открытия с противодавлением:",
-    "type": "DisabledType",
-    "inputName": "Ppo",
-    "value": null
-  },
-  {
-    "id": 20,
-    "name": "Давление начала открытия с противодавлением:",
-    "type": "DisabledType",
-    "inputName": "P1",
-    "value": null
-  },
-  {
-    "id": 21,
-    "name": "Давление начала открытия с противодавлением:",
-    "type": "DisabledType",
-    "inputName": "P2",
-    "value": null
-  },
-  {
-    "id": 22,
-    "name": "Давление начала открытия с противодавлением:",
-    "type": "DisabledType",
-    "inputName": "Kw",
-    "value": null
-  },
-  {
-    "id": 23,
-    "name": "Давление начала открытия с противодавлением:",
-    "type": "DisabledType",
-    "inputName": "Gideal",
-    "value": null
-  },
-  {
-    "id": 24,
-    "name": "Давление начала открытия с противодавлением:",
-    "type": "DisabledType",
-    "inputName": "pre_DN",
-    "value": null
-  },
-  {
-    "id": 25,
-    "name": "Давление начала открытия с противодавлением:",
-    "type": "DisabledType",
-    "inputName": "DN",
-    "value": null
+    "inputName": "pressureAnswersGroup",
+    "type": "inputGroup",
+    "answers": [
+      {
+        "id": 18,
+        "name": "Давление начала открытия с противодавлением:",
+        "type": "DisabledType",
+        "inputName": "Pno",
+        "value": null
+      },
+      {
+        "id": 19,
+        "name": "Давление полного открытия с противодавлением:",
+        "type": "DisabledType",
+        "inputName": "Ppo",
+        "value": null
+      },
+      {
+        "id": 20,
+        "name": "Давление на входе:",
+        "type": "DisabledType",
+        "inputName": "P1",
+        "value": null
+      },
+      {
+        "id": 21,
+        "name": "Давление на выходе:",
+        "type": "DisabledType",
+        "inputName": "P2",
+        "value": null
+      },
+      {
+        "id": 22,
+        "name": "Коэффициент, учитывающий эффект неполного открытия разгруженных ПК из-за противодавления:",
+        "type": "DisabledType",
+        "inputName": "Kw",
+        "value": null
+      },
+      {
+        "id": 23,
+        "name": "Массовая скорость:",
+        "type": "DisabledType",
+        "inputName": "Gideal",
+        "value": null
+      },
+      {
+        "id": 24,
+        "name": "DN предворительный:",
+        "type": "DisabledType",
+        "inputName": "pre_DN",
+        "value": null
+      },
+      {
+        "id": 25,
+        "name": "Диаметр седла клапана:",
+        "type": "DisabledType",
+        "inputName": "DN",
+        "value": null
+      }
+    ]
   }
 ]

@@ -59,31 +59,39 @@ export default {
         const mainQuestions = computed(() => questionsStore.questions);
         const errors = computed(() => helperStore.getMessages);
 
+        const questionInGroup = computed(() => helperStore.getQuestionsRef);
+
+        onMounted(() => {
+            helperStore.pushToRefGroup(questionRefs.value)
+        })
+
         const goToQuestion = (name) => {
-            questionRefs.value[name]?.scrollIntoView({
+            questionInGroup.value[name]?.scrollIntoView({
                 behavior: 'smooth',
                 block: 'center'
             });
         };
 
         const handleErrorHighlight = (newErrors) => {
-            Object.values(questionRefs.value).forEach(element => {
+            console.log(questionInGroup.value);
+
+            Object.values(questionInGroup.value).forEach(element => {
                 element.classList.remove('card--error-highlight');
             });
 
             if (newErrors.length > 1) {
-                const target = newErrors[newErrors.length - 1].inputName;
-                if (target) {
-                    questionRefs.value[target]?.scrollIntoView({
+                const target = newErrors[newErrors.length - 1].inputGroup ? newErrors[newErrors.length - 1].inputGroup : newErrors[newErrors.length - 1].inputName;
+                if (!target.inputGroup) {
+                    questionInGroup.value[target]?.scrollIntoView({
                         behavior: 'smooth',
                         block: 'center'
                     });
-                    questionRefs.value[target]?.classList.add('card--error-highlight');
+                    questionInGroup.value[target]?.classList.add('card--error-highlight');
                 }
 
                 newErrors.forEach(error => {
-                    if (error.id !== 0 && questionRefs.value[error.inputName]) {
-                        questionRefs.value[error.inputName].classList.add('card--error-highlight');
+                    if (error.id !== 0 && questionInGroup.value[error.inputName]) {
+                        questionInGroup.value[error.inputName].classList.add('card--error-highlight');
                     }
                 });
             }

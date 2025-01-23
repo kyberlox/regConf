@@ -18,7 +18,7 @@ import RadioType from "@/components/questionsTypes/RadioType.vue";
 import TextType from "@/components/questionsTypes/TextType.vue";
 import CheckboxType from "@/components/questionsTypes/CheckboxType.vue";
 import OneLineType from "../questionsTypes/uniqueQuestions/OneLineType.vue";
-import DisabledType from "../questionsTypes/DisabledType.vue";
+import InputGroup from "../questionsTypes/InputGroup.vue";
 
 import { useQuestionsStore } from "@/store/questions";
 export default {
@@ -34,7 +34,7 @@ export default {
         TextType,
         CheckboxType,
         OneLineType,
-        DisabledType
+        InputGroup
     },
     setup() {
         const questionsStore = useQuestionsStore();

@@ -50,13 +50,13 @@ export default {
         const saveSelectText = (value, groupIndex) => {
             answer.value.id = value;
             if (answer.value.value) {
-                emit("saveNewValue", props.question.inputName, answer.value, true, groupIndex);
+                emit("saveNewValue", props.question.inputName, answer.value, 'oneLine', groupIndex);
             }
         };
         const saveSelectValue = (value, groupIndex) => {
             answer.value.value = value;
             if (answer.value.id) {
-                emit("saveNewValue", props.question.inputName, answer.value, true, groupIndex);
+                emit("saveNewValue", props.question.inputName, answer.value, 'oneLine', groupIndex);
             }
         };
 
