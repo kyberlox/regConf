@@ -18,6 +18,7 @@ def mixture(envs : list):
         "compressibility_factor" : 0
     }
 
+    
     env_type = set()
     for env in envs:
         env_type.add(env["environment"])
@@ -60,7 +61,7 @@ def mixture(envs : list):
             viscosity_сh = 0
             viscosity_zn = 0
             pre_M = 0
-            adiabatic_index_ch = 0
+            adiabatic_index = 0
             adiabatic_index_zn = 0
             for env in envs:
                 r = env["r"]
@@ -70,12 +71,11 @@ def mixture(envs : list):
                 pre_M += M_i * r
                 viscosity_сh += u_i * r * sqrt(M_i)
                 viscosity_zn += r * sqrt(M_i)
-                adiabatic_index_ch += env['isobaric_capacity'] * r
-                adiabatic_index_zn += env['isochoric_capacity'] * r
+                adiabatic_index += env['adiabatic_index'] * r
                 
             result["molar_mass"] = pre_M #/100
             result["viscosity"] = viscosity_сh / viscosity_zn
-            result["adiabatic_index"] = adiabatic_index_ch / adiabatic_index_zn
+            result["adiabatic_index"] = adiabatic_index
     
     return result
     
@@ -90,7 +90,7 @@ def Raschet(dt):
     Gab = dt["Gab"]
     N = dt["N"]
     pre_Kc = dt["pre_Kc"]
-
+    p1 = dt["density"]
     if pre_Kc:
         Kc = 0.9
     else:
