@@ -83,6 +83,8 @@ def mixture(envs : list):
 
 def Raschet(dt):
     P_atm = 0.101320
+    R = 8.31446261815324 #Газовая постоянная ( Дж / (моль * K))
+
     u = dt["viscosity"]
     Pn = dt["Pn"]
     Pp = dt["Pp"]
@@ -90,7 +92,19 @@ def Raschet(dt):
     Gab = dt["Gab"]
     N = dt["N"]
     pre_Kc = dt["pre_Kc"]
-    p1 = dt["density"]
+
+    climate = dt["climate"]
+    model = {
+        "У1" : [-45, 40],
+        "ХЛ1" : [-60, 40],
+        "УХЛ1" : [-60, 40],
+        "М1" : [-40, 40]
+    }
+
+    T_min, T_max = model[climate]
+    T = dt["T"]
+
+
     if pre_Kc:
         Kc = 0.9
     else:
@@ -127,6 +141,9 @@ def Raschet(dt):
     B = P2 / P1
         
     if dt["environment"] == "Газ":
+        M = dt["molar_mass"]
+        p1 = P1 * M / R * T
+
         alpha = 0.8
         if (Ppo / Pn) == 1.1:
             if (Pp / Pno) <= 0.3:
@@ -205,6 +222,8 @@ def Raschet(dt):
         DN = sqrt((4 * F) / pi)
         
     new_dt = {
+        "T_min" : T_min,     #Минимальная рабочая температура
+        "T_max" : T_max,     #Максивальная рабочая температура
         "Pno" : Pno,         #Давление начала открытия с противодавлением
         "Ppo" : Ppo,         #Давление полного открытия с противодавлением
         "P1" : P1,           #Давление на входе
