@@ -2,20 +2,26 @@
     <!-- ds -->
 </template>
 <script>
-import { watch, computed } from "vue";
+import { watch, computed, onMounted } from "vue";
 import { useQuestionsStore } from "@/store/questions";
 import { useHelperStore } from "@/store/helper";
 import { useEnvModuleStore } from "@/store/envModule";
 import { changeToMpa } from "@/utils/changeToMpa";
 import Api from "@/utils/Api";
+import { usePageStore } from "@/store/page";
 export default {
     setup() {
-
         const questionsStore = useQuestionsStore();
         const helperStore = useHelperStore();
+        const pageStore = usePageStore();
         const envModuleStore = useEnvModuleStore();
 
         const questions = computed(() => questionsStore.questions);
+
+        const errors = computed(() => helperStore.getMessages);
+
+        const nodeRefs = computed(() => pageStore.getNodeRefs);
+
         const paramsToGetCompound = computed(() => {
             return {
                 environmentType: questions.value.find((e) => e.inputName == 'environmentType'),
@@ -33,9 +39,29 @@ export default {
                 ppDin: questions.value.find((e) => e.inputName == 'Pp_din'),
                 gab: questions.value.find((e) => e.inputName == 'Gab'),
                 n: questions.value.find((e) => e.inputName == 'N'),
-                preKc: questions.value.find((e) => e.inputName == 'Pre_Kc')
+                preKc: questions.value.find((e) => e.inputName == 'Pre_Kc'),
+
+                T: questions.value.find((e) => e.inputName == 'T'),
+                climate: questions.value.find((e) => e.inputName == 'climate'),
             }
         })
+
+        // обработка ошибок
+        watch(
+            () => [...errors.value],
+            (newErrors) => helperStore.handleErrorHighlight(newErrors, nodeRefs),
+            { deep: true }
+        );
+
+        // Получение сред и их значений
+        onMounted(async () => {
+            try {
+                const data = await Api.get(API_URL + '/get_table');
+                envModuleStore.setEnvValues(data);
+            } catch (error) {
+                console.error('Failed to fetch table data:', error);
+            }
+        });
 
         // заполнение селектов при выборе агрегатного состояния
         watch(paramsToGetCompound.value.environmentType, (newVal) => {
@@ -73,7 +99,6 @@ export default {
             if (targetQuestion.value.length > 0) {
                 if (sum !== 100) {
                     helperStore.setErrorMessage(targetInput);
-                    console.log(targetInput);
 
                     return false;
                 }
@@ -87,7 +112,8 @@ export default {
         // запрос (#2, get_compound) на параметры для конкр сред (Вязкость, материал, молекулярная масса, вязкость)
         watch([paramsToGetCompound.value.environment, paramsToGetCompound.value.secondEnv], (newVal) => {
             if (checkSum()) {
-                const envParamsToGet = ['molecular_weight', 'density', 'material', 'viscosity'];
+                // 'material',
+                const envParamsToGet = ['molecular_weight', 'density', 'viscosity'];
                 let dataToSend = [];
 
                 if (paramsToGetCompound.value.isSecondEnv.value) {
@@ -104,9 +130,10 @@ export default {
                 Api.post(API_URL + '/get_compound',
                     formattedData
                 ).then(data => {
+                    if (data.error) return;
                     envModuleStore.setAfterGetCompoundValue(data);
                     envParamsToGet.map((key) => {
-                        questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'pressureAnswersGroup');
+                        questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'envAnswersGroup');
                     })
                 })
             };
@@ -114,12 +141,11 @@ export default {
 
         // запрос (#3, get_pressure) на "Pno", "Ppo", "P1", "P2","Kw", "Gideal", "pre_DN","DN"
         watch(paramsToGetPressure, (newVal) => {
-            if (newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.value && newVal.n.value && newVal.preKc.value) {
-                const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', 'DN'];
-
+            if (newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.value && newVal.n.value && newVal.T.value && newVal.climate.value) {
+                const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', 'DN', 'material'];
                 const formattedData = {
                     "Pn": Number(changeToMpa(newVal.pn.value[0].id, newVal.pn.value[0].value)), "Pp": Number(newVal.pp.value),
-                    "Pp_din": Number(newVal.ppDin.value), "Gab": Number(newVal.gab.value), "N": Number(newVal.n.value), "pre_Kc": Number(newVal.preKc.value)
+                    "Pp_din": Number(newVal.ppDin.value), "Gab": Number(newVal.gab.value), "N": Number(newVal.n.value), "pre_Kc": Number(newVal.preKc.value), "T": Number(newVal.T.value), "climate": newVal.climate.value
                 };
 
                 envModuleStore.pushToAfterGetCompoundValue(formattedData);
@@ -129,9 +155,11 @@ export default {
                 Api.post(API_URL + '/get_pressure',
                     dataToSend.value
                 ).then((data) => {
+                    if (data.error) return;
+
                     envModuleStore.setAfterGetCompoundValue(data);
                     paramsToGet.map((key) => {
-                        questionsStore.setQuestionValue(key, data[key]);
+                        questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'pressureAnswersGroup');
                     })
                 })
             }

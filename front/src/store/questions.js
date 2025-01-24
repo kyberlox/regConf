@@ -44,8 +44,8 @@ export const useQuestionsStore = defineStore('questions', {
             const target = this.questions.find(item => item.id === questionId);
             const lastIndex = target.inner.length;
             const newInner = JSON.parse(JSON.stringify(target.inner[lastIndex - 1]));
-
-            newInner.forEach(item => {
+            
+            newInner.forEach(item => {  
                 item.id = parseFloat((item.id + 0.2).toFixed(2));
             });
 

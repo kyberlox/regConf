@@ -26,9 +26,8 @@
 </template>
 
 <script>
-import { ref, computed, watch, onMounted } from "vue";
-import { useHelperStore } from "@/store/helper";
-import { useEnvModuleStore } from "@/store/envModule";
+import { ref, computed, onMounted } from "vue";
+import { usePageStore } from "@/store/page";
 import { useQuestionsStore } from "@/store/questions";
 
 import ArrowLeft from "@/assets/icons/ArrowLeft.vue";
@@ -37,7 +36,6 @@ import Passport from "../components/common/FormEndPassport.vue";
 import CardCommon from "@/components/common/CardCommon.vue";
 import SideHelper from "@/components/common/SideHelper.vue";
 import FormHandler from "@/components/FormHandler.vue";
-import Api from "@/utils/Api";
 
 export default {
     components: {
@@ -50,69 +48,25 @@ export default {
     },
 
     setup() {
-        const helperStore = useHelperStore();
-        const envModuleStore = useEnvModuleStore();
         const questionsStore = useQuestionsStore();
-
+        const pageStore = usePageStore();
         const showHelper = ref(true);
         const questionRefs = ref({});
         const mainQuestions = computed(() => questionsStore.questions);
-        const errors = computed(() => helperStore.getMessages);
-
-        const questionInGroup = computed(() => helperStore.getQuestionsRef);
 
         onMounted(() => {
-            helperStore.pushToRefGroup(questionRefs.value)
+            pageStore.pushToRefGroup(questionRefs.value)
         })
 
         const goToQuestion = (name) => {
-            questionInGroup.value[name]?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            });
-        };
-
-        const handleErrorHighlight = (newErrors) => {
-            console.log(questionInGroup.value);
-
-            Object.values(questionInGroup.value).forEach(element => {
-                element.classList.remove('card--error-highlight');
-            });
-
-            if (newErrors.length > 1) {
-                const target = newErrors[newErrors.length - 1].inputGroup ? newErrors[newErrors.length - 1].inputGroup : newErrors[newErrors.length - 1].inputName;
-                if (!target.inputGroup) {
-                    questionInGroup.value[target]?.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
-                    questionInGroup.value[target]?.classList.add('card--error-highlight');
-                }
-
-                newErrors.forEach(error => {
-                    if (error.id !== 0 && questionInGroup.value[error.inputName]) {
-                        questionInGroup.value[error.inputName].classList.add('card--error-highlight');
-                    }
-                });
-            }
-        };
-
-        watch(() => [...errors.value], handleErrorHighlight, { deep: true });
-
-        onMounted(async () => {
-            try {
-                const data = await Api.get(API_URL + '/get_table');
-                envModuleStore.setEnvValues(data);
-            } catch (error) {
-                console.error('Failed to fetch table data:', error);
-            }
-        });
+            pageStore.goToQuestion(name)
+        }
 
         return {
             showHelper,
             mainQuestions,
-            goToQuestion,
             questionRefs,
+            goToQuestion
         };
     }
 };

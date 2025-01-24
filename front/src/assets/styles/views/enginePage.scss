@@ -86,6 +86,7 @@
         margin: 30px;
         transition: 0.2s all;
         background: white;
+        z-index: 2;
 
         &:hover {
             transform: scale(1.05);

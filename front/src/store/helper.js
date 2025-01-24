@@ -159,7 +159,6 @@ export const useHelperStore = defineStore('helper', {
                     text: 'Не делаем из-за низкого давления настройки'
                 }
             ],
-            errorsRef: [],
         };
     },
 
@@ -168,8 +167,6 @@ export const useHelperStore = defineStore('helper', {
             this.messages = DEFAULT_MESSAGE;
         },
         setErrorMessage(name) {
-            console.log(name);
-
             const existingMessage = this.messages.find(item => item.inputName === name);
             const newError = this.errors.find(item => item.inputName === name);
 
@@ -180,19 +177,31 @@ export const useHelperStore = defineStore('helper', {
         deleteErrorMessage(index) {
             this.messages = this.messages.filter((item) => item.inputName != index);
         },
-        pushToRefGroup(refs) {
-            const filteredRefs = Object.fromEntries(
-                Object.entries(refs).filter(([key]) => key !== 'envAnswersGroup')
-            );
+        handleErrorHighlight(newErrors, nodeRefs) {
+            Object.values(nodeRefs.value).forEach(element => {
+                element.classList.remove('card--error-highlight');
+            });
 
-            if (Object.keys(filteredRefs).length > 0) {
-                Object.assign(this.errorsRef, filteredRefs);
+            if (newErrors.length > 1) {
+                const target = newErrors[newErrors.length - 1].inputGroup ? newErrors[newErrors.length - 1].inputGroup : newErrors[newErrors.length - 1].inputName;
+                if (!target.inputGroup) {
+                    nodeRefs.value[target]?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                    nodeRefs.value[target]?.classList.add('card--error-highlight');
+                }
+
+                newErrors.forEach(error => {
+                    if (error.id !== 0 && nodeRefs.value[error.inputName]) {
+                        nodeRefs.value[error.inputName].classList.add('card--error-highlight');
+                    }
+                });
             }
         }
     },
 
     getters: {
         getMessages: (state) => state.messages,
-        getQuestionsRef: (state) => state.errorsRef,
     },
 });

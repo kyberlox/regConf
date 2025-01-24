@@ -20,8 +20,9 @@
         </div>
     </TransitionGroup>
 
-    <button v-if="!question.modifiers || !question.modifiers.includes('noAddButton')"
+    <button v-if="!question.modifiers || !question.modifiers.includes('noAddButton') || optionsLimit"
             class="card-footer__button"
+            :class="{ hidden: optionsLimit }"
             @click="cloneQuestion(question.id)">+</button>
 </template>
 
@@ -29,7 +30,7 @@
 import SelectType from "@/components/questionsTypes/SelectType.vue";
 import TextType from "@/components/questionsTypes/TextType.vue";
 import { useQuestionsStore } from "@/store/questions";
-import { ref, watch } from "vue";
+import { ref } from "vue";
 
 export default {
     components: {
@@ -45,6 +46,8 @@ export default {
     emits: ["saveNewValue"],
     setup(props, { emit }) {
         const questionStore = useQuestionsStore();
+        const optionsCounter = ref(1);
+        const optionsLimit = ref(false);
 
         const answer = ref({ id: null, value: null });
         const saveSelectText = (value, groupIndex) => {
@@ -64,6 +67,11 @@ export default {
 
         const cloneQuestion = () => {
             questionStore.cloneQuestion(props.question.id);
+            optionsCounter.value++;
+
+            if (optionsCounter.value > props.question.optionsLimit) {
+                optionsLimit.value = true;
+            }
         }
 
         const removeLine = (groupIndex) => {
@@ -75,7 +83,8 @@ export default {
             saveSelectValue,
             envTypeVariants,
             cloneQuestion,
-            removeLine
+            removeLine,
+            optionsLimit
         };
     },
 };

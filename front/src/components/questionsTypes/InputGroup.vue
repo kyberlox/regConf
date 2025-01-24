@@ -19,15 +19,15 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { useHelperStore } from "@/store/helper";
+import { usePageStore } from "@/store/page";
 export default {
     props: ["question"],
-    setup(props, { emit }) {
-        const helperStore = useHelperStore();
+    setup() {
+        const pageStore = usePageStore();
         const questionInGroup = ref({});
 
         onMounted(() => {
-            helperStore.pushToRefGroup(questionInGroup.value)
+            pageStore.pushToRefGroup(questionInGroup.value)
         })
 
         return {
