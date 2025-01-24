@@ -18,6 +18,7 @@ def mixture(envs : list):
         "compressibility_factor" : 0
     }
 
+    
     env_type = set()
     for env in envs:
         env_type.add(env["environment"])
@@ -60,7 +61,7 @@ def mixture(envs : list):
             viscosity_сh = 0
             viscosity_zn = 0
             pre_M = 0
-            adiabatic_index_ch = 0
+            adiabatic_index = 0
             adiabatic_index_zn = 0
             for env in envs:
                 r = env["r"]
@@ -70,12 +71,11 @@ def mixture(envs : list):
                 pre_M += M_i * r
                 viscosity_сh += u_i * r * sqrt(M_i)
                 viscosity_zn += r * sqrt(M_i)
-                adiabatic_index_ch += env['isobaric_capacity'] * r
-                adiabatic_index_zn += env['isochoric_capacity'] * r
+                adiabatic_index += env['adiabatic_index'] * r
                 
             result["molar_mass"] = pre_M #/100
             result["viscosity"] = viscosity_сh / viscosity_zn
-            result["adiabatic_index"] = adiabatic_index_ch / adiabatic_index_zn
+            result["adiabatic_index"] = adiabatic_index
     
     return result
     
@@ -83,6 +83,8 @@ def mixture(envs : list):
 
 def Raschet(dt):
     P_atm = 0.101320
+    R = 8.31446261815324 #Газовая постоянная ( Дж / (моль * K))
+
     u = dt["viscosity"]
     Pn = dt["Pn"]
     Pp = dt["Pp"]
@@ -90,6 +92,18 @@ def Raschet(dt):
     Gab = dt["Gab"]
     N = dt["N"]
     pre_Kc = dt["pre_Kc"]
+
+    climate = dt["climate"]
+    model = {
+        "У1" : [-45, 40],
+        "ХЛ1" : [-60, 40],
+        "УХЛ1" : [-60, 40],
+        "М1" : [-40, 40]
+    }
+
+    T_min, T_max = model[climate]
+    T = dt["T"]
+
 
     if pre_Kc:
         Kc = 0.9
@@ -127,6 +141,9 @@ def Raschet(dt):
     B = P2 / P1
         
     if dt["environment"] == "Газ":
+        M = dt["molar_mass"]
+        p1 = P1 * M / R * T
+
         alpha = 0.8
         if (Ppo / Pn) == 1.1:
             if (Pp / Pno) <= 0.3:
@@ -205,6 +222,8 @@ def Raschet(dt):
         DN = sqrt((4 * F) / pi)
         
     new_dt = {
+        "T_min" : T_min,     #Минимальная рабочая температура
+        "T_max" : T_max,     #Максивальная рабочая температура
         "Pno" : Pno,         #Давление начала открытия с противодавлением
         "Ppo" : Ppo,         #Давление полного открытия с противодавлением
         "P1" : P1,           #Давление на входе

@@ -93,7 +93,7 @@ app.add_middleware(
 #app.mount("/", StaticFiles(directory="../front/dist", html=True), name="static")
 
 #миграция и таблицы эксель
-@app.get("/migration")
+@app.get("/api/migration")
 def get_table():
     #прочитать из таблицы
     wb = load_workbook("./table.xlsx")
@@ -147,7 +147,7 @@ def get_table():
     return result
 
 #подбор сред
-@app.get("/get_table")
+@app.get("/api/get_table")
 def get_table():
     #вывод словаря
     environments = []
@@ -173,7 +173,7 @@ def get_table():
     return environments
 
 #подбор смесей
-@app.post("/get_compound")
+@app.post("/api/get_compound")
 def get_compound(data = Body()):
     environments = []
     lines = db.query(Table).all()
@@ -203,7 +203,7 @@ def get_compound(data = Body()):
     return mixture(environments)
 
 #получение осатльных параметров
-@app.post("/get_pressure")
+@app.post("/api/get_pressure")
 def get_pressure(data = Body()):
     for key in data.keys():
         if ((data[key] == "") or (data[key] == None)):
