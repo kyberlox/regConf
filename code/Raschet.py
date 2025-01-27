@@ -50,12 +50,14 @@ def mixture(envs : list):
 
             result["density"] = ch_den/zn_den
             result["viscosity"] = 10**(pre_viscosity)
-
+            
+            '''
             #добавить подбор материала result["material"]
             if "Морская вода" in result["name"]:
                 result["material"] = "12Х18Н12М3ТЛ"
             elif ("Масло подсолнечное" in result["name"]) or ("Лимонная кислота" in result["name"]) or ("Молочная кислота" in result["name"]):
                 result["material"] = "12Х18Н9ТЛ"
+            '''
 
         elif result["environment"] == "Газ": #если среда - газ
             viscosity_сh = 0
@@ -76,6 +78,29 @@ def mixture(envs : list):
             result["molar_mass"] = pre_M #/100
             result["viscosity"] = viscosity_сh / viscosity_zn
             result["adiabatic_index"] = adiabatic_index
+    else:
+        result["environment"] = "Раствор газа в жидкости"
+        density_ch = 0
+        density_zn = 0
+        pre_u = 0
+        for env in envs:
+            r = env["r"]
+            result["name"] += f"{env['name']}:{r} "
+
+            density_ch += env["density"] * r
+            density_zn += r
+
+            #pre_viscosity += log10(env["viscosity"]) * r
+            
+            if env["environment"] == "Газ":
+                M = env["molar_mass"]
+            elif env["environment"] == "Жидкость":
+                M = env["molecular_weight"]
+            pre_u = r * env["viscosity"] * M
+
+        result["density"] 
+        result["viscosity"] 
+        #result["viscosity"] = 10**(pre_viscosity)
     
     return result
     
