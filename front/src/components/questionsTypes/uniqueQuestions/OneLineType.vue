@@ -9,6 +9,7 @@
                  :class="{ 'card-body__question--oneLine--input-first': question.modifiers && question.modifiers.includes('inputBeforeSelect') }">
                 <SelectType v-if="part.type == 'SelectType'"
                             :question="part"
+                            :selectedOptions="question.value"
                             @change="saveSelectText($event.target.value, groupIndex)" />
                 <TextType v-if="part.type == 'TextType'"
                           :question="part"

@@ -29,23 +29,29 @@ export const useQuestionsStore = defineStore('questions', {
             }
         },
 
-        setMultipleAnswers(questionName, questionValue) {
-            const targetQuestion = this.findQuestion(questionName).inner;
-            targetQuestion.forEach(item => {
-                item.forEach(e => {
-                    if (e.answers) {
-                        e.answers = questionValue
-                    };
+        setAnswers(questionName, questionValue, deep = true) {
+            if (deep) {
+                const targetQuestion = this.findQuestion(questionName).inner;
+                targetQuestion.forEach(item => {
+                    item.forEach(e => {
+                        if (e.answers) {
+                            e.answers = questionValue
+                        };
+                    });
                 });
-            });
+            }
+            else {
+                const targetQuestion = this.findQuestion(questionName);
+                targetQuestion.answers = questionValue;
+            }
         },
 
         cloneQuestion(questionId) {
             const target = this.questions.find(item => item.id === questionId);
             const lastIndex = target.inner.length;
             const newInner = JSON.parse(JSON.stringify(target.inner[lastIndex - 1]));
-            
-            newInner.forEach(item => {  
+
+            newInner.forEach(item => {
                 item.id = parseFloat((item.id + 0.2).toFixed(2));
             });
 
@@ -57,12 +63,12 @@ export const useQuestionsStore = defineStore('questions', {
             const liquidEndValues = envStore.getLiquidEnv;
             const envGasValues = envStore.getGasEnv;
             if (type == 'gas') {
-                this.setMultipleAnswers('environment', envGasValues);
-                this.setMultipleAnswers('secondEnv', liquidEndValues);
+                this.setAnswers('environment', envGasValues);
+                this.setAnswers('secondEnv', liquidEndValues);
             }
             else {
-                this.setMultipleAnswers('environment', liquidEndValues);
-                this.setMultipleAnswers('secondEnv', envGasValues);
+                this.setAnswers('environment', liquidEndValues);
+                this.setAnswers('secondEnv', envGasValues);
             }
         },
         removeLine(name, index) {

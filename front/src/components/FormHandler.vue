@@ -164,6 +164,32 @@ export default {
                 })
             }
         }, { deep: true })
+
+        // подсказки для климатики
+        const climateGroup = [
+            { "name": "У1", "value": "У1" },
+            { "name": "УХЛ1", "value": "УХЛ1" },
+            { "name": "ХЛ1", "value": "ХЛ1" },
+            { "name": "М1", "value": "М1" }
+        ];
+
+        watch(paramsToGetPressure.value.T, (newVal) => {
+            console.log(newVal);
+            const numberValue = Number(newVal.value);
+            switch (true) {
+                case numberValue <= 40 && numberValue >= -45:
+                    questionsStore.setAnswers('climate', climateGroup, false);
+                    break;
+                case numberValue < -45 && numberValue >= -60:
+                    questionsStore.setAnswers('climate', climateGroup.filter((i) => i.value !== 'У1' && i.value !== 'М1'), false);
+                    break;
+                default:
+                    questionsStore.setAnswers('climate', [], false);
+                    console.log('ge');
+                    break;
+            }
+        }
+        )
     }
 }
 </script>

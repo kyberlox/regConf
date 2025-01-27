@@ -20,7 +20,14 @@
                 position: relative;
 
             }
+
+            & option:disabled:not(:first-child) {
+                color: #858484d2;
+                background-color: #d0d0d0a8;
+                cursor: not-allowed;
+            }
         }
+
 
         &__input {
             border: none;
