@@ -1,16 +1,16 @@
 <template>
     <div class="card-body__select__wrapper">
-        <select @change="saveNewValue(question.inputName, $event.target.value)"
-                :name="question.inputName"
+        <select :name="question.inputName"
                 :id="question.inputName"
                 :key="question.answers.length"
-                class="card-body__select">
+                class="card-body__select"
+                @change="saveNewValue(question.inputName, $event.target.value)">
             <option disabled
                     selected
                     value="">Выберите из списка</option>
             <option :value="answer.id"
                     v-for="answer in question.answers"
-                    :key="question.answers.indexOf(answer)"
+                    :key="question.answers.indexOf(answer) + answer"
                     :disabled="checkDuplicate(question.answers.indexOf(answer) + 1)">
                 {{ typeof answer == "object" ? answer.name : answer }}
             </option>
@@ -19,10 +19,15 @@
 </template>
 
 <script>
+import { watch } from 'vue';
 export default {
     props: ["question", "selectedOptions"],
     emits: ["saveNewValue"],
     setup(props, { emit }) {
+
+        watch(() => props.question.answers.length, () => {
+            saveNewValue(props.question.inputName, null);
+        })
 
         const saveNewValue = (name, value) => {
             emit("saveNewValue", name, value);

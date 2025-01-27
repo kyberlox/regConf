@@ -28,7 +28,8 @@ export const useHelperStore = defineStore('helper', {
                 },
                 {
                     id: 3,
-                    text: 'Укажите давление настройки с противодавлением'
+                    inputName: 'T',
+                    text: 'Температура должна быть в диапазоне от 40 до -60°С'
                 },
                 {
                     id: 4,
@@ -174,8 +175,8 @@ export const useHelperStore = defineStore('helper', {
                 this.messages.push(newError);
             }
         },
-        deleteErrorMessage(index) {
-            this.messages = this.messages.filter((item) => item.inputName != index);
+        deleteErrorMessage(name) {
+            this.messages = this.messages.filter((item) => item.inputName != name);
         },
         handleErrorHighlight(newErrors, nodeRefs) {
             Object.values(nodeRefs.value).forEach(element => {

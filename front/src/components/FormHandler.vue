@@ -9,6 +9,8 @@ import { useEnvModuleStore } from "@/store/envModule";
 import { changeToMpa } from "@/utils/changeToMpa";
 import Api from "@/utils/Api";
 import { usePageStore } from "@/store/page";
+import climateGroup from "@/assets/staticJsons/climateGroup.json";
+
 export default {
     setup() {
         const questionsStore = useQuestionsStore();
@@ -166,26 +168,20 @@ export default {
         }, { deep: true })
 
         // подсказки для климатики
-        const climateGroup = [
-            { "name": "У1", "value": "У1" },
-            { "name": "УХЛ1", "value": "УХЛ1" },
-            { "name": "ХЛ1", "value": "ХЛ1" },
-            { "name": "М1", "value": "М1" }
-        ];
-
         watch(paramsToGetPressure.value.T, (newVal) => {
-            console.log(newVal);
             const numberValue = Number(newVal.value);
             switch (true) {
                 case numberValue <= 40 && numberValue >= -45:
                     questionsStore.setAnswers('climate', climateGroup, false);
+                    helperStore.deleteErrorMessage('T');
                     break;
                 case numberValue < -45 && numberValue >= -60:
                     questionsStore.setAnswers('climate', climateGroup.filter((i) => i.value !== 'У1' && i.value !== 'М1'), false);
+                    helperStore.deleteErrorMessage('T');
                     break;
                 default:
                     questionsStore.setAnswers('climate', [], false);
-                    console.log('ge');
+                    helperStore.setErrorMessage('T');
                     break;
             }
         }
