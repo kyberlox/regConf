@@ -135,7 +135,7 @@ def get_table():
         line = Table(name = env['name'], environment = env['environment'], molecular_weight = env['molecular_weight'], density = env['density'], material = env['material'], viscosity = env['viscosity'], isobaric_capacity = env['isobaric_capacity'], molar_mass = env['molar_mass'], isochoric_capacity = env['isochoric_capacity'], adiabatic_index = env['adiabatic_index'], compressibility_factor = env['compressibility_factor'])
         lines = db.query(Table).filter(
             Table.name == env['name'],
-            Table.environment == env['environment']).all()
+            Table.environment == env['environment'])
         '''print(env['name'], env['environment'], ":")
         for lns in lines:
             print(lns.name, lns.environment)'''
