@@ -71,7 +71,7 @@ class TableDN(Base):
     __tablename__ = 'DNStoDN'
     id = Column(Integer, primary_key=True)
     DNS = Column(Text, nullable=True)
-    P1 = Column(Text, nullable=True)
+    PN = Column(Text, nullable=True)
     DN = Column(Text, nullable=True)
 
 
@@ -104,7 +104,7 @@ app.add_middleware(
 
 #миграция и таблицы эксель
 @app.get("/api/migration")
-def get_table():
+def migration():
     #прочитать из таблицы
     wb = load_workbook("./table.xlsx")
     sheet = wb['table']
@@ -154,9 +154,33 @@ def get_table():
             if need:
                 db.commit()
 
-            
+    #миграция DN PN
+    wb = load_workbook("./DNtoPN.xlsx")
+    sheet = wb['DB']
+    res = []
+    for i in range(2, sheet.max_row+1):
+        row = {
+            "DN_s" : sheet[f"A{i}"].value,
+            "PN1" : sheet[f"B{i}"].value,
+            "DN" : sheet[f"C{i}"].value
+        }
+        res.append(row)
     
-    return result
+    for xl in res:
+        print(xl)
+        line = TableDN(DNS = xl['DN_s'], PN = xl["PN1"], DN = xl["DN"])
+        req = db.query(TableDN).filter(TableDN.DNS == xl['DN_s'] and TableDN.PN == xl['PN1'] and TableDN.DN == xl["DN"]).first()
+        #проверка на повтор
+        print(req == None)
+        if req == None:
+            db.add(line)
+            db.commit()
+            xl['id'] = line.id
+        else:
+            if not (req.DN == xl["DN"] and req.DNS == xl["DNS"], req.PN == xl["PN1"]):
+                db.commit()  
+    
+    return [result, xl]
 
 #подбор сред
 @app.get("/api/get_table")
@@ -223,6 +247,14 @@ def get_pressure(data = Body()):
         else:
             #расчет
             return Raschet(data)
+
+@app.get("/api/get_DN/{DNS}/{PN}")
+def get_DN(DNS : float, PN : float):
+    line = db.query(TableDN).filter(TableDN.DNS >= DNS, TableDN.PN >= PN).first()
+    DN = line.DN
+    return DN
+
+
 
 #подбор оборудования
 #генерация документации
