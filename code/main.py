@@ -21,7 +21,99 @@ import psycopg2
 
 import json
 
-
+#В каких величинах PN? кгс/см2 =>  0.098067 * PN МПа
+DNtoPN = [
+    {
+        "DN_s" : 16,
+        "PN" : 16.4,
+        "DN" : 35
+    },
+    {
+        "DN_s" : 12,
+        "PN" : 100,
+        "DN" : 25
+    },
+    {
+        "DN_s" : 12,
+        "PN" : 160,
+        "DN" : 25
+    },
+    {
+        "DN_s" : 33,
+        "PN" : 16,
+        "DN" : 50
+    },
+    {
+        "DN_s" : 33,
+        "PN" : 40,
+        "DN" : 50
+    },
+    {
+        "DN_s" : 33,
+        "PN" : 63,
+        "DN" : 50
+    },
+    {
+        "DN_s" : 33,
+        "PN" : 160,
+        "DN" : 50
+    },
+    {
+        "DN_s" : 40,
+        "PN" : 16,
+        "DN" : 80
+    },
+    {
+        "DN_s" : 40,
+        "PN" : 40,
+        "DN" : 80
+    },
+    {
+        "DN_s" : 40,
+        "PN" : 63,
+        "DN" : 80
+    },
+    {
+        "DN_s" : 48,
+        "PN" : 16,
+        "DN" : 100
+    },
+    {
+        "DN_s" : 48,
+        "PN" : 40,
+        "DN" : 100
+    },
+    {
+        "DN_s" : 48,
+        "PN" : 160,
+        "DN" : 100
+    },
+    {
+        "DN_s" : 56,
+        "PN" : 100,
+        "DN" : 100
+    },
+    {
+        "DN_s" : 72,
+        "PN" : 63,
+        "DN" : 100
+    },
+    {
+        "DN_s" : 75,
+        "PN" : 16,
+        "DN" : 150
+    },
+    {
+        "DN_s" : 75,
+        "PN" : 40,
+        "DN" : 150
+    },
+    {
+        "DN_s" : 142,
+        "PN" : 16,
+        "DN" : 200
+    }
+]
 
 def DB_exec(command):
     conn = psycopg2.connect(dbname="pdb", host="postgres", user="kyberlox", password="4179", port="5432")
@@ -66,14 +158,6 @@ class Table(Base):
     isochoric_capacity = Column(Float, nullable=True)
     adiabatic_index = Column(Float, nullable=True)
     compressibility_factor = Column(Float, nullable=True)
-
-class TableDN(Base):
-    __tablename__ = 'DNStoDN'
-    id = Column(Integer, primary_key=True)
-    DNS = Column(Text, nullable=True)
-    PN = Column(Text, nullable=True)
-    DN = Column(Text, nullable=True)
-
 
 
 Base.metadata.create_all(bind=engine)
@@ -153,34 +237,8 @@ def migration():
                     need = True
             if need:
                 db.commit()
-
-    #миграция DN PN
-    wb = load_workbook("./DNtoPN.xlsx")
-    sheet = wb['DB']
-    res = []
-    for i in range(2, sheet.max_row+1):
-        row = {
-            "DN_s" : sheet[f"A{i}"].value,
-            "PN1" : sheet[f"B{i}"].value,
-            "DN" : sheet[f"C{i}"].value
-        }
-        res.append(row)
     
-    for xl in res:
-        print(xl)
-        line = TableDN(DNS = xl['DN_s'], PN = xl["PN1"], DN = xl["DN"])
-        req = db.query(TableDN).filter(TableDN.DNS == xl['DN_s'] and TableDN.PN == xl['PN1'] and TableDN.DN == xl["DN"]).first()
-        #проверка на повтор
-        print(req == None)
-        if req == None:
-            db.add(line)
-            db.commit()
-            xl['id'] = line.id
-        else:
-            if not (req.DN == xl["DN"] and req.DNS == xl["DNS"], req.PN == xl["PN1"]):
-                db.commit()  
-    
-    return [result, xl]
+    return result
 
 #подбор сред
 @app.get("/api/get_table")
@@ -250,9 +308,12 @@ def get_pressure(data = Body()):
 
 @app.get("/api/get_DN/{DNS}/{PN}")
 def get_DN(DNS : float, PN : float):
-    line = db.query(TableDN).filter(TableDN.DNS >= DNS, TableDN.PN >= PN).first()
-    DN = line.DN
-    return DN
+    for req in DNtoPN:
+        print(req)
+        if (DNS <= req['DN_s']) and (PN <= req['PN']):
+            return req['DN']
+        else:
+            return {"error" : "incorrect value", "body" : "DN_s > 142 or PN > 160"}
 
 
 
