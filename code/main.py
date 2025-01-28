@@ -66,6 +66,15 @@ class Table(Base):
         adiabatic_index = Column(Float, nullable=True)
         compressibility_factor = Column(Float, nullable=True)
 
+class TableDN(Base):
+    __tablename__ = 'DNStoDN'
+    id = Column(Integer, primary_key=True)
+    DNS = Column(Text, nullable=True)
+    P1 = Column(Text, nullable=True)
+    DN = Column(Text, nullable=True)
+
+
+
 Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autoflush=True, bind=engine)
 db = SessionLocal()

@@ -1,16 +1,16 @@
 {
-    "environment_id" : 0,
-    "name" : "",
-    "environment" : "",
-    "molecular_weight" : 0.0,
-    "density" : 0.0,
-    "material" : "",
-    "viscosity" : 0.0,
-    "isobaric_capacity" : 0.0,
-    "molar_mass" : 0.0,
-    "isochoric_capacity" : 0.0,
-    "adiabatic_index" : 0.0,
-    "compressibility_factor" : 0.0,
+    "environment_id" : 0,           #ID среды
+    "name" : "",                    #Название среды
+    "environment" : "",             #Состояние (Жидкость/Газ)
+    "molecular_weight" : 0.0,       #Молекулярная масса
+    "density" : 0.0,                #Плотность
+    "material" : "",                #Материал
+    "viscosity" : 0.0,              #Вязкость
+    "isobaric_capacity" : 0.0,      #удельная изобарная теплоемиокость
+    "molar_mass" : 0.0,             #молярная масса
+    "isochoric_capacity" : 0.0,     #удельная изохорная теплоемиокость
+    "adiabatic_index" : 0.0,        #Показатель адиабаты
+    "compressibility_factor" : 0.0, #Фактор сжимаемости
 
     "Pn" : 0.0,       #Введите давление настройки (МПа)
     "Pp" : 0.0,       #Введите проитводавление (МПа)
@@ -30,7 +30,8 @@
     "Kw" : 0.0,       #Коэффициент, учитывающий эффект неполного открытия разгруженных ПК из-за противодавления
     "Gideal" : 0.0,   #Массовая скорость
     "pre_DN" : 0.0,   #DN предворительный
-    "DN" : 0.0,       #Диаметр седла клапана
+    "DN_s" : 0.0,     #Диаметр седла клапана
+    "DN" : 0.0,       #Диаметр ПК
 
     "valve_type" : "",            #Тип предохранительного клапана Пружинный или Пилотный
     "need_bellows" : False,       #Переменное противодавление или необходим сильфон на пружинные ПК по требованию ОЛ
@@ -39,13 +40,13 @@
     "inlet flange" : "",          # B C D E F J или RF LM LF SM SF LT LG ST SG RTJ
     "outlet flange" : "",         # B C D E F J или RF LM LF SM SF LT LG ST SG RTJ
     "detonation_node" : False,    #Узел подрыва
+
     "rotary_plugs" : False,       #Наличие поворотных заглушек
     "thermal_cover" : False,      #Наличие термочехла
     "abrasive_particles" : False, #Наличие в рабочей среде абразивных частиц
     "climate" : "",               #Климатическое исполнение по ГОСТ 15150-69 (У1 ХЛ1 М1)
     "tightness" : "",             #Герметичность затвора по ГОСТ 9544-2015 (A AA B C)
     "color" : "",                 #Покраска
-
     "warranty" : 12,                  #Гарантийный срок службы, мес.
     "assignment" : 20,                #Назначенный срок службы, лет
     "packaging" : "Стандартная (клапан упакован в стрейч-пленку, на паллет). Хранение под навесом.",                 #Упаковка 

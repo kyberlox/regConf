@@ -96,15 +96,13 @@ def mixture(envs : list):
                 M = env["molar_mass"]
             elif env["environment"] == "Жидкость":
                 M = env["molecular_weight"]
-            pre_u = r * env["viscosity"] * M
+            pre_u += r * env["viscosity"] * M
 
-        result["density"] 
-        result["viscosity"] 
+        result["density"] = density_ch / density_zn
+        result["viscosity"] = pre_u
         #result["viscosity"] = 10**(pre_viscosity)
     
     return result
-    
- 
 
 def Raschet(dt):
     P_atm = 0.101320
@@ -119,6 +117,11 @@ def Raschet(dt):
     pre_Kc = dt["pre_Kc"]
 
     climate = dt["climate"]
+
+    #если климатика => то материал
+    if climate == "М1":
+        dt["material"] = "ГЛ20"
+
     model = {
         "У1" : [-45, 40],
         "ХЛ1" : [-60, 40],
@@ -214,7 +217,7 @@ def Raschet(dt):
         #P1 * p1
         Gideal = Kp_kr * Kb *sqrt(P1 * p1)
 
-    elif dt["environment"] == "Жидкость":
+    else:
         alpha = 0.6
         p1 = dt["density"]
         if (Pp / Pno) <= 1.15:
@@ -227,11 +230,15 @@ def Raschet(dt):
         Kp = sqrt(2*(1-B)) #на самом деле, тут корень, но его будем извлекать в конце
         Gideal = Kp * sqrt(P1 * p1)
 
+    print(Kp, P1, p1)
+    print(Gideal)
+
     DN = None
     pre_DN = 0
     Kv = 1
 
     while DN != pre_DN:
+        print(Gab, alpha, Kv, Kw, Kc, Gideal, N)
         pre_F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
         pre_DN = sqrt((4 * pre_F) / pi)
             
@@ -256,10 +263,13 @@ def Raschet(dt):
         "Kw" : Kw,           #Коэффициент, учитывающий эффект неполного открытия разгруженных ПК из-за противодавления
         "Gideal" : Gideal,   #Массовая скорость
         "pre_DN" : pre_DN,   #DN предворительный
-        "DN" : DN            #Диаметр седла клапана
+        "DN_s" : DN          #Диаметр седла клапана
     }
 
     all_dt = dt | new_dt
 
     return all_dt
-                        
+
+def get_DN(dt):
+    #подбор DN по таблице
+    pass
