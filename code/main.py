@@ -12,6 +12,7 @@ from openpyxl import load_workbook
 from openpyxl import Workbook
 
 from sqlalchemy import create_engine
+from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import create_engine, MetaData, Column, Integer, Text, Float
@@ -52,19 +53,19 @@ engine = create_engine('postgresql+psycopg2://kyberlox:4179@postgres/pdb')
 class Base(DeclarativeBase): pass
 
 class Table(Base):
-        __tablename__ = 'environment_table'
-        id = Column(Integer, primary_key=True)
-        name = Column(Text)
-        environment = Column(Text)
-        molecular_weight = Column(Float, nullable=True)
-        density = Column(Float, nullable=True)
-        material = Column(Text, nullable=True)
-        viscosity = Column(Float, nullable=True)
-        isobaric_capacity = Column(Float, nullable=True)
-        molar_mass = Column(Float, nullable=True)
-        isochoric_capacity = Column(Float, nullable=True)
-        adiabatic_index = Column(Float, nullable=True)
-        compressibility_factor = Column(Float, nullable=True)
+    __tablename__ = 'environment_table'
+    id = Column(Integer, primary_key=True)
+    name = Column(Text)
+    environment = Column(Text)
+    molecular_weight = Column(Float, nullable=True)
+    density = Column(Float, nullable=True)
+    material = Column(Text, nullable=True)
+    viscosity = Column(Float, nullable=True)
+    isobaric_capacity = Column(Float, nullable=True)
+    molar_mass = Column(Float, nullable=True)
+    isochoric_capacity = Column(Float, nullable=True)
+    adiabatic_index = Column(Float, nullable=True)
+    compressibility_factor = Column(Float, nullable=True)
 
 class TableDN(Base):
     __tablename__ = 'DNStoDN'
@@ -133,12 +134,9 @@ def get_table():
     for env in result:
         #построчная запись после проверки
         line = Table(name = env['name'], environment = env['environment'], molecular_weight = env['molecular_weight'], density = env['density'], material = env['material'], viscosity = env['viscosity'], isobaric_capacity = env['isobaric_capacity'], molar_mass = env['molar_mass'], isochoric_capacity = env['isochoric_capacity'], adiabatic_index = env['adiabatic_index'], compressibility_factor = env['compressibility_factor'])
-        lines = db.query(Table).filter(
-            Table.name == env['name'],
-            Table.environment == env['environment'])
-        '''print(env['name'], env['environment'], ":")
-        for lns in lines:
-            print(lns.name, lns.environment)'''
+        #lines = select(Table).where(Table.name == env['name'], Table.environment == env['environment'])
+        lines = db.query(Table).filter(Table.name == env['name'], Table.environment == env['environment']).first()
+        
         if lines == None:
             db.add(line)
             db.commit()
