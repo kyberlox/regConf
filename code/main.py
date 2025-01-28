@@ -124,8 +124,13 @@ def get_table():
     for env in result:
         #построчная запись после проверки
         line = Table(name = env['name'], environment = env['environment'], molecular_weight = env['molecular_weight'], density = env['density'], material = env['material'], viscosity = env['viscosity'], isobaric_capacity = env['isobaric_capacity'], molar_mass = env['molar_mass'], isochoric_capacity = env['isochoric_capacity'], adiabatic_index = env['adiabatic_index'], compressibility_factor = env['compressibility_factor'])
-        lines = db.query(Table).filter(Table.name == env['name'] and Table.environment == env['environment']).all()
-        if lines == []:
+        lines = db.query(Table).filter(
+            Table.name == env['name'],
+            Table.environment == env['environment']).all()
+        '''print(env['name'], env['environment'], ":")
+        for lns in lines:
+            print(lns.name, lns.environment)'''
+        if lines == None:
             db.add(line)
             db.commit()
             env['id'] = line.id
