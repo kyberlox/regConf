@@ -312,8 +312,8 @@ def get_DN(DNS : float, PN : float):
         print(req)
         if (DNS <= req['DN_s']) and (PN <= req['PN']):
             return req['DN']
-        else:
-            return {"error" : "incorrect value", "body" : "DN_s > 142 or PN > 160"}
+
+    return {"error" : "incorrect value", "body" : "DN_s > 142 or PN > 160"}
 
 
 
