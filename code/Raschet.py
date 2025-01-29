@@ -323,14 +323,14 @@ def Raschet(dt):
         Gideal = Kp * sqrt(P1 * p1)
 
     print(Kp, P1, p1)
-    print(Gideal)
+    #print(Gideal)
 
     DN = None
     pre_DN = 0
     Kv = 1
 
     while DN != pre_DN:
-        print(Gab, alpha, Kv, Kw, Kc, Gideal, N)
+        #print(Gab, alpha, Kv, Kw, Kc, Gideal, N)
         pre_F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
         pre_DN = sqrt((4 * pre_F) / pi)
             
