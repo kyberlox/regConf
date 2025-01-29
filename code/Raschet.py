@@ -2,12 +2,7 @@ import math
 from math import sqrt, log, exp, pi, log10
 
 #В каких величинах PN? кгс/см2 =>  0.098067 * PN МПа
-DNtoPN = [
-    {
-        "DN_s" : 16,
-        "PN" : 16.4,
-        "DN" : 35
-    },
+DNtoPN = [   
     {
         "DN_s" : 12,
         "PN" : 100,
@@ -16,6 +11,11 @@ DNtoPN = [
     {
         "DN_s" : 12,
         "PN" : 160,
+        "DN" : 25
+    },
+    {
+        "DN_s" : 16,
+        "PN" : 16.4,
         "DN" : 25
     },
     {
@@ -322,15 +322,14 @@ def Raschet(dt):
         Kp = sqrt(2*(1-B)) #на самом деле, тут корень, но его будем извлекать в конце
         Gideal = Kp * sqrt(P1 * p1)
 
-    print(Kp, P1, p1)
+    #print(Kp, P1, p1)
     #print(Gideal)
 
-    DN = None
+    DN_s = None
     pre_DN = 0
     Kv = 1
 
-    while DN != pre_DN:
-        #print(Gab, alpha, Kv, Kw, Kc, Gideal, N)
+    while DN_s != pre_DN:
         pre_F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
         pre_DN = sqrt((4 * pre_F) / pi)
             
@@ -344,6 +343,7 @@ def Raschet(dt):
             
         F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
         DN_s = sqrt((4 * F) / pi)
+
             
     new_dt = {
         "T_min" : T_min,     #Минимальная рабочая температура
@@ -363,11 +363,9 @@ def Raschet(dt):
     for req in DNtoPN:
         if (DN_s <= req['DN_s']) and (P1 <= req['PN']):
             new_dt["DN"] = req["DN"]
+            all_dt = dt | new_dt
+            return all_dt
 
-    all_dt = dt | new_dt
-
-    return all_dt
-
-def get_DN(dt):
-    #подбор DN по таблице
+def get_silfon(dt):
+    #
     pass
