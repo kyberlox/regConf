@@ -21,100 +21,6 @@ import psycopg2
 
 import json
 
-#В каких величинах PN? кгс/см2 =>  0.098067 * PN МПа
-DNtoPN = [
-    {
-        "DN_s" : 16,
-        "PN" : 16.4,
-        "DN" : 35
-    },
-    {
-        "DN_s" : 12,
-        "PN" : 100,
-        "DN" : 25
-    },
-    {
-        "DN_s" : 12,
-        "PN" : 160,
-        "DN" : 25
-    },
-    {
-        "DN_s" : 33,
-        "PN" : 16,
-        "DN" : 50
-    },
-    {
-        "DN_s" : 33,
-        "PN" : 40,
-        "DN" : 50
-    },
-    {
-        "DN_s" : 33,
-        "PN" : 63,
-        "DN" : 50
-    },
-    {
-        "DN_s" : 33,
-        "PN" : 160,
-        "DN" : 50
-    },
-    {
-        "DN_s" : 40,
-        "PN" : 16,
-        "DN" : 80
-    },
-    {
-        "DN_s" : 40,
-        "PN" : 40,
-        "DN" : 80
-    },
-    {
-        "DN_s" : 40,
-        "PN" : 63,
-        "DN" : 80
-    },
-    {
-        "DN_s" : 48,
-        "PN" : 16,
-        "DN" : 100
-    },
-    {
-        "DN_s" : 48,
-        "PN" : 40,
-        "DN" : 100
-    },
-    {
-        "DN_s" : 48,
-        "PN" : 160,
-        "DN" : 100
-    },
-    {
-        "DN_s" : 56,
-        "PN" : 100,
-        "DN" : 100
-    },
-    {
-        "DN_s" : 72,
-        "PN" : 63,
-        "DN" : 100
-    },
-    {
-        "DN_s" : 75,
-        "PN" : 16,
-        "DN" : 150
-    },
-    {
-        "DN_s" : 75,
-        "PN" : 40,
-        "DN" : 150
-    },
-    {
-        "DN_s" : 142,
-        "PN" : 16,
-        "DN" : 200
-    }
-]
-
 def DB_exec(command):
     conn = psycopg2.connect(dbname="pdb", host="postgres", user="kyberlox", password="4179", port="5432")
     cursor = conn.cursor()
@@ -305,15 +211,6 @@ def get_pressure(data = Body()):
         else:
             #расчет
             return Raschet(data)
-
-@app.get("/api/get_DN/{DNS}/{PN}")
-def get_DN(DNS : float, PN : float):
-    for req in DNtoPN:
-        print(req)
-        if (DNS <= req['DN_s']) and (PN <= req['PN']):
-            return req['DN']
-
-    return {"error" : "incorrect value", "body" : "DN_s > 142 or PN > 160"}
 
 
 
