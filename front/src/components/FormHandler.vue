@@ -114,7 +114,6 @@ export default {
         // запрос (#2, get_compound) на параметры для конкр сред (Вязкость, материал, молекулярная масса, вязкость)
         watch([paramsToGetCompound.value.environment, paramsToGetCompound.value.secondEnv], (newVal) => {
             if (checkSum()) {
-                // 'material',
                 const envParamsToGet = ['molecular_weight', 'density', 'viscosity'];
                 let dataToSend = [];
 
@@ -141,10 +140,17 @@ export default {
             };
         }, { deep: true })
 
+        // Проверка, что давление настройки > Противодавления статического >= Динамического противодавления
+        // watch(paramsToGetPressure.value.pn, paramsToGetPressure.value.pp, paramsToGetPressure.value.ppDin, (newValue) => {
+        //     if (newValue.pn && newValue.pp && newValue.ppDin) {
+        //         console.log('NE ZABIT ETO DODELOT');
+        //     }
+        // })
+
         // запрос (#3, get_pressure) на "Pno", "Ppo", "P1", "P2","Kw", "Gideal", "pre_DN","DN"
         watch(paramsToGetPressure, (newVal) => {
             if (newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.value && newVal.n.value && newVal.T.value && newVal.climate.value) {
-                const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', 'DN', 'material'];
+                const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', 'DN_s', 'material', "DN"];
                 const formattedData = {
                     "Pn": Number(changeToMpa(newVal.pn.value[0].id, newVal.pn.value[0].value)), "Pp": Number(newVal.pp.value),
                     "Pp_din": Number(newVal.ppDin.value), "Gab": Number(newVal.gab.value), "N": Number(newVal.n.value), "pre_Kc": Number(newVal.preKc.value), "T": Number(newVal.T.value), "climate": newVal.climate.value

@@ -323,13 +323,14 @@
         "name": "DN предворительный:",
         "type": "DisabledType",
         "inputName": "pre_DN",
-        "value": null
+        "value": null,
+        "hidden": true
       },
       {
         "id": 14.8,
-        "name": "Диаметр седла клапана:",
+        "name": "Диаметр седла клапана, мм:",
         "type": "DisabledType",
-        "inputName": "DN",
+        "inputName": "DN_s",
         "value": null
       },
       {
@@ -337,6 +338,12 @@
         "name": "Материал:",
         "inputName": "material",
         "hidden": false,
+        "value": null
+      },
+      {
+        "id": 14.10,
+        "name": "Номинальный диаметр клапана, мм:",
+        "inputName": "DN",
         "value": null
       }
     ]

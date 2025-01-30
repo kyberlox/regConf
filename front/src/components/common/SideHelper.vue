@@ -1,8 +1,7 @@
 <template>
     <div class="helper__wrapper">
         <div class="helper">
-            <p>Помощь</p>
-
+            <div class="helper__title">Помощь</div>
             <div class="helper__content">
                 <TransitionGroup name="slide-down">
                     <div class="helper__message"
