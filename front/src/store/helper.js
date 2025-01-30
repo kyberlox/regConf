@@ -33,7 +33,8 @@ export const useHelperStore = defineStore('helper', {
                 },
                 {
                     id: 4,
-                    text: 'Укажите наличие растворенной среды и ее концентрацию в другом агрегатном состоянии. Если среды в другом агрегатном состоянии меньше 5%, то можно ею пренебречь и делать расчет на однофазный поток'
+                    inputName: 'pp',
+                    text: 'Давление настройки должно быть больше противодавления статического и большие или равно динамическому противодавлению'
                 },
                 {
                     id: 5,
@@ -180,7 +181,7 @@ export const useHelperStore = defineStore('helper', {
         },
         handleErrorHighlight(newErrors, nodeRefs) {
             Object.values(nodeRefs.value).forEach(element => {
-                element.classList.remove('card--error-highlight');
+                element?.classList?.contains('card--error-highlight') && element.classList.remove('card--error-highlight');
             });
 
             if (newErrors.length > 1) {

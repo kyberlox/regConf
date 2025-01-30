@@ -3,13 +3,14 @@
     <div class="summary">
         <div class="summary__container"
              :class="{ 'summary__container--open': showHelper }">
-            <div v-for="item in mainQuestions"
-                 :key="item.id"
-                 :ref="el => questionRefs[item.inputName] = el">
-                <CardCommon class="summary__card card mb-4"
-                            :class="{ 'hidden': item.hidden }"
-                            :question="item" />
-            </div>
+
+            <CardCommon v-for="item in mainQuestions"
+                        :key="item.id"
+                        :ref="el => questionRefs[item.inputName] = el"
+                        class="summary__card card mb-4"
+                        :class="{ 'hidden': item.hidden }"
+                        :question="item" />
+
         </div>
 
         <transition name="slide">

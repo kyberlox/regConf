@@ -3,7 +3,7 @@
         <div class="card__results__result-block"
              v-for="answer in question.answers"
              :key="answer.id"
-             v-show="!answer.hidden"
+             :class="{ 'hidden': answer.hidden }"
              :ref="el => questionInGroup[answer.inputName] = el">
             <div class="card__results__result-title">
                 {{ answer.name }}

@@ -2,7 +2,7 @@
     <!-- ds -->
 </template>
 <script>
-import { watch, computed, onMounted } from "vue";
+import { watch, computed, onMounted, ref } from "vue";
 import { useQuestionsStore } from "@/store/questions";
 import { useHelperStore } from "@/store/helper";
 import { useEnvModuleStore } from "@/store/envModule";
@@ -81,8 +81,23 @@ export default {
         })
 
         // проверка суммы всех состояний
-        const checkSum = () => {
+        const checkEnvSum = () => {
             const isSecondEnv = paramsToGetCompound.value.isSecondEnv.value;
+
+            const summary = ref([]);
+            isSecondEnv ?
+                summary.value = [...paramsToGetCompound.value.environment.value, ...paramsToGetCompound.value.secondEnv.value] : summary.value = [...paramsToGetCompound.value.environment.value];
+
+            let sum = 0;
+            summary.value.map((i) => {
+                if (i && i.value) {
+                    sum += Number(i.value);
+                    questionsStore.setQuestionValue('bothEnvSumm', sum, 'inputGroup', false, 'envAnswersGroup')
+                    if (!isSecondEnv) {
+                        questionsStore.setQuestionValue('envSumm', sum, 'inputGroup', false, 'envAnswersGroup')
+                    }
+                }
+            })
 
             const targetInput = isSecondEnv ? 'bothEnvSumm' : 'envSumm';
             const hiddenInput = isSecondEnv ? 'envSumm' : 'bothEnvSumm';
@@ -90,18 +105,9 @@ export default {
 
             helperStore.deleteErrorMessage(hiddenInput);
 
-            let sum = 0;
-            targetQuestion.value.map((i) => {
-                if (i && i.value) {
-                    isSecondEnv ? sum += Number(i.value) + paramsToGetCompound.value.envSumm.value :
-                        sum += Number(i.value);
-                    questionsStore.setQuestionValue(targetInput, sum, 'inputGroup', false, 'envAnswersGroup')
-                }
-            })
             if (targetQuestion.value.length > 0) {
                 if (sum !== 100) {
                     helperStore.setErrorMessage(targetInput);
-
                     return false;
                 }
                 else {
@@ -113,7 +119,7 @@ export default {
 
         // запрос (#2, get_compound) на параметры для конкр сред (Вязкость, материал, молекулярная масса, вязкость)
         watch([paramsToGetCompound.value.environment, paramsToGetCompound.value.secondEnv], (newVal) => {
-            if (checkSum()) {
+            if (checkEnvSum()) {
                 const envParamsToGet = ['molecular_weight', 'density', 'viscosity'];
                 let dataToSend = [];
 
@@ -141,11 +147,18 @@ export default {
         }, { deep: true })
 
         // Проверка, что давление настройки > Противодавления статического >= Динамического противодавления
-        // watch(paramsToGetPressure.value.pn, paramsToGetPressure.value.pp, paramsToGetPressure.value.ppDin, (newValue) => {
-        //     if (newValue.pn && newValue.pp && newValue.ppDin) {
-        //         console.log('NE ZABIT ETO DODELOT');
-        //     }
-        // })
+        watch([paramsToGetPressure.value.pn, paramsToGetPressure.value.pp, paramsToGetPressure.value.ppDin], ([pn, pp, ppDin]) => {
+            if (pn.value && pp.value && ppDin.value) {
+                switch (true) {
+                    case (pn.value[0].value <= pp.value || pn.value <= ppDin.value):
+                        helperStore.setErrorMessage('pp');
+                        break;
+                    default:
+                        helperStore.deleteErrorMessage('pp');
+                        break;
+                }
+            }
+        })
 
         // запрос (#3, get_pressure) на "Pno", "Ppo", "P1", "P2","Kw", "Gideal", "pre_DN","DN"
         watch(paramsToGetPressure, (newVal) => {

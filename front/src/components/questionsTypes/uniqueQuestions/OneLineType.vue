@@ -51,6 +51,7 @@ export default {
         const optionsLimit = ref(false);
 
         const answer = ref({ id: null, value: null });
+
         const saveSelectText = (value, groupIndex) => {
             answer.value.id = value;
             if (answer.value.value) {
@@ -67,6 +68,7 @@ export default {
         const envTypeVariants = ref(props.question.inner);
 
         const cloneQuestion = () => {
+            answer.value = { id: null, value: null };
             questionStore.cloneQuestion(props.question.id);
             optionsCounter.value++;
 
