@@ -207,6 +207,8 @@ def Raschet(dt):
     Gab = dt["Gab"]
     N = dt["N"]
     pre_Kc = dt["pre_Kc"]
+    
+    p1 = dt["density"] 
 
     climate = dt["climate"]
 
@@ -259,10 +261,10 @@ def Raschet(dt):
 
     #Отношение абсолютных давлений;
     B = P2 / P1
-        
+       
     if dt["environment"] == "Газ":
         M = dt["molar_mass"]
-        p1 = P1 * M / R * T
+        #p1 = P1 * M / R * T
 
         alpha = 0.8
         if (Ppo / Pn) == 1.1:
@@ -311,7 +313,7 @@ def Raschet(dt):
 
     else:
         alpha = 0.6
-        p1 = dt["density"]
+        #p1 = dt["density"]
         if (Pp / Pno) <= 1.15:
             Kw = 1
         elif ((Pp / Pno) > 1.15) and ((Pp / Pno) <= 0.25):
