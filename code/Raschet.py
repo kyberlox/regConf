@@ -1,7 +1,99 @@
 import math
 from math import sqrt, log, exp, pi, log10
 
-
+#В каких величинах PN? кгс/см2 =>  0.098067 * PN МПа
+DNtoPN = [   
+    {
+        "DN_s" : 12,
+        "PN" : 100,
+        "DN" : 25
+    },
+    {
+        "DN_s" : 12,
+        "PN" : 160,
+        "DN" : 25
+    },
+    {
+        "DN_s" : 16,
+        "PN" : 16.4,
+        "DN" : 25
+    },
+    {
+        "DN_s" : 33,
+        "PN" : 16,
+        "DN" : 50
+    },
+    {
+        "DN_s" : 33,
+        "PN" : 40,
+        "DN" : 50
+    },
+    {
+        "DN_s" : 33,
+        "PN" : 63,
+        "DN" : 50
+    },
+    {
+        "DN_s" : 33,
+        "PN" : 160,
+        "DN" : 50
+    },
+    {
+        "DN_s" : 40,
+        "PN" : 16,
+        "DN" : 80
+    },
+    {
+        "DN_s" : 40,
+        "PN" : 40,
+        "DN" : 80
+    },
+    {
+        "DN_s" : 40,
+        "PN" : 63,
+        "DN" : 80
+    },
+    {
+        "DN_s" : 48,
+        "PN" : 16,
+        "DN" : 100
+    },
+    {
+        "DN_s" : 48,
+        "PN" : 40,
+        "DN" : 100
+    },
+    {
+        "DN_s" : 48,
+        "PN" : 160,
+        "DN" : 100
+    },
+    {
+        "DN_s" : 56,
+        "PN" : 100,
+        "DN" : 100
+    },
+    {
+        "DN_s" : 72,
+        "PN" : 63,
+        "DN" : 100
+    },
+    {
+        "DN_s" : 75,
+        "PN" : 16,
+        "DN" : 150
+    },
+    {
+        "DN_s" : 75,
+        "PN" : 40,
+        "DN" : 150
+    },
+    {
+        "DN_s" : 142,
+        "PN" : 16,
+        "DN" : 200
+    }
+]
 
 def mixture(envs : list):
     result = {
@@ -96,15 +188,13 @@ def mixture(envs : list):
                 M = env["molar_mass"]
             elif env["environment"] == "Жидкость":
                 M = env["molecular_weight"]
-            pre_u = r * env["viscosity"] * M
+            pre_u += r * env["viscosity"] * M
 
-        result["density"] 
-        result["viscosity"] 
+        result["density"] = density_ch / density_zn
+        result["viscosity"] = pre_u
         #result["viscosity"] = 10**(pre_viscosity)
     
     return result
-    
- 
 
 def Raschet(dt):
     P_atm = 0.101320
@@ -119,6 +209,11 @@ def Raschet(dt):
     pre_Kc = dt["pre_Kc"]
 
     climate = dt["climate"]
+
+    #если климатика => то материал
+    if climate == "М1":
+        dt["material"] = "ГЛ20"
+
     model = {
         "У1" : [-45, 40],
         "ХЛ1" : [-60, 40],
@@ -214,7 +309,7 @@ def Raschet(dt):
         #P1 * p1
         Gideal = Kp_kr * Kb *sqrt(P1 * p1)
 
-    elif dt["environment"] == "Жидкость":
+    else:
         alpha = 0.6
         p1 = dt["density"]
         if (Pp / Pno) <= 1.15:
@@ -227,11 +322,14 @@ def Raschet(dt):
         Kp = sqrt(2*(1-B)) #на самом деле, тут корень, но его будем извлекать в конце
         Gideal = Kp * sqrt(P1 * p1)
 
-    DN = None
+    #print(Kp, P1, p1)
+    #print(Gideal)
+
+    DN_s = None
     pre_DN = 0
     Kv = 1
 
-    while DN != pre_DN:
+    while DN_s != pre_DN:
         pre_F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
         pre_DN = sqrt((4 * pre_F) / pi)
             
@@ -244,8 +342,9 @@ def Raschet(dt):
             Kv = 1
             
         F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
-        DN = sqrt((4 * F) / pi)
-        
+        DN_s = sqrt((4 * F) / pi)
+
+            
     new_dt = {
         "T_min" : T_min,     #Минимальная рабочая температура
         "T_max" : T_max,     #Максивальная рабочая температура
@@ -256,10 +355,17 @@ def Raschet(dt):
         "Kw" : Kw,           #Коэффициент, учитывающий эффект неполного открытия разгруженных ПК из-за противодавления
         "Gideal" : Gideal,   #Массовая скорость
         "pre_DN" : pre_DN,   #DN предворительный
-        "DN" : DN            #Диаметр седла клапана
+        "DN_s" : DN_s        #Диаметр седла клапана
     }
 
-    all_dt = dt | new_dt
+    #Деаметр ПК
+    new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \nДавление на входе = {P1}"
+    for req in DNtoPN:
+        if (DN_s <= req['DN_s']) and (P1 <= req['PN']):
+            new_dt["DN"] = req["DN"]
+            all_dt = dt | new_dt
+            return all_dt
 
-    return all_dt
-                        
+def get_silfon(dt):
+    #
+    pass

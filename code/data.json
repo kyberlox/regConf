@@ -30,6 +30,7 @@
     "Kw" : 0.0,
     "Gideal" : 0.0,
     "pre_DN" : 0.0,
+    "DN_s" : 0.0,
     "DN" : 0.0,
 
     "need_bellows" : false,
@@ -38,12 +39,12 @@
     "inlet flange" : "",
     "outlet flange" : "",
     "detonation_node" : false,
+
     "rotary_plugs" : false,
     "thermal_cover" : false,
     "abrasive_particles" : false,
     "tightness" : "",
     "color" : "",
-
     "warranty" : "",
     "assignment" : "",
     "packaging" : "",
