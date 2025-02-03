@@ -198,7 +198,7 @@ def mixture(envs : list):
 
 def Raschet(dt):
     P_atm = 0.101320
-    R = 8.31446261815324 #Газовая постоянная ( Дж / (моль * K))
+    R = 8.31446261815324 #Газовая постоянная ( Па / (моль * K))
 
     u = dt["viscosity"]
     Pn = dt["Pn"]
@@ -217,7 +217,7 @@ def Raschet(dt):
         dt["material"] = "ГЛ20"
 
     model = {
-        "У1" : [-45, 40],
+        "У1" : [-40, 40],
         "ХЛ1" : [-60, 40],
         "УХЛ1" : [-60, 40],
         "М1" : [-40, 40]
@@ -264,7 +264,8 @@ def Raschet(dt):
        
     if dt["environment"] == "Газ":
         M = dt["molar_mass"]
-        #p1 = P1 * M / R * T
+
+        p1 = P1 * 1000 * M / (R  * (T+273.15))
 
         alpha = 0.8
         if (Ppo / Pn) == 1.1:
@@ -324,6 +325,7 @@ def Raschet(dt):
         Kp = sqrt(2*(1-B)) #на самом деле, тут корень, но его будем извлекать в конце
         Gideal = Kp * sqrt(P1 * p1)
 
+    print(Kp_kr, P1, p1)
     #print(Kp, P1, p1)
     #print(Gideal)
 
@@ -332,6 +334,7 @@ def Raschet(dt):
     Kv = 1
 
     while DN_s != pre_DN:
+        #print(3.6, alpha, Kv, Kw, Kc, Gideal, N)
         pre_F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
         pre_DN = sqrt((4 * pre_F) / pi)
             
@@ -365,6 +368,7 @@ def Raschet(dt):
     for req in DNtoPN:
         if (DN_s <= req['DN_s']) and (P1 <= req['PN']):
             new_dt["DN"] = req["DN"]
+            new_dt["PN"] = req["PN"]
             all_dt = dt | new_dt
             return all_dt
 
