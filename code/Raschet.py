@@ -2,98 +2,55 @@ import math
 from math import sqrt, log, exp, pi, log10
 
 #В каких величинах PN? кгс/см2 =>  0.098067 * PN МПа
-DNtoPN = [   
-    {
-        "DN_s" : 12,
-        "PN" : 100,
-        "DN" : 25
-    },
-    {
-        "DN_s" : 12,
-        "PN" : 160,
-        "DN" : 25
-    },
-    {
-        "DN_s" : 16,
-        "PN" : 16.4,
-        "DN" : 25
-    },
-    {
-        "DN_s" : 33,
-        "PN" : 16,
-        "DN" : 50
-    },
-    {
-        "DN_s" : 33,
-        "PN" : 40,
-        "DN" : 50
-    },
-    {
-        "DN_s" : 33,
-        "PN" : 63,
-        "DN" : 50
-    },
-    {
-        "DN_s" : 33,
-        "PN" : 160,
-        "DN" : 50
-    },
-    {
-        "DN_s" : 40,
-        "PN" : 16,
-        "DN" : 80
-    },
-    {
-        "DN_s" : 40,
-        "PN" : 40,
-        "DN" : 80
-    },
-    {
-        "DN_s" : 40,
-        "PN" : 63,
-        "DN" : 80
-    },
-    {
-        "DN_s" : 48,
-        "PN" : 16,
-        "DN" : 100
-    },
-    {
-        "DN_s" : 48,
-        "PN" : 40,
-        "DN" : 100
-    },
-    {
-        "DN_s" : 48,
-        "PN" : 160,
-        "DN" : 100
-    },
-    {
-        "DN_s" : 56,
-        "PN" : 100,
-        "DN" : 100
-    },
-    {
-        "DN_s" : 72,
-        "PN" : 63,
-        "DN" : 100
-    },
-    {
-        "DN_s" : 75,
-        "PN" : 16,
-        "DN" : 150
-    },
-    {
-        "DN_s" : 75,
-        "PN" : 40,
-        "DN" : 150
-    },
-    {
-        "DN_s" : 142,
-        "PN" : 16,
-        "DN" : 200
-    }
-]
+from sqlalchemy import create_engine
+from sqlalchemy import select
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import create_engine, MetaData, Column, Integer, Text, Float
+
+engine = create_engine('postgresql+psycopg2://kyberlox:4179@postgres/pdb')
+
+class Base(DeclarativeBase): pass
+
+class Params(Base):
+    __tablename__ = 'parametrs_table'
+    id = Column(Integer, primary_key=True)
+    DNS = Column(Float, nullable=True)
+    P1 = Column(Float, nullable=True)
+    DN = Column(Float, nullable=True)
+    PN = Column(Float, nullable=True)
+    spring_material = Column(Text, nullable=True)
+
+Base.metadata.create_all(bind=engine)
+SessionLocal = sessionmaker(autoflush=True, bind=engine)
+db = SessionLocal()
+
+
+def searchParams(DNS, curP1):
+    #найти все подходящие строки их DNS и P1 - больше искомых
+    request = db.query(Params).filter(Params.DNS >= DNS, Params.P1 >= curP1).all()
+
+    if request == None:
+        return False
+    ans = False
+
+    #найти самы подходящий - MIN по DNS и P1
+    minDNS = request[0].DNS
+    minP1 = request[0].P1
+    for example in request:
+        if (example.DNS <= minDNS) and (example.P1 <= minP1):
+            minDNS = example.DNS
+            minP1 = example.P1
+            ans = {
+                "ID" : example.id,  
+                "DNS" : example.DNS, 
+                "P1" : example.P1, 
+                "DN" : example.DN, 
+                "PN" : example.PN, 
+                "spring_material" : example.spring_material
+            }
+    
+    return ans
 
 def mixture(envs : list):
     result = {
@@ -211,11 +168,6 @@ def Raschet(dt):
     p1 = dt["density"] 
 
     climate = dt["climate"]
-
-    #если климатика => то материал
-    if climate == "М1":
-        dt["material"] = "ГЛ20"
-
     model = {
         "У1" : [-40, 40],
         "ХЛ1" : [-60, 40],
@@ -224,6 +176,11 @@ def Raschet(dt):
     }
 
     T_min, T_max = model[climate]
+
+    #если климатика => то материал
+    if ((climate == "ХЛ1") or (climate == "УХЛ1")) and (dt["material"] == "25Л"):
+        dt["material"] = "20ГЛ"
+
     T = dt["T"]
 
 
@@ -325,7 +282,7 @@ def Raschet(dt):
         Kp = sqrt(2*(1-B)) #на самом деле, тут корень, но его будем извлекать в конце
         Gideal = Kp * sqrt(P1 * p1)
 
-    print(Kp_kr, P1, p1)
+    #print(Kp_kr, P1, p1)
     #print(Kp, P1, p1)
     #print(Gideal)
 
@@ -364,14 +321,92 @@ def Raschet(dt):
     }
 
     #Деаметр ПК
-    new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \nДавление на входе = {P1}"
-    for req in DNtoPN:
-        if (DN_s <= req['DN_s']) and (P1 <= req['PN']):
-            new_dt["DN"] = req["DN"]
-            new_dt["PN"] = req["PN"]
-            all_dt = dt | new_dt
-            return all_dt
+    new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {P1}"
+    
+    #поиск записи в БД
+    example = searchParams(DN_s, 0.098067 * P1)#P1 перевести из МПа в кгс/см2
+    
+    new_dt["DN"] = example["DN"] #Номинальный диаметр
+    new_dt["PN"] = example["PN"] #Номиннальное давление
 
-def get_silfon(dt):
-    #
-    pass
+    #подбор сильфона !!!!!!!!!!!!!!!!!!!!! сильфон только на пружине?
+    if (dt["valve_type"] == 'В') and  ( ( (example["spring_material"] == '51ХФА') and (T > 120) ) or ( (example["spring_material"] == '50ХФА') and (T > 250) ) ):
+        new_dt["need_bellows"] = True
+
+    all_dt = dt | new_dt
+    return all_dt
+
+def mark_params(dt):
+    valve_type = dt["valve_type"]
+    PN = dt["PN"]
+    DN = dt["DN"]
+    T = dt["T"]
+    joining_type = dt["joining_type"]
+
+    err = False
+
+    #тип контакта
+    if valve_type == "В": #у пружинного - строго металл-металл
+        contact_type = "металл-металл"
+    elif (valve_type == "Н") and (PN > 160):  
+        contact_type = "металл-металл"
+    elif (valve_type == "Н") and (PN <= 160): #если пилотный - по умлочанию металл-неметалл, но можно выбрать
+        contact_type = "металл-неметалл" #можно заменить
+    else:
+        err = {"error" : "Невозможно определить тип контакта", "value" : f"Некорректое значение типа ПК: {valve_type}"}
+
+    #класс гкрметичнности
+    #бывает ли АА?
+    if valve_type == "Н":
+        if contact_type == "металл-металл":
+            tightness = ["С"]
+        elif contact_type == "металл-неметалл":
+            tightness = ["В", "А", "С"]
+    elif valve_type == "В":
+        if DN == 25.0:
+            tightness = ["В", "С"]
+        else:
+            tightness = ["В", "А", "С"]
+    else:
+        err = {"error" : "Невозможно определить класс гкрметичнности", "value" : f"Некорректое значение типа ПК: {valve_type}"}
+
+    #окр закр тип
+    #температура силльлфона
+    Tsilf = None
+    #агресивность среды
+    evil_env = True
+
+    if (T == Tsilf) and not evil_env:
+        open_close_type = "открытого типа"
+        dt["need_bellows"] = False
+    elif T != Tsilf or evil_env:
+        open_close_type = "закрытого типа"
+    else:
+        err = {"error" : "Невозможно определить окрытый или закрытый тип", "value" : f"Температура сильфона: {Tsilf} \nАгрессивнность среды: {evil_env}"}
+
+    #подбор фланца
+    if joining_type == "фланцовое":
+        inlet_flange = ['B']#B C D F J K
+        if PN == 16.0 or PN == 16.4:
+            inlet_flange = ['B', 'C', 'D', 'F']
+        if PN == 40.0:
+            inlet_flange = ['F', 'C', 'D']
+        if PN == 63.0 or PN == 100.0 or PN == 160.0:
+            inlet_flange = ['J', 'K', 'F', 'C', 'D']
+        if PN == 250.0:
+            inlet_flange = ['K', 'D']
+        outlet_flange = inlet_flange
+    else:
+        inlet_flange = None
+        outlet_flange = inlet_flange
+        
+    #заполнеие параметров и выгрузка
+    if not err:
+        dt["contact_type"] = contact_type       #тип присоединения
+        dt["tightness"] = tightness             #варианты класса герметичности
+        dt["open_close_type"] = open_close_type #открытый или закрытый тип
+        dt["inlet_flange"] = inlet_flange       #варианты фланца на входе
+        dt["outlet_flange"] = outlet_flange     #варианты фланца на выходе
+        return dt
+    else:
+        return err

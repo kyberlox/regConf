@@ -5,7 +5,7 @@ from starlette.responses import RedirectResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import HTTPException
 
-from Raschet import Raschet, mixture
+from Raschet import Raschet, mixture, mark_params
 
 import openpyxl
 from openpyxl import load_workbook
@@ -65,6 +65,14 @@ class Table(Base):
     adiabatic_index = Column(Float, nullable=True)
     compressibility_factor = Column(Float, nullable=True)
 
+class Params(Base):
+    __tablename__ = 'parametrs_table'
+    id = Column(Integer, primary_key=True)
+    DNS = Column(Float, nullable=True)
+    P1 = Column(Float, nullable=True)
+    DN = Column(Float, nullable=True)
+    PN = Column(Float, nullable=True)
+    spring_material = Column(Text, nullable=True)
 
 Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autoflush=True, bind=engine)
@@ -144,7 +152,56 @@ def migration():
             if need:
                 db.commit()
     
-    return result
+    #миграция параметров DN и PN
+    WB = load_workbook("./DNtoPN.xlsx")
+    sheet = WB['full']
+
+    par_result = {"added" : [], "exists" : []}
+
+    for i in range(2, sheet.max_row+1):
+        DNS = float(sheet[f"A{i}"].value)
+        P1_max = float(sheet[f"D{i}"].value)
+        DN = float(sheet[f"C{i}"].value)
+        PN = float(sheet[f"B{i}"].value)
+        spring_material = str(sheet[f"F{i}"].value)
+
+        #экземпляр таблицы параметров
+        example = Params(DNS = DNS, P1 = P1_max, DN = DN, PN = PN, spring_material = spring_material)
+        
+        #есть ли такая запись?
+        request = db.query(Params).filter(Params.DNS == DNS, Params.P1 == P1_max, Params.DN == DN, Params.PN == PN, Params.spring_material == spring_material).first()
+        #print(request)
+
+        #если нет - добавить
+        if request == None:
+            db.add(example)
+            db.commit()
+
+            curr = {
+                "№" : i,
+                "ID" : example.id,  
+                "DNS" : DNS, 
+                "P1" : P1_max, 
+                "DN" : DN, 
+                "PN" : PN, 
+                "spring_material" : spring_material
+            }
+            par_result["added"].append(curr)
+
+        #если есть - пропустить
+        else:
+            curr = {
+                "ID" : request.id,  
+                "DNS" : request.DNS, 
+                "P1" : request.P1, 
+                "DN" : request.DN, 
+                "PN" : request.PN, 
+                "spring_material" : request.spring_material
+            }
+            par_result["exists"].append(curr)
+
+    
+    return {"environmentTable" : result, "valveParametrsTable" : par_result}
 
 #подбор сред
 @app.get("/api/get_table")
@@ -212,7 +269,9 @@ def get_pressure(data = Body()):
             #расчет
             return Raschet(data)
 
-
-
 #подбор оборудования
+@app.post("/api/get_mark_params")
+def get_mark_params(data = Body()):
+    return mark_params(data)
+
 #генерация документации
