@@ -73,8 +73,6 @@ export default {
         };
 
         const handleErrorHighlight = (newErrors) => {
-            console.log(questionInGroup.value);
-
             Object.values(questionInGroup.value).forEach(element => {
                 element.classList.remove('card--error-highlight');
             });

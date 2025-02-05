@@ -20,7 +20,7 @@ export default defineConfig({
     }
   },
   define: {
-    'API_URL': JSON.stringify('http://regconfapi.emk.org.ru')
+    'API_URL': JSON.stringify('http://regconf.emk.org.ru/api')
   }
 
 })

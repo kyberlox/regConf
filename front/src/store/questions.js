@@ -21,12 +21,17 @@ export const useQuestionsStore = defineStore('questions', {
                 targetQuestion.value = newValue;
                 return;
             }
-            else if (type == 'inputGroup') {
+            else if (type == 'inputGroup') {  
                 this.questions.find((e) => (e.inputName == targetGroup)).answers.find((e) => (e.inputName == questionName)).value = questionValue;
             }
             else {
                 targetQuestion.value = questionValue;
             }
+        },
+
+        setSelectAnswer(questionName, questionValue){
+            const targetQuestion = this.findQuestion(questionName);
+            targetQuestion.answers = questionValue;
         },
 
         setMultipleAnswers(questionName, questionValue) {

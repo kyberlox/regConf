@@ -1,22 +1,5 @@
 [
   {
-    "id": 1,
-    "name": "Тип предохранительного клапана:",
-    "type": "RadioType",
-    "inputName": "clapanType",
-    "value": null,
-    "answers": [
-      {
-        "name": "Пилотный",
-        "value": "Н"
-      },
-      {
-        "name": "Пружинный",
-        "value": "В"
-      }
-    ]
-  },
-  {
     "id": 2,
     "name": "Агрегатное состояние несущей рабочей среды:",
     "type": "RadioType",
@@ -246,6 +229,55 @@
   },
   {
     "id": 18,
+    "name": "Температура окружающей среды:",
+    "inputName": "T",
+    "type": "TextType",
+    "placeholder": "Укажите значение"
+  },
+  {
+    "id": 19,
+    "name": "Климатическое исполнение:",
+    "inputName": "climate",
+    "type": "SelectType",
+    "value": null,
+    "answers": [
+      {
+        "name": "У1",
+        "value": "У1"
+      },
+      {
+        "name": "ХЛ1",
+        "value": "ХЛ1"
+      },
+      {
+        "name": "УХЛ1",
+        "value": "УХЛ1"
+      },
+      {
+        "name": "М1",
+        "value": "М1"
+      }
+    ]
+  },
+  {
+    "id": 100,
+    "name": "Тип предохранительного клапана:",
+    "type": "RadioType",
+    "inputName": "valve_type",
+    "value": null,
+    "answers": [
+      {
+        "name": "Пилотный",
+        "value": "Н"
+      },
+      {
+        "name": "Пружинный",
+        "value": "В"
+      }
+    ]
+  },
+  {
+    "id": 101,
     "inputName": "pressureAnswersGroup",
     "type": "inputGroup",
     "answers": [
@@ -302,9 +334,115 @@
         "id": 25,
         "name": "Диаметр седла клапана:",
         "type": "DisabledType",
+        "inputName": "DN_s",
+        "value": null
+      },
+      {
+        "id": 26,
+        "name": "Номинальный диаметр:",
+        "type": "DisabledType",
         "inputName": "DN",
+        "value": null
+      },
+      {
+        "id": 27,
+        "name": "Номинальное давление:",
+        "type": "DisabledType",
+        "inputName": "PN",
+        "value": null
+      },
+      {
+        "id": 28,
+        "name": "Переменное противодавление или необходим сильфон на пружинные ПК по требованию ОЛ:",
+        "type": "DisabledType",
+        "inputName": "need_bellows",
         "value": null
       }
     ]
-  }
+  },
+  {
+    "id": 102,
+    "name": "Тип присоединения:",
+    "inputName": "joining_type",
+    "type": "SelectType",
+    "value": null,
+    "answers": [
+      {
+        "name": "Фланцевое",
+        "value": "Фланцевое"
+      },
+      {
+        "name": "Под приварку",
+        "value": "Под приварку"
+      },
+      {
+        "name": "Штуцерно-торцовое",
+        "value": "Штуцерно-торцовое"
+      },
+      {
+        "name": "Муфтовое",
+        "value": "Муфтовое"
+      },
+      {
+        "name": "Ниппельное",
+        "value": "Ниппельное"
+      },
+      {
+        "name": "Кламповое",
+        "value": "Кламповое"
+      },
+      {
+        "name": "Комбинированное",
+        "value": "Комбинированное"
+      }
+    ]
+  },
+  {
+  "id": 102,
+  "inputName": "markAnswersGroup",
+  "type": "inputGroup",
+  "answers": [
+    {
+      "id": 6.1,
+      "name": "Тип контакта:",
+      "inputName": "contact_type",
+      "type": "DisabledType",
+      "hidden": false,
+      "value": null
+    },
+    {
+      "id": 6.3,
+      "name": "тип ПК:",
+      "inputName": "open_close_type",
+      "type": "DisabledType",
+      "hidden": false,
+      "value": null
+    },
+    {
+      "id": 6.4,
+      "name": "Фланец на входе:",
+      "inputName": "inlet_flange",
+      "type": "DisabledType",
+      "hidden": false,
+      "value": null
+    },
+    {
+      "id": 6.5,
+      "name": "Фланец на выходе:",
+      "inputName": "outlet_flange",
+      "type": "DisabledType",
+      "hidden": false,
+      "value": null
+    }
+  ]
+},
+{
+  "id": 105,
+  "name": "Герметичность затвора по ГОСТ 9544-2015:",
+  "type": "SelectType",
+  "inputName": "tightness",
+  "value": null,
+  "answers": []
+}
+  
 ]

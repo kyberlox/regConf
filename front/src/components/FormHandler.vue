@@ -33,7 +33,16 @@ export default {
                 ppDin: questions.value.find((e) => e.inputName == 'Pp_din'),
                 gab: questions.value.find((e) => e.inputName == 'Gab'),
                 n: questions.value.find((e) => e.inputName == 'N'),
-                preKc: questions.value.find((e) => e.inputName == 'Pre_Kc')
+                preKc: questions.value.find((e) => e.inputName == 'Pre_Kc'),
+                t: questions.value.find((e) => e.inputName == 'T'),
+                climate: questions.value.find((e) => e.inputName == 'climate'),
+                valveType: questions.value.find((e) => e.inputName == 'valve_type'),
+            }
+        })
+
+        const paramsToGetMark = computed(()=>{
+            return{
+                joiningType: questions.value.find((e) => e.inputName == 'joining_type'),
             }
         })
 
@@ -73,8 +82,6 @@ export default {
             if (targetQuestion.value.length > 0) {
                 if (sum !== 100) {
                     helperStore.setErrorMessage(targetInput);
-                    console.log(targetInput);
-
                     return false;
                 }
                 else {
@@ -106,7 +113,7 @@ export default {
                 ).then(data => {
                     envModuleStore.setAfterGetCompoundValue(data);
                     envParamsToGet.map((key) => {
-                        questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'pressureAnswersGroup');
+                        questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'envAnswersGroup');
                     })
                 })
             };
@@ -114,12 +121,21 @@ export default {
 
         // запрос (#3, get_pressure) на "Pno", "Ppo", "P1", "P2","Kw", "Gideal", "pre_DN","DN"
         watch(paramsToGetPressure, (newVal) => {
-            if (newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.value && newVal.n.value && newVal.preKc.value) {
-                const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', 'DN'];
+            console.log(newVal);
+            
+            if (newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.value && newVal.n.value && newVal.t.value && newVal.climate.value && newVal.valveType.value) {                
+                const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', "DN_s", 'DN', "PN", "need_bellows"];
 
                 const formattedData = {
-                    "Pn": Number(changeToMpa(newVal.pn.value[0].id, newVal.pn.value[0].value)), "Pp": Number(newVal.pp.value),
-                    "Pp_din": Number(newVal.ppDin.value), "Gab": Number(newVal.gab.value), "N": Number(newVal.n.value), "pre_Kc": Number(newVal.preKc.value)
+                    "Pn": Number(changeToMpa(newVal.pn.value[0].id, newVal.pn.value[0].value)),
+                    "Pp": Number(newVal.pp.value),
+                    "Pp_din": Number(newVal.ppDin.value),
+                    "Gab": Number(newVal.gab.value),
+                    "N": Number(newVal.n.value),
+                    "pre_Kc": Number(newVal.preKc.value),
+                    "T": Number(newVal.t.value),
+                    "climate": newVal.climate.value,
+                    "valve_type": newVal.valveType.value,
                 };
 
                 envModuleStore.pushToAfterGetCompoundValue(formattedData);
@@ -131,7 +147,39 @@ export default {
                 ).then((data) => {
                     envModuleStore.setAfterGetCompoundValue(data);
                     paramsToGet.map((key) => {
-                        questionsStore.setQuestionValue(key, data[key]);
+                        questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'pressureAnswersGroup');
+                    })
+                })
+            }
+        }, { deep: true })
+
+
+        // запрос (#4, get_mark_params) на "Pno", "Ppo", "P1", "P2","Kw", "Gideal", "pre_DN","DN"
+        watch(paramsToGetMark, (newVal) => {
+            console.log(newVal);
+            
+            if (newVal.joiningType.value) {                
+                const paramsToGet = ['contact_type', 'tightness', 'open_close_type', 'inlet_flange', 'outlet_flange'];
+
+                const formattedData = {
+                    "joining_type": newVal.joiningType.value,
+                };
+
+                envModuleStore.pushToAfterGetCompoundValue(formattedData);
+
+                const dataToSend = computed(() => envModuleStore.getAfterGetCompoundValue);
+
+                Api.post(API_URL + '/get_mark_params',
+                    dataToSend.value
+                ).then((data) => {
+                    envModuleStore.setAfterGetCompoundValue(data);
+                    paramsToGet.map((key) => {
+                        if (key == 'tightness'){
+                            questionsStore.setSelectAnswer(key, data[key]);
+                        }
+                        else {
+                        questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'markAnswersGroup');
+                    }
                     })
                 })
             }

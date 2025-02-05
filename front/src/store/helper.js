@@ -168,8 +168,6 @@ export const useHelperStore = defineStore('helper', {
             this.messages = DEFAULT_MESSAGE;
         },
         setErrorMessage(name) {
-            console.log(name);
-
             const existingMessage = this.messages.find(item => item.inputName === name);
             const newError = this.errors.find(item => item.inputName === name);
 
