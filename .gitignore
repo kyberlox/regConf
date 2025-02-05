@@ -1,4 +1,5 @@
 /pSQL/data
+.vscode
 apiDescription.txt
 front/.vscode/
-/__pycache__/
+code/__pycache__/
