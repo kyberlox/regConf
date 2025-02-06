@@ -1,6 +1,6 @@
 [
   {
-    "id": 2,
+    "id": 1,
     "name": "Агрегатное состояние несущей рабочей среды:",
     "type": "RadioType",
     "inputName": "environmentType",
@@ -17,7 +17,7 @@
     ]
   },
   {
-    "id": 3,
+    "id": 2,
     "name": "Мольная доля состава рабочей среды, %:",
     "type": "oneLineType",
     "inputName": "environment",
@@ -25,7 +25,7 @@
     "inner": [
       [
         {
-          "id": 3.1,
+          "id": 2.1,
           "name": "",
           "type": "SelectType",
           "inputName": "environmentName",
@@ -33,7 +33,7 @@
           "answers": []
         },
         {
-          "id": 3.2,
+          "id": 2.2,
           "name": "",
           "type": "TextType",
           "inputName": "environmentPercent",
@@ -44,20 +44,21 @@
     ]
   },
   {
-    "id": 4,
+    "id": 3,
     "name": "Наличие растворенной среды в другом агрегатном состоянии:",
     "type": "CheckboxType",
     "inputName": "isSecondEnv",
+    "value": false,
     "answers": [
       {
         "name": "Да",
-        "value": "Н",
+        "value": "true",
         "checkToHide": 5
       }
     ]
   },
   {
-    "id": 5,
+    "id": 4,
     "name": "Другое агрегатное состояние, %:",
     "type": "oneLineType",
     "inputName": "secondEnv",
@@ -66,7 +67,7 @@
     "inner": [
       [
         {
-          "id": 5.1,
+          "id": 4.1,
           "name": "",
           "type": "SelectType",
           "inputName": "environmentName",
@@ -74,7 +75,7 @@
           "answers": []
         },
         {
-          "id": 5.2,
+          "id": 4.2,
           "name": "",
           "type": "TextType",
           "inputName": "environmentPercent",
@@ -85,47 +86,47 @@
     ]
   },
   {
-    "id": 6,
+    "id": 5,
     "inputName": "envAnswersGroup",
     "type": "inputGroup",
     "answers": [
       {
-        "id": 6.1,
+        "id": 5.1,
         "name": "Суммарная доля состава рабочей среды, %:",
         "inputName": "envSumm",
         "hidden": false,
         "value": null
       },
       {
-        "id": 6.2,
+        "id": 5.2,
         "name": "Сумма газовой и жидкой фазы, %:",
         "inputName": "bothEnvSumm",
         "hidden": true,
         "value": null
       },
       {
-        "id": 6.3,
+        "id": 5.3,
         "name": "Молекулярная масса:",
         "inputName": "molecular_weight",
         "hidden": false,
         "value": null
       },
       {
-        "id": 6.4,
+        "id": 5.4,
         "name": "Плотность жидкости:",
         "inputName": "density",
         "hidden": false,
         "value": null
       },
       {
-        "id": 6.5,
+        "id": 5.5,
         "name": "Материал:",
         "inputName": "material",
         "hidden": false,
         "value": null
       },
       {
-        "id": 6.6,
+        "id": 5.6,
         "name": "Вязкость:",
         "inputName": "viscosity",
         "hidden": false,
@@ -134,7 +135,7 @@
     ]
   },
   {
-    "id": 12,
+    "id": 6,
     "name": "Давление настройки:",
     "inputName": "Pn",
     "type": "oneLineType",
@@ -146,7 +147,7 @@
     "inner": [
       [
         {
-          "id": 12.1,
+          "id": 6.1,
           "name": "",
           "type": "TextType",
           "inputName": "pnValue",
@@ -154,7 +155,7 @@
           "value": null
         },
         {
-          "id": 12.2,
+          "id": 6.2,
           "name": "",
           "type": "SelectType",
           "inputName": "pnUnit",
@@ -162,23 +163,23 @@
           "answers": [
             {
               "name": "Мпа",
-              "value": "mpa"
+              "value": "Мпа"
             },
             {
               "name": "Кпа",
-              "value": "kpa"
+              "value": "Кпа"
             },
             {
               "name": "Па",
-              "value": "Pa"
+              "value": "Па"
             },
             {
               "name": "бар",
-              "value": "bar"
+              "value": "бар"
             },
             {
               "name": "кгс/см2",
-              "value": "kgs"
+              "value": "кгс/см2"
             }
           ]
         }
@@ -186,81 +187,81 @@
     ]
   },
   {
-    "id": 13,
+    "id": 7,
     "name": "Противодавление статическое:",
     "inputName": "Pp",
     "type": "TextType",
     "value": null
   },
   {
-    "id": 14,
+    "id": 8,
     "name": "Динамическое противодавление:",
     "inputName": "Pp_din",
     "type": "TextType",
     "value": null
   },
   {
-    "id": 15,
+    "id": 9,
     "name": "Максимальный аварийный расход жидкости и газа (кг/час):",
     "inputName": "Gab",
     "type": "TextType",
     "value": null
   },
   {
-    "id": 16,
+    "id": 10,
     "name": "Количество параллельно установленных и одновременно работающих клапанов (шт):",
     "inputName": "N",
     "type": "TextType",
     "value": null
   },
   {
-    "id": 17,
+    "id": 11,
     "name": "Мембранно-предохранительное устройство:",
     "inputName": "Pre_Kc",
     "type": "CheckboxType",
-    "value": null,
+    "value": false,
     "answers": [
       {
         "name": "Да",
-        "value": "Н",
+        "value": "true",
         "checkToHide": 5
       }
     ]
   },
   {
-    "id": 18,
-    "name": "Температура окружающей среды:",
+    "id": 12,
+    "name": "Температура рабочей среды:",
     "inputName": "T",
     "type": "TextType",
     "placeholder": "Укажите значение"
   },
   {
-    "id": 19,
+    "id": 13,
     "name": "Климатическое исполнение:",
     "inputName": "climate",
     "type": "SelectType",
     "value": null,
     "answers": [
       {
-        "name": "У1",
+        "name": "У1 (от -40 до +40)",
         "value": "У1"
       },
       {
-        "name": "ХЛ1",
+        "name": "ХЛ1 (от -60 до +40)",
         "value": "ХЛ1"
       },
       {
-        "name": "УХЛ1",
+        "name": "УХЛ1 (от -60 до +40)",
         "value": "УХЛ1"
       },
       {
-        "name": "М1",
+        "name": "М1 (от -40 до +40)",
         "value": "М1"
       }
     ]
   },
   {
-    "id": 100,
+    "id": 14,
     "name": "Тип предохранительного клапана:",
     "type": "RadioType",
     "inputName": "valve_type",
@@ -277,91 +278,98 @@
     ]
   },
   {
-    "id": 101,
+    "id": 15,
     "inputName": "pressureAnswersGroup",
     "type": "inputGroup",
     "answers": [
       {
-        "id": 18,
+        "id": 15.1,
         "name": "Давление начала открытия с противодавлением:",
         "type": "DisabledType",
         "inputName": "Pno",
         "value": null
       },
       {
-        "id": 19,
+        "id": 15.2,
         "name": "Давление полного открытия с противодавлением:",
         "type": "DisabledType",
         "inputName": "Ppo",
         "value": null
       },
       {
-        "id": 20,
+        "id": 15.3,
         "name": "Давление на входе:",
         "type": "DisabledType",
         "inputName": "P1",
         "value": null
       },
       {
-        "id": 21,
+        "id": 15.4,
         "name": "Давление на выходе:",
         "type": "DisabledType",
         "inputName": "P2",
         "value": null
       },
       {
-        "id": 22,
+        "id": 15.5,
         "name": "Коэффициент, учитывающий эффект неполного открытия разгруженных ПК из-за противодавления:",
         "type": "DisabledType",
         "inputName": "Kw",
         "value": null
       },
       {
-        "id": 23,
+        "id": 15.6,
         "name": "Массовая скорость:",
         "type": "DisabledType",
         "inputName": "Gideal",
         "value": null
       },
       {
-        "id": 24,
+        "id": 15.7,
         "name": "DN предворительный:",
         "type": "DisabledType",
         "inputName": "pre_DN",
         "value": null
       },
       {
-        "id": 25,
+        "id": 15.8,
         "name": "Диаметр седла клапана:",
         "type": "DisabledType",
         "inputName": "DN_s",
         "value": null
       },
       {
-        "id": 26,
+        "id": 15.9,
         "name": "Номинальный диаметр:",
         "type": "DisabledType",
         "inputName": "DN",
         "value": null
       },
       {
-        "id": 27,
+        "id": 15.10,
         "name": "Номинальное давление:",
         "type": "DisabledType",
         "inputName": "PN",
-        "value": null
-      },
-      {
-        "id": 28,
-        "name": "Переменное противодавление или необходим сильфон на пружинные ПК по требованию ОЛ:",
-        "type": "DisabledType",
-        "inputName": "need_bellows",
         "value": null
       }
     ]
   },
   {
-    "id": 102,
+    "id": 15.1,
+    "name": "Переменное противодавление или необходим сильфон на пружинные ПК по требованию ОЛ:",
+    "type": "CheckboxType",
+    "inputName": "need_bellows",
+    "value": false,
+    "answers": [
+      {
+        "name": "Да",
+        "value": "true",
+        "checkToHide": 5
+      }
+    ]
+  },
+  {
+    "id": 16,
     "name": "Тип присоединения:",
     "inputName": "joining_type",
     "type": "SelectType",
@@ -398,12 +406,12 @@
     ]
   },
   {
-  "id": 102,
+  "id": 17,
   "inputName": "markAnswersGroup",
   "type": "inputGroup",
   "answers": [
     {
-      "id": 6.1,
+      "id": 17.1,
       "name": "Тип контакта:",
       "inputName": "contact_type",
       "type": "DisabledType",
@@ -411,7 +419,7 @@
       "value": null
     },
     {
-      "id": 6.3,
+      "id": 17.2,
       "name": "тип ПК:",
       "inputName": "open_close_type",
       "type": "DisabledType",
@@ -419,7 +427,7 @@
       "value": null
     },
     {
-      "id": 6.4,
+      "id": 17.3,
       "name": "Фланец на входе:",
       "inputName": "inlet_flange",
       "type": "DisabledType",
@@ -427,7 +435,7 @@
       "value": null
     },
     {
-      "id": 6.5,
+      "id": 17.4,
       "name": "Фланец на выходе:",
       "inputName": "outlet_flange",
       "type": "DisabledType",
@@ -437,12 +445,11 @@
   ]
 },
 {
-  "id": 105,
+  "id": 18,
   "name": "Герметичность затвора по ГОСТ 9544-2015:",
   "type": "SelectType",
   "inputName": "tightness",
   "value": null,
   "answers": []
 }
-  
 ]

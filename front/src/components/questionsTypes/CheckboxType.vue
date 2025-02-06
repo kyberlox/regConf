@@ -6,6 +6,9 @@
                :name="question.inputName"
                :type="'checkbox'"
                :id="question.inputName + questionInfo.value"
+               :value="questionInfo.value"
+               :checked="question.value"
+
                class="form-check-input card-body__radio" />
         <label :for="question.inputName + questionInfo.value"
                class="form-check-label card-body__radio-label">{{ questionInfo.name }}</label>
@@ -13,7 +16,6 @@
 </template>
 
 <script>
-import { ref } from 'vue';
 export default {
     props: ["question"],
     emits: ["saveNewValue"],

@@ -28,11 +28,13 @@ export const useHelperStore = defineStore('helper', {
                 },
                 {
                     id: 3,
-                    text: 'Укажите давление настройки с противодавлением'
+                    inputName: 'T',
+                    text: 'Температура должна быть в диапазоне от 40 до -60°С'
                 },
                 {
                     id: 4,
-                    text: 'Укажите наличие растворенной среды и ее концентрацию в другом агрегатном состоянии. Если среды в другом агрегатном состоянии меньше 5%, то можно ею пренебречь и делать расчет на однофазный поток'
+                    inputName: 'pp',
+                    text: 'Давление настройки должно быть больше противодавления статического и большие или равно динамическому противодавлению'
                 },
                 {
                     id: 5,
@@ -159,7 +161,6 @@ export const useHelperStore = defineStore('helper', {
                     text: 'Не делаем из-за низкого давления настройки'
                 }
             ],
-            errorsRef: [],
         };
     },
 
@@ -175,22 +176,25 @@ export const useHelperStore = defineStore('helper', {
                 this.messages.push(newError);
             }
         },
-        deleteErrorMessage(index) {
-            this.messages = this.messages.filter((item) => item.inputName != index);
+        deleteErrorMessage(name) {
+            this.messages = this.messages.filter((item) => item.inputName != name);
         },
-        pushToRefGroup(refs) {
-            const filteredRefs = Object.fromEntries(
-                Object.entries(refs).filter(([key]) => key !== 'envAnswersGroup')
-            );
+        handleErrorHighlight(newErrors, nodeRefs) {
+            Object.values(nodeRefs.value).forEach(element => {
+                element?.classList?.contains('card--error-highlight') && element.classList.remove('card--error-highlight');
+            });
 
-            if (Object.keys(filteredRefs).length > 0) {
-                Object.assign(this.errorsRef, filteredRefs);
+            if (newErrors.length > 1) {
+                newErrors.forEach(error => {         
+                    if (error.id !== 0 && nodeRefs.value[error.inputName]) {                        
+                        nodeRefs.value[error.inputName].classList.add('card--error-highlight');
+                    }
+                });
             }
         }
     },
 
     getters: {
         getMessages: (state) => state.messages,
-        getQuestionsRef: (state) => state.errorsRef,
     },
 });

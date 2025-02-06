@@ -3,7 +3,7 @@
         <div class="card__results__result-block"
              v-for="answer in question.answers"
              :key="answer.id"
-             v-show="!answer.hidden"
+             :class="{ 'hidden': answer.hidden }"
              :ref="el => questionInGroup[answer.inputName] = el">
             <div class="card__results__result-title">
                 {{ answer.name }}
@@ -19,15 +19,15 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { useHelperStore } from "@/store/helper";
+import { usePageStore } from "@/store/page";
 export default {
     props: ["question"],
-    setup(props, { emit }) {
-        const helperStore = useHelperStore();
+    setup() {
+        const pageStore = usePageStore();
         const questionInGroup = ref({});
 
         onMounted(() => {
-            helperStore.pushToRefGroup(questionInGroup.value)
+            pageStore.pushToRefGroup(questionInGroup.value)
         })
 
         return {

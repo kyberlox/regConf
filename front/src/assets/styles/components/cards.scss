@@ -20,7 +20,14 @@
                 position: relative;
 
             }
+
+            & option:disabled:not(:first-child) {
+                color: #858484d2;
+                background-color: #d0d0d0a8;
+                cursor: not-allowed;
+            }
         }
+
 
         &__input {
             border: none;
@@ -104,8 +111,10 @@
                 padding: 20px;
                 background: white;
                 border-radius: 12px;
-                // box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
                 border: 2px solid rgba(0, 0, 0, 0.1);
+                display: flex;
+                justify-content: space-between;
+                flex-direction: column;
             }
 
             &-title {
@@ -116,7 +125,7 @@
 
             &-value {
                 &__number {
-                    font-size: 30px;
+                    font-size: 25px;
                     // font-weight: 600;
                     color: #434242;
                     display: flex;

@@ -2,20 +2,28 @@
     <!-- ds -->
 </template>
 <script>
-import { watch, computed } from "vue";
+import { watch, computed, onMounted, ref } from "vue";
 import { useQuestionsStore } from "@/store/questions";
 import { useHelperStore } from "@/store/helper";
 import { useEnvModuleStore } from "@/store/envModule";
 import { changeToMpa } from "@/utils/changeToMpa";
 import Api from "@/utils/Api";
+import { usePageStore } from "@/store/page";
+import climateGroup from "@/assets/staticJsons/climateGroup.json";
+
 export default {
     setup() {
-
         const questionsStore = useQuestionsStore();
         const helperStore = useHelperStore();
+        const pageStore = usePageStore();
         const envModuleStore = useEnvModuleStore();
 
         const questions = computed(() => questionsStore.questions);
+
+        const errors = computed(() => helperStore.getMessages);
+
+        const nodeRefs = computed(() => pageStore.getNodeRefs);
+
         const paramsToGetCompound = computed(() => {
             return {
                 environmentType: questions.value.find((e) => e.inputName == 'environmentType'),
@@ -34,7 +42,8 @@ export default {
                 gab: questions.value.find((e) => e.inputName == 'Gab'),
                 n: questions.value.find((e) => e.inputName == 'N'),
                 preKc: questions.value.find((e) => e.inputName == 'Pre_Kc'),
-                t: questions.value.find((e) => e.inputName == 'T'),
+
+                T: questions.value.find((e) => e.inputName == 'T'),
                 climate: questions.value.find((e) => e.inputName == 'climate'),
                 valveType: questions.value.find((e) => e.inputName == 'valve_type'),
             }
@@ -45,6 +54,23 @@ export default {
                 joiningType: questions.value.find((e) => e.inputName == 'joining_type'),
             }
         })
+
+        // обработка ошибок
+        watch(
+            () => [...errors.value],
+            (newErrors) =>{ helperStore.handleErrorHighlight(newErrors, nodeRefs)},
+            { deep: true }
+        );
+
+        // Получение сред и их значений
+        onMounted(async () => {
+            try {
+                const data = await Api.get(API_URL + '/get_table');
+                envModuleStore.setEnvValues(data);
+            } catch (error) {
+                console.error('Failed to fetch table data:', error);
+            }
+        });
 
         // заполнение селектов при выборе агрегатного состояния
         watch(paramsToGetCompound.value.environmentType, (newVal) => {
@@ -62,8 +88,23 @@ export default {
         })
 
         // проверка суммы всех состояний
-        const checkSum = () => {
-            const isSecondEnv = paramsToGetCompound.value.isSecondEnv.value;
+        const checkEnvSum = () => {            
+            const isSecondEnv = paramsToGetCompound.value.isSecondEnv.value !== 'false';            
+
+            const summary = ref([]);
+            isSecondEnv ?
+                summary.value = [...paramsToGetCompound.value.environment.value, ...paramsToGetCompound.value.secondEnv.value] : summary.value = [...paramsToGetCompound.value.environment.value];
+
+            let sum = 0;
+            summary.value.map((i) => {
+                if (i && i.value) {
+                    sum += Number(i.value);
+                    questionsStore.setQuestionValue('bothEnvSumm', sum, 'inputGroup', false, 'envAnswersGroup')
+                    if (!isSecondEnv) {
+                        questionsStore.setQuestionValue('envSumm', sum, 'inputGroup', false, 'envAnswersGroup')
+                    }
+                }
+            })
 
             const targetInput = isSecondEnv ? 'bothEnvSumm' : 'envSumm';
             const hiddenInput = isSecondEnv ? 'envSumm' : 'bothEnvSumm';
@@ -71,14 +112,6 @@ export default {
 
             helperStore.deleteErrorMessage(hiddenInput);
 
-            let sum = 0;
-            targetQuestion.value.map((i) => {
-                if (i && i.value) {
-                    isSecondEnv ? sum += Number(i.value) + paramsToGetCompound.value.envSumm.value :
-                        sum += Number(i.value);
-                    questionsStore.setQuestionValue(targetInput, sum, 'inputGroup', false, 'envAnswersGroup')
-                }
-            })
             if (targetQuestion.value.length > 0) {
                 if (sum !== 100) {
                     helperStore.setErrorMessage(targetInput);
@@ -92,8 +125,8 @@ export default {
         }
 
         // запрос (#2, get_compound) на параметры для конкр сред (Вязкость, материал, молекулярная масса, вязкость)
-        watch([paramsToGetCompound.value.environment, paramsToGetCompound.value.secondEnv], (newVal) => {
-            if (checkSum()) {
+        watch([paramsToGetCompound.value.environment, paramsToGetCompound.value.secondEnv], ([EnvVal, secVal]) => {
+            if ((EnvVal || secVal) && checkEnvSum()) {
                 const envParamsToGet = ['molecular_weight', 'density', 'material', 'viscosity'];
                 let dataToSend = [];
 
@@ -111,6 +144,7 @@ export default {
                 Api.post(API_URL + '/get_compound',
                     formattedData
                 ).then(data => {
+                    if (data.error) return;
                     envModuleStore.setAfterGetCompoundValue(data);
                     envParamsToGet.map((key) => {
                         questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'envAnswersGroup');
@@ -119,11 +153,30 @@ export default {
             };
         }, { deep: true })
 
+        // Проверка, что давление настройки > Противодавления статического >= Динамического противодавления
+        watch([paramsToGetPressure.value.pn, paramsToGetPressure.value.pp, paramsToGetPressure.value.ppDin], ([pn, pp, ppDin]) => {
+            // if (pn.value && pp.value && ppDin.value) {
+                console.log(pn.value);
+                console.log(pp.value);
+                console.log(ppDin.value);
+                
+
+                    if (Number(pn.value[0].value) >= Number(pp.value) && Number(pn.value[0].value) >= Number(ppDin.value)){
+                        console.log(pp.value);
+                        console.log(ppDin.value);
+                        helperStore.deleteErrorMessage('pp');
+                         
+                    } else {
+                        console.log('neHer');
+                        helperStore.setErrorMessage('pp');
+                    }
+                
+            // }
+        })
+
         // запрос (#3, get_pressure) на "Pno", "Ppo", "P1", "P2","Kw", "Gideal", "pre_DN","DN"
         watch(paramsToGetPressure, (newVal) => {
-            console.log(newVal);
-            
-            if (newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.value && newVal.n.value && newVal.t.value && newVal.climate.value && newVal.valveType.value) {                
+            if (newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.value && newVal.n.value && newVal.T.value && newVal.climate.value && newVal.valveType.value) {
                 const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', "DN_s", 'DN', "PN", "need_bellows"];
 
                 const formattedData = {
@@ -133,7 +186,7 @@ export default {
                     "Gab": Number(newVal.gab.value),
                     "N": Number(newVal.n.value),
                     "pre_Kc": Number(newVal.preKc.value),
-                    "T": Number(newVal.t.value),
+                    "T": Number(newVal.T.value),
                     "climate": newVal.climate.value,
                     "valve_type": newVal.valveType.value,
                 };
@@ -145,19 +198,42 @@ export default {
                 Api.post(API_URL + '/get_pressure',
                     dataToSend.value
                 ).then((data) => {
+                    if (data.error) return;
+
                     envModuleStore.setAfterGetCompoundValue(data);
                     paramsToGet.map((key) => {
-                        questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'pressureAnswersGroup');
+                        if(key == 'need_bellows'){
+                            questionsStore.setQuestionValue(key, data[key]);
+                        }
+                        else {
+                            questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'pressureAnswersGroup');
+                        }
                     })
                 })
             }
         }, { deep: true })
 
+        // подсказки для климатики
+        // watch(paramsToGetPressure.value.T, (newVal) => {
+        //     const numberValue = Number(newVal.value);
+        //     switch (true) {
+        //         case numberValue <= 40 && numberValue >= -40:
+        //             questionsStore.setAnswers('climate', climateGroup, false);
+        //             helperStore.deleteErrorMessage('T');
+        //             break;
+        //         case numberValue < -40 && numberValue >= -60:
+        //             questionsStore.setAnswers('climate', climateGroup.filter((i) => i.value !== 'У1' && i.value !== 'М1'), false);
+        //             helperStore.deleteErrorMessage('T');
+        //             break;
+        //         default:
+        //             questionsStore.setAnswers('climate', [], false);
+        //             helperStore.setErrorMessage('T');
+        //             break;
+        //     }
+        // })
 
-        // запрос (#4, get_mark_params) на "Pno", "Ppo", "P1", "P2","Kw", "Gideal", "pre_DN","DN"
-        watch(paramsToGetMark, (newVal) => {
-            console.log(newVal);
-            
+            // запрос (#4, get_mark_params) на "Pno", "Ppo", "P1", "P2","Kw", "Gideal", "pre_DN","DN"
+            watch(paramsToGetMark, (newVal) => {            
             if (newVal.joiningType.value) {                
                 const paramsToGet = ['contact_type', 'tightness', 'open_close_type', 'inlet_flange', 'outlet_flange'];
 
@@ -175,7 +251,7 @@ export default {
                     envModuleStore.setAfterGetCompoundValue(data);
                     paramsToGet.map((key) => {
                         if (key == 'tightness'){
-                            questionsStore.setSelectAnswer(key, data[key]);
+                            questionsStore.setAnswers(key, data[key], false);
                         }
                         else {
                         questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'markAnswersGroup');
