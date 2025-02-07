@@ -72,7 +72,7 @@ export default {
             questionStore.cloneQuestion(props.question.id);
             optionsCounter.value++;
 
-            if (optionsCounter.value > props.question.optionsLimit) {
+            if (optionsCounter.value >= props.question.optionsLimit) {
                 optionsLimit.value = true;
             }
         }

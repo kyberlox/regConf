@@ -125,9 +125,7 @@ export default {
         }
 
         // запрос (#2, get_compound) на параметры для конкр сред (Вязкость, материал, молекулярная масса, вязкость)
-        watch([paramsToGetCompound.value.environment, paramsToGetCompound.value.secondEnv], ([EnvVal, secVal]) => {
-            console.log(EnvVal);
-            
+        watch([paramsToGetCompound.value.environment, paramsToGetCompound.value.secondEnv], ([EnvVal, secVal]) => {            
             if (checkEnvSum()) {
                 const envParamsToGet = ['molecular_weight', 'density', 'material', 'viscosity'];
                 let dataToSend = [];
@@ -157,19 +155,10 @@ export default {
 
         // Проверка, что давление настройки > Противодавления статического >= Динамического противодавления
         watch([paramsToGetPressure.value.pn, paramsToGetPressure.value.pp, paramsToGetPressure.value.ppDin], ([pn, pp, ppDin]) => {
-            // if (pn.value && pp.value && ppDin.value) {
-                console.log(pn.value);
-                console.log(pp.value);
-                console.log(ppDin.value);
-                
-
                     if (Number(pn.value[0].value) >= Number(pp.value) && Number(pn.value[0].value) >= Number(ppDin.value)){
-                        console.log(pp.value);
-                        console.log(ppDin.value);
                         helperStore.deleteErrorMessage('pp');
                          
                     } else {
-                        console.log('neHer');
                         helperStore.setErrorMessage('pp');
                     }
                 
@@ -206,9 +195,11 @@ export default {
                     paramsToGet.map((key) => {
                         if(key == 'need_bellows'){
                             questionsStore.setQuestionValue(key, data[key]);
+                            questionsStore.setQuestionDisable('need_bellows', true);
                         }
                         else {
                             questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'pressureAnswersGroup');
+                            questionsStore.setQuestionDisable('need_bellows', false);
                         }
                     })
                 })

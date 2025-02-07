@@ -63,6 +63,7 @@
     "type": "oneLineType",
     "inputName": "secondEnv",
     "hidden": true,
+    "optionsLimit": 3,
     "value": [],
     "inner": [
       [
@@ -360,6 +361,7 @@
     "type": "CheckboxType",
     "inputName": "need_bellows",
     "value": false,
+    "disabled": false,
     "answers": [
       {
         "name": "Да",

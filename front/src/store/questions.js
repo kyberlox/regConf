@@ -46,6 +46,11 @@ export const useQuestionsStore = defineStore('questions', {
             }
         },
 
+        setQuestionDisabled(questionName, disabled){
+            const targetQuestion = this.findQuestion(questionName);
+            targetQuestion.disabled = disabled;
+        },
+
         cloneQuestion(questionId) {
             const target = this.questions.find(item => item.id === questionId);
             const lastIndex = target.inner.length;
