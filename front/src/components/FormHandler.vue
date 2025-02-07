@@ -89,7 +89,7 @@ export default {
 
         // проверка суммы всех состояний
         const checkEnvSum = () => {            
-            const isSecondEnv = paramsToGetCompound.value.isSecondEnv.value !== 'false';            
+            const isSecondEnv = paramsToGetCompound.value.isSecondEnv.value;            
 
             const summary = ref([]);
             isSecondEnv ?
@@ -126,7 +126,9 @@ export default {
 
         // запрос (#2, get_compound) на параметры для конкр сред (Вязкость, материал, молекулярная масса, вязкость)
         watch([paramsToGetCompound.value.environment, paramsToGetCompound.value.secondEnv], ([EnvVal, secVal]) => {
-            if ((EnvVal || secVal) && checkEnvSum()) {
+            console.log(EnvVal);
+            
+            if (checkEnvSum()) {
                 const envParamsToGet = ['molecular_weight', 'density', 'material', 'viscosity'];
                 let dataToSend = [];
 
