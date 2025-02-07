@@ -26,6 +26,7 @@ SessionLocal = sessionmaker(autoflush=True, bind=engine)
 db = SessionLocal()
 
 
+
 def searchParams(DNS, curP1):
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Params).filter(Params.DNS >= DNS, Params.P1 >= curP1).all()
@@ -293,6 +294,7 @@ def Raschet(dt):
     while DN_s != pre_DN:
         #print(3.6, alpha, Kv, Kw, Kc, Gideal, N)
         pre_F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
+        print(pi, pre_F)
         pre_DN = sqrt((4 * pre_F) / pi)
             
         Re = (Gideal * p1 * pre_DN) / u #Gideal
@@ -361,7 +363,7 @@ def mark_params(dt):
         if contact_type == "металл-металл":
             tightness = ["С"]
         elif contact_type == "металл-неметалл":
-            tightness = ["В", "А", "С"]
+            tightness = ["В", "А", "АА", "С"]
     elif valve_type == "В":
         if DN == 25.0:
             tightness = ["В", "С"]
@@ -371,21 +373,38 @@ def mark_params(dt):
         err = {"error" : "Невозможно определить класс гкрметичнности", "value" : f"Некорректое значение типа ПК: {valve_type}"}
 
     #окр закр тип
-    #температура силльлфона
-    Tsilf = None
-    #агресивность среды
-    evil_env = True
+    
+    env_name = dt["name"]
+    env_names = []
+    for ev in env_name.split():
+        env_names.append(ev[:ev.find(":")])
+    
+    print(env_names)
 
-    if (T == Tsilf) and not evil_env:
+    #вода агрессиваня?
+    cool_env = ["Вода", "Водяной пар", "Воздух", "Азот", "Вода"]
+    
+    evil_env = False
+    cool = 0
+    for en in env_names:
+        #убрать из смеси неагрессивные среды
+        if en in cool_env:
+            print(en)
+            cool+=1
+
+    if cool == len(env_names):
+        evil_env = True
+    
+    print(evil_env)
+
+    open_close_type = "закрытого типа"
+    if evil_env:
         open_close_type = "открытого типа"
         dt["need_bellows"] = False
-    elif T != Tsilf or evil_env:
-        open_close_type = "закрытого типа"
-    else:
-        err = {"error" : "Невозможно определить окрытый или закрытый тип", "value" : f"Температура сильфона: {Tsilf} \nАгрессивнность среды: {evil_env}"}
+        
 
     #подбор фланца
-    if joining_type == "фланцовое":
+    if joining_type == "фланцевое":
         inlet_flange = ['B']#B C D F J K
         if PN == 16.0 or PN == 16.4:
             inlet_flange = ['B', 'C', 'D', 'F']
