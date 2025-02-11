@@ -55,20 +55,19 @@ def searchT2(T, Pn):
     ans = False
 
     #найти самы подходящий - MIN по DNS и P1
-    if (len(request) > 0):
-        minT = request[0].T
-        minPn = request[0].Pn
-        for example in request:
-            if (example.T <= minT) and (example.Pn <= minPn):
-                minT = example.T
-                minPn = example.Pn
-                ans = {
-                    "ID" : example.id,  
-                    "T" : example.T, 
-                    "Pn" : example.Pn, 
-                    "PN" : example.P
-                }
-        return ans
+    minT = request[0].T
+    minPn = request[0].Pn
+    for example in request:
+        if (example.T <= minT) and (example.Pn <= minPn):
+            minT = example.T
+            minPn = example.Pn
+            ans = {
+                "ID" : example.id,  
+                "T" : example.T, 
+                "Pn" : example.Pn, 
+                "PN" : example.P
+            }
+    return ans
     
     
 
@@ -254,15 +253,6 @@ def Raschet(dt):
         dt["material"] = "20ГЛ"
 
     T = dt["T"]
-
-    #Определяем PN
-    if dt["material"] == "20ГЛ" or dt["material"] == "25Л":
-        #Таблица2
-        pass
-    else:
-        #Таблица10
-        pass
-
 
     if pre_Kc:
         Kc = 0.9
