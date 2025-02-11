@@ -432,6 +432,8 @@ def Raschet(dt):
     #подбор сильфона !!!!!!!!!!!!!!!!!!!!! сильфон только на пружине
     if (dt["valve_type"] == 'В') and  ( ( (example["spring_material"] == '51ХФА') and (T > 120) ) or ( (example["spring_material"] == '50ХФА') and (T > 250) ) ):
         new_dt["need_bellows"] = True
+    else:
+        new_dt["need_bellows"] = [True, False]
 
     all_dt = dt | new_dt
     return all_dt
