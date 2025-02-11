@@ -434,6 +434,35 @@ def Raschet(dt):
         new_dt["need_bellows"] = True
     else:
         new_dt["need_bellows"] = [True, False]
+    
+    #окр закр тип
+    env_name = dt["name"]
+    env_names = []
+    for ev in env_name.split():
+        env_names.append(ev[:ev.find(":")])
+
+    #вода агрессиваня?
+    cool_env = ["Вода", "Водяной пар", "Воздух", "Азот", "Вода"]
+    
+    evil_env = False
+    cool = 0
+    for en in env_names:
+        #убрать из смеси неагрессивные среды
+        if en in cool_env:
+            print(en)
+            cool+=1
+
+    if cool == len(env_names):
+        evil_env = True
+    
+    print(evil_env)
+
+    open_close_type = "закрытого типа"
+    if evil_env:
+        open_close_type = "открытого типа"
+        dt["need_bellows"] = False
+    
+    dt["open_close_type"] = open_close_type #открытый или закрытый тип
 
     all_dt = dt | new_dt
     return all_dt
@@ -460,38 +489,7 @@ def mark_params(dt):
     else:
         err = {"error" : "Невозможно определить тип контакта", "value" : f"Некорректое значение типа ПК: {valve_type}"}
 
-    
-    #окр закр тип
-    env_name = dt["name"]
-    env_names = []
-    for ev in env_name.split():
-        env_names.append(ev[:ev.find(":")])
-    
-    print(env_names)
-
-    #вода агрессиваня?
-    cool_env = ["Вода", "Водяной пар", "Воздух", "Азот", "Вода"]
-    
-    evil_env = False
-    cool = 0
-    for en in env_names:
-        #убрать из смеси неагрессивные среды
-        if en in cool_env:
-            print(en)
-            cool+=1
-
-    if cool == len(env_names):
-        evil_env = True
-    
-    print(evil_env)
-
-    open_close_type = "закрытого типа"
-    if evil_env:
-        open_close_type = "открытого типа"
-        dt["need_bellows"] = False 
-
-    
-
+    #подбор фланцев
     if joining_type == "Фланцевое":
         inlet_flange = ['B']#B C D F J K
         if PN == 16.0 or PN == 16.4:
@@ -570,7 +568,6 @@ def mark_params(dt):
         return err
     else:
         dt["contact_type"] = contact_type       #тип присоединения
-        dt["open_close_type"] = open_close_type #открытый или закрытый тип
         dt["inlet_flange"] = inlet_flange       #варианты фланца на входе
         dt["outlet_flange"] = outlet_flange     #варианты фланца на выходе
         dt = dt | new_dt
