@@ -69,8 +69,6 @@ def searchT2(T, Pn):
             }
     return ans
     
-    
-
 def searchT10(T, Pn):
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Table10).filter(Table10.T >= T, Table10.Pn >= Pn).all()
@@ -108,7 +106,7 @@ def searchParams(DNS, curP1, PN):
     minP1 = request[0].P1
     minPN = request[0].PN
     for example in request:
-        if (example.DNS <= minDNS) and (example.P1 <= minP1) and (example.PN <= PN):
+        if (example.DNS <= minDNS) and (example.P1 <= minP1) and (example.PN <= minPN):
             minDNS = example.DNS
             minP1 = example.P1
             ans = {
@@ -120,7 +118,7 @@ def searchParams(DNS, curP1, PN):
                 "spring_material" : example.spring_material,
                 "spring_number" : example.spring_number
             }
-    
+    print(ans)
     return ans
 
 def mixture(envs : list):
