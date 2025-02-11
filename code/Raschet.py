@@ -460,23 +460,8 @@ def mark_params(dt):
     else:
         err = {"error" : "Невозможно определить тип контакта", "value" : f"Некорректое значение типа ПК: {valve_type}"}
 
-    #класс гкрметичнности
-    #бывает ли АА?
-    if valve_type == "Н":
-        if contact_type == "металл-металл":
-            tightness = ["С"]
-        elif contact_type == "металл-неметалл":
-            tightness = ["В", "А", "АА", "С"]
-    elif valve_type == "В":
-        if DN == 25.0:
-            tightness = ["В", "С"]
-        else:
-            tightness = ["В", "А", "С"]
-    else:
-        err = {"error" : "Невозможно определить класс гкрметичнности", "value" : f"Некорректое значение типа ПК: {valve_type}"}
-
-    #окр закр тип
     
+    #окр закр тип
     env_name = dt["name"]
     env_names = []
     for ev in env_name.split():
@@ -581,16 +566,36 @@ def mark_params(dt):
     }
         
     #заполнеие параметров и выгрузка
-    if not err:
+    if err:
+        return err
+    else:
         dt["contact_type"] = contact_type       #тип присоединения
-        dt["tightness"] = tightness             #варианты класса герметичности
         dt["open_close_type"] = open_close_type #открытый или закрытый тип
         dt["inlet_flange"] = inlet_flange       #варианты фланца на входе
         dt["outlet_flange"] = outlet_flange     #варианты фланца на выходе
         dt = dt | new_dt
         return dt
+
+def get_tightness(dt):
+    #класс гкрметичнности
+    #бывает ли АА?
+    if dt["valve_type"] == "Н":
+        if dt["contact_type"] == "металл-металл":
+            tightness = ["С"]
+        elif dt["contact_type"] == "металл-неметалл":
+            tightness = ["В", "А", "АА", "С"]
+    elif dt["valve_type"] == "В":
+        if dt["DN"] == 25.0:
+            tightness = ["В", "С"]
+        else:
+            tightness = ["В", "А", "С"]
     else:
-        return err
+        return {"error" : "Невозможно определить класс гкрметичнности", "value" : f"Некорректое значение типа ПК: {valve_type}"}
+
+    #варианты класса герметичности
+    dt["tightness"] = tightness 
+    return dt
+
 
 def make_XL(dt, ID):
     wb = load_workbook("./ТКП.xlsx")

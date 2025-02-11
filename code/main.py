@@ -5,7 +5,7 @@ from starlette.responses import RedirectResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import HTTPException
 
-from Raschet import Raschet, mixture, mark_params, make_XL
+from Raschet import Raschet, mixture, mark_params, get_tightness, make_XL
 
 import openpyxl
 from openpyxl import load_workbook
@@ -367,6 +367,10 @@ def get_pressure(data = Body()):
 @app.post("/api/get_mark_params")
 def get_mark_params(data = Body()):
     return mark_params(data)
+
+@app.post("/api/get_tightness")
+def get_tightness(data = Body()):
+    return get_tightness(data)
 
 #генерация документации
 @app.post("/api/generate")
