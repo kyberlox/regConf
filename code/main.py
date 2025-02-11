@@ -5,7 +5,7 @@ from starlette.responses import RedirectResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import HTTPException
 
-from Raschet import Raschet, mixture, mark_params
+from Raschet import Raschet, mixture, mark_params, make_XL
 
 import openpyxl
 from openpyxl import load_workbook
@@ -73,6 +73,21 @@ class Params(Base):
     DN = Column(Float, nullable=True)
     PN = Column(Float, nullable=True)
     spring_material = Column(Text, nullable=True)
+    spring_number = Column(Integer, nullable=True)
+
+class Table2(Base):
+    __tablename__ = 'table2'
+    id = Column(Integer, primary_key=True)
+    T = Column(Float, nullable=True)
+    Pn = Column(Float, nullable=True)
+    P = Column(Float, nullable=True)
+
+class Table10(Base):
+    __tablename__ = 'table10'
+    id = Column(Integer, primary_key=True)
+    T = Column(Float, nullable=True)
+    Pn = Column(Float, nullable=True)
+    P = Column(Float, nullable=True)
 
 Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autoflush=True, bind=engine)
@@ -164,12 +179,13 @@ def migration():
         DN = float(sheet[f"C{i}"].value)
         PN = float(sheet[f"B{i}"].value)
         spring_material = str(sheet[f"F{i}"].value)
+        spring_number = int(sheet[f"E{i}"].value)
 
         #экземпляр таблицы параметров
-        example = Params(DNS = DNS, P1 = P1_max, DN = DN, PN = PN, spring_material = spring_material)
+        example = Params(DNS = DNS, P1 = P1_max, DN = DN, PN = PN, spring_material = spring_material, spring_number = spring_number)
         
         #есть ли такая запись?
-        request = db.query(Params).filter(Params.DNS == DNS, Params.P1 == P1_max, Params.DN == DN, Params.PN == PN, Params.spring_material == spring_material).first()
+        request = db.query(Params).filter(Params.DNS == DNS, Params.P1 == P1_max, Params.DN == DN, Params.PN == PN, Params.spring_material == spring_material, Params.spring_number == spring_number).first()
         #print(request)
 
         #если нет - добавить
@@ -184,7 +200,8 @@ def migration():
                 "P1" : P1_max, 
                 "DN" : DN, 
                 "PN" : PN, 
-                "spring_material" : spring_material
+                "spring_material" : spring_material,
+                "spring_number" : spring_number
             }
             par_result["added"].append(curr)
 
@@ -196,12 +213,89 @@ def migration():
                 "P1" : request.P1, 
                 "DN" : request.DN, 
                 "PN" : request.PN, 
-                "spring_material" : request.spring_material
+                "spring_material" : request.spring_material,
+                "spring_number" : spring_number
             }
             par_result["exists"].append(curr)
 
-    
-    return {"environmentTable" : result, "valveParametrsTable" : par_result}
+    wb1 = load_workbook("./Table2.xlsx")
+    sheet = wb1['Лист1']
+
+    t2_result = {"added" : [], "exists" : []}
+    for i in range(2, sheet.max_row+1):
+        T = float(sheet[f"A{i}"].value)
+        Pn = float(sheet[f"B{i}"].value)
+        P = float(sheet[f"C{i}"].value)
+
+        #print(i, T, Pn, P)
+
+        example = Table2(T=T, Pn=Pn, P=P)
+        request = db.query(Table2).filter(Table2.T == T, Table2.Pn == Table2.Pn, Table2.P == P).first()
+
+        #если нет - добавить
+        if request == None:
+            db.add(example)
+            db.commit()
+
+            curr = {
+                "№" : i,
+                "ID" : example.id,  
+                "T" : T, 
+                "Pn" : Pn, 
+                "P" : P
+            }
+            t2_result["added"].append(curr)
+        #если есть - пропустить
+        else:
+            curr = {
+                "ID" : request.id,  
+                "T" : request.T, 
+                "Pn" : request.Pn, 
+                "P" : request.P
+            }
+            t2_result["exists"].append(curr)
+        
+    result.append(par_result)
+
+    wb2 = load_workbook("./Table10.xlsx")
+    sheet = wb2['Лист1']
+
+    t10_result = {"added" : [], "exists" : []}
+
+    for i in range(2, sheet.max_row+1):
+        T = float(sheet[f"A{i}"].value)
+        Pn = float(sheet[f"B{i}"].value)
+        P = float(sheet[f"C{i}"].value)
+
+        example = Table10(T=T, Pn=Pn, P=P)
+        request = db.query(Table10).filter(Table10.T == T, Table10.Pn == Table10.Pn, Table10.P == P).first()
+        
+        #если нет - добавить
+        if request == None:
+            db.add(example)
+            db.commit()
+
+            curr = {
+                "№" : i,
+                "ID" : example.id,  
+                "T" : T, 
+                "Pn" : Pn, 
+                "P" : P
+            }
+            t10_result["added"].append(curr)
+        #если есть - пропустить
+        else:
+            curr = {
+                "ID" : request.id,  
+                "T" : request.T, 
+                "Pn" : request.Pn, 
+                "P" : request.P
+            }
+            t10_result["exists"].append(curr)
+
+    result.append(t10_result)
+
+    return {"environmentTable" : result, "valveParametrsTable" : par_result, "Table2" : t2_result, "Table10" : t10_result}
 
 #подбор сред
 @app.get("/api/get_table")
@@ -275,3 +369,22 @@ def get_mark_params(data = Body()):
     return mark_params(data)
 
 #генерация документации
+@app.post("/api/generate")
+def generate(data = Body()):
+    #запись в БД
+
+    #удалить предыдущий эксель файл и чтение ID
+    ID = 1
+
+    #сохранить json
+    f = open(f"TKP{ID}.json", 'w')
+    json.dump(data, f, indent=4)
+    f.close()
+    
+    #генерация файла
+    make_XL(data, ID)
+
+    #выдать файл
+    return FileResponse(f'ТКП{ID}.xlsx', filename=f'ТКП ПК.xls', media_type='application/xlsx')
+
+    

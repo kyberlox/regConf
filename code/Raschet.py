@@ -20,16 +20,83 @@ class Params(Base):
     DN = Column(Float, nullable=True)
     PN = Column(Float, nullable=True)
     spring_material = Column(Text, nullable=True)
+    spring_number = Column(Integer, nullable=True)
+
+class Table2(Base):
+    __tablename__ = 'table2'
+    id = Column(Integer, primary_key=True)
+    T = Column(Float, nullable=True)
+    Pn = Column(Float, nullable=True)
+    P = Column(Float, nullable=True)
+
+class Table10(Base):
+    __tablename__ = 'table10'
+    id = Column(Integer, primary_key=True)
+    T = Column(Float, nullable=True)
+    Pn = Column(Float, nullable=True)
+    P = Column(Float, nullable=True)
 
 Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autoflush=True, bind=engine)
 db = SessionLocal()
 
+import openpyxl
+from openpyxl import load_workbook
+from openpyxl import Workbook
 
 
-def searchParams(DNS, curP1):
+
+def searchT2(T, Pn):
     #найти все подходящие строки их DNS и P1 - больше искомых
-    request = db.query(Params).filter(Params.DNS >= DNS, Params.P1 >= curP1).all()
+    request = db.query(Table2).filter(Table2.T >= T, Table2.Pn >= Pn).all()
+
+    if request == None:
+        return False
+    ans = False
+
+    #найти самы подходящий - MIN по DNS и P1
+    minT = request[0].T
+    minPn = request[0].Pn
+    for example in request:
+        if (example.T <= minT) and (example.Pn <= minPn):
+            minT = example.T
+            minPn = example.Pn
+            ans = {
+                "ID" : example.id,  
+                "T" : example.T, 
+                "Pn" : example.Pn, 
+                "PN" : example.P
+            }
+    
+    return ans
+
+def searchT10(T, Pn):
+    #найти все подходящие строки их DNS и P1 - больше искомых
+    request = db.query(Table10).filter(Table10.T >= T, Table10.Pn >= Pn).all()
+
+    if request == None:
+        return False
+    ans = False
+
+    #найти самы подходящий - MIN по DNS и P1
+    minT = request[0].T
+    minPn = request[0].Pn
+    for example in request:
+        if (example.T <= minT) and (example.Pn <= minPn):
+            minT = example.T
+            minPn = example.Pn
+            ans = {
+                "ID" : example.id,  
+                "T" : example.T, 
+                "Pn" : example.Pn, 
+                "PN" : example.P
+            }
+    
+    return ans
+
+def searchParams(DNS, curP1, PN):
+    #найти все подходящие строки их DNS и P1 - больше искомых
+    request = db.query(Params).filter(Params.DNS >= DNS, Params.P1 >= curP1, Params.PN >= PN).all()
 
     if request == None:
         return False
@@ -38,8 +105,9 @@ def searchParams(DNS, curP1):
     #найти самы подходящий - MIN по DNS и P1
     minDNS = request[0].DNS
     minP1 = request[0].P1
+    minPN = request[0].PN
     for example in request:
-        if (example.DNS <= minDNS) and (example.P1 <= minP1):
+        if (example.DNS <= minDNS) and (example.P1 <= minP1) and (example.PN <= PN):
             minDNS = example.DNS
             minP1 = example.P1
             ans = {
@@ -48,7 +116,8 @@ def searchParams(DNS, curP1):
                 "P1" : example.P1, 
                 "DN" : example.DN, 
                 "PN" : example.PN, 
-                "spring_material" : example.spring_material
+                "spring_material" : example.spring_material,
+                "spring_number" : example.spring_number
             }
     
     return ans
@@ -184,6 +253,14 @@ def Raschet(dt):
 
     T = dt["T"]
 
+    #Определяем PN
+    if dt["material"] == "20ГЛ" or dt["material"] == "25Л":
+        #Таблица2
+        pass
+    else:
+        #Таблица10
+        pass
+
 
     if pre_Kc:
         Kc = 0.9
@@ -308,32 +385,62 @@ def Raschet(dt):
         F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
         DN_s = sqrt((4 * F) / pi)
 
-            
+    #перевести из МПа в кгс/см2
     new_dt = {
         "T_min" : T_min,     #Минимальная рабочая температура
         "T_max" : T_max,     #Максивальная рабочая температура
-        "Pno" : Pno,         #Давление начала открытия с противодавлением
-        "Ppo" : Ppo,         #Давление полного открытия с противодавлением
-        "P1" : P1,           #Давление на входе
-        "P2" : P2,           #Давление на выходе
+        "Pno" : Pno * 0.1,   #Давление начала открытия с противодавлением
+        "Ppo" : Ppo * 0.1,   #Давление полного открытия с противодавлением
+        "P1" : P1 * 0.1,     #Давление на входе
+        "P2" : P2 * 0.1,     #Давление на выходе
         "Kw" : Kw,           #Коэффициент, учитывающий эффект неполного открытия разгруженных ПК из-за противодавления
         "Gideal" : Gideal,   #Массовая скорость
         "pre_DN" : pre_DN,   #DN предворительный
         "DN_s" : DN_s        #Диаметр седла клапана
     }
 
+    #Номинальное давление
+    new_dt["PN"] = f"Невозмажно подобрать при сочитании параметров: \nТемпература рабочей среды = {T} \n Давление настройки = {Pn}"
+    if dt["material"] == "20ГЛ" or dt["material"] == "25Л":
+        ex = searchT2(T, Pn)
+    else:
+        ex = searchT10(T, Pn)
+    PN = ex["PN"]
+
     #Деаметр ПК
-    new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {P1}"
-    
-    #поиск записи в БД
-    example = searchParams(DN_s, 0.098067 * P1)#P1 перевести из МПа в кгс/см2
+    new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
+    example = searchParams(DN_s, 0.098067 * Pn, PN)#P1 перевести из МПа в кгс/см2
     
     new_dt["DN"] = example["DN"] #Номинальный диаметр
     new_dt["PN"] = example["PN"] #Номиннальное давление
 
+    DN2 = {
+        25.0 : 40.0,
+        50.0 : 80.0,
+        80.0 : 100.0,
+        100.0 : 150.0,
+        200.0 : 300.0
+    }
+    new_dt["DN2"] = DN2[new_dt["DN"]]
+
+    PN2 = {
+        16.0 : 6,
+        40.0 : 16.0,
+        63.0 : 40.0,
+        100.0 : 40.0,
+        160.0 : 40.0,
+        250.0 : 40.0
+    }
+    new_dt["PN2"] = PN2[new_dt["PN"]]
+
+    new_dt["spring_material"] = example["spring_material"]
+    new_dt["spring_number"] = example["spring_number"]
+    
+
     #подбор сильфона !!!!!!!!!!!!!!!!!!!!! сильфон только на пружине?
     if (dt["valve_type"] == 'В') and  ( ( (example["spring_material"] == '51ХФА') and (T > 120) ) or ( (example["spring_material"] == '50ХФА') and (T > 250) ) ):
         new_dt["need_bellows"] = True
+
 
     all_dt = dt | new_dt
     return all_dt
@@ -341,6 +448,7 @@ def Raschet(dt):
 def mark_params(dt):
     valve_type = dt["valve_type"]
     PN = dt["PN"]
+    PN2 = dt["PN2"]
     DN = dt["DN"]
     T = dt["T"]
     joining_type = dt["joining_type"]
@@ -350,10 +458,12 @@ def mark_params(dt):
     #тип контакта
     if valve_type == "В": #у пружинного - строго металл-металл
         contact_type = "металл-металл"
+
     elif (valve_type == "Н") and (PN > 160):  
         contact_type = "металл-металл"
+
     elif (valve_type == "Н") and (PN <= 160): #если пилотный - по умлочанию металл-неметалл, но можно выбрать
-        contact_type = "металл-неметалл" #можно заменить
+        contact_type = ["металл-неметалл", "металл-металл"] #можно заменить
     else:
         err = {"error" : "Невозможно определить тип контакта", "value" : f"Некорректое значение типа ПК: {valve_type}"}
 
@@ -400,11 +510,11 @@ def mark_params(dt):
     open_close_type = "закрытого типа"
     if evil_env:
         open_close_type = "открытого типа"
-        dt["need_bellows"] = False
-        
+        dt["need_bellows"] = False 
 
-    #подбор фланца
-    if joining_type == "фланцевое":
+    
+
+    if joining_type == "Фланцевое":
         inlet_flange = ['B']#B C D F J K
         if PN == 16.0 or PN == 16.4:
             inlet_flange = ['B', 'C', 'D', 'F']
@@ -414,10 +524,68 @@ def mark_params(dt):
             inlet_flange = ['J', 'K', 'F', 'C', 'D']
         if PN == 250.0:
             inlet_flange = ['K', 'D']
-        outlet_flange = inlet_flange
+        
+        outlet_flange = ['B']#B C D F J K
+        if PN2 == 16.0 or PN2 == 16.4:
+            outlet_flange = ['B', 'C', 'D', 'F']
+        if PN2 == 40.0:
+            outlet_flange = ['F', 'C', 'D']
+        if PN2 == 63.0 or PN2 == 100.0 or PN2 == 160.0:
+            outlet_flange = ['J', 'K', 'F', 'C', 'D']
+        if PN2 == 250.0:
+            outlet_flange = ['K', 'D']
+
     else:
         inlet_flange = None
         outlet_flange = inlet_flange
+
+    
+
+    material_bellows = "08Х18Р10Т" if dt["need_bellows"] else ""
+
+    if dt["material"] == "25Л" and T <= 200:
+        material_spool = "20Х13"
+    elif dt["material"] == "25Л" and T > 200:
+        material_spool = "12Х18Н10Т"
+    elif dt["material"] == "20ГЛ" and T > 200:
+        material_spool = "12Х18Н10Т"
+    elif dt["material"] == "20ГЛ" and T <= 200:
+        material_spool = "14Х17Н2"
+    else:
+        material_spool = "10Х17Н13М2Т"
+    
+    if dt["material"] == "25Л":
+        color = [
+            f"Серый RAL7035 по технологической инструкции 38877941.25206.01013 АО \"НПО Регулятор\" ", #Заводская
+            f"Серый RAL7035 cистема АКП С4 по № П2-05 ТИ-0002", #Роснефть
+            f"Красный RAL3020 по СТО Газпром 9.1-018-2012" #Газпром
+            ]
+    elif dt["material"] == "20ГЛ":
+        color = [
+            f"Синий RAL5017 по технологической инструкции 38877941.25206.01013 АО \"НПО Регулятор\" ", #Заводская
+            f"Синий RAL5017 система АКП С4 по № П2-05 ТИ-0002", #Роснефть
+            f"Красный RAL3020 по СТО Газпром 9.1-018-2012" #Газпром
+            ]
+    else:
+        color = [
+            f"Голубой RAL5012 по технологической инструкции 38877941.25206.01013 АО \"НПО Регулятор\" ", #Заводская
+            f"Голубой RAL5012 система АКП С4 по № П2-05 ТИ-0002", #Роснефть
+            f"Красный RAL3020 по СТО Газпром 9.1-018-2012" #Газпром
+            ]
+
+    assignment = "25 лет" if dt["need_bellows"] else "30 лет"
+    
+    new_dt = {
+        "material_bellows" : material_bellows,      #Материал сильфона
+        "material_spool" : material_spool,          #Материал золотника
+        "material_saddle" : "",                     #Материал седла
+        "weight" : "",                              #Маccа
+        "color" : color,                            #Цвет
+        "painting_area" : "",                       #Площадь под покраску
+        "packaging" : "Стандартная (клапан упакован в стрейч-пленку, на паллет). Хранение под навесом.", #Упаковка
+        "trials" : "",                              #Испытания
+        "assignment" : assignment,                  #Срок службы
+    }
         
     #заполнеие параметров и выгрузка
     if not err:
@@ -426,6 +594,116 @@ def mark_params(dt):
         dt["open_close_type"] = open_close_type #открытый или закрытый тип
         dt["inlet_flange"] = inlet_flange       #варианты фланца на входе
         dt["outlet_flange"] = outlet_flange     #варианты фланца на выходе
+        dt = dt | new_dt
         return dt
     else:
         return err
+
+def make_XL(dt, ID):
+    wb = load_workbook("./ТКП.xlsx")
+    sheet = wb['Лист1']
+
+    data_keys = {
+        "C" : "mark",
+        "F" : "quantity",
+        "H" : "name",
+        "I" : "T",
+        "L" : "climate", 
+        "M" : "detonation_node",
+        "N" : "need_bellows",
+        "O" : "DN",
+        "P" : "PN",
+        "Q" : "DN2",
+        "R" : "PN2",
+        "T" : "Gab",
+        "U" : "material",
+        "V" : "material_bellows",
+        "W" : "material_spool",
+        "X" : "material_saddle",
+        "Y" : "spring_material",
+        "Z" : "joining_type",
+        "AA" : "contact_type",
+        "AB" : "weight",
+        "AC" : "painting_area",
+        "AD" : "color",
+        "AE" : "tightness",
+        "AF" : "spring_number",
+        "AK" : "Pp",
+        "AL" : "Pn",
+        "AM" : "Pno",
+        "AN" : "Ppo",
+        "AO" : "needKOF",
+        "AP" : "need_ZIP",
+        "AQ" : "adapters",
+        "AR" : "thermal_cover",
+        "AS" : "docs",
+        "AT" : "pre_Kc",
+        "AU" : "rotary_plugs",
+        "AV" : "packaging",
+        "AW" : "acceptance",
+        "AX" : "trials",
+        "AY" : "warranty",
+        "AZ" : "assignment",
+        "BA" : "additionally"
+    }
+
+    for i, position in enumerate(dt, start=3):
+        #нумерация 
+        sheet[f"A{i}"].value = int(sheet[f"A3"].value) + i-3
+        sheet[f"B{i}"].value = int(sheet[f"A3"].value) + i-3
+        #изготовитель
+        sheet[f"BB{i}"].value = sheet[f"BB3"].value
+
+        #Назначение
+        sheet[f"D{i}"].value
+
+        #Номер документа
+        sheet[f"E{i}"].value
+
+        #Материал и размер трубопровода
+        sheet[f"G{i}"].value
+
+        #Тип клапана
+        sheet[f"K{i}"].value
+
+        #Коэффициент расхода, α
+        sheet[f"S{i}"].value = 0.8 if (position["environment"] == "Газ") else 0.6
+
+        #Диапазон настройки, кгс/см²
+        if position["PN"] == 16:
+            sheet[f"AG{i}"].value = "0,5...16"
+        elif position["PN"] == 25:
+            sheet[f"AG{i}"].value = "6...25"
+        elif position["PN"] == 40:
+            sheet[f"AG{i}"].value = "8...40"
+        elif position["PN"] == 63:
+            sheet[f"AG{i}"].value = "16...63"
+        elif position["PN"] == 100:
+            sheet[f"AG{i}"].value = "40...100"
+        elif position["PN"] == 160:
+            sheet[f"AG{i}"].value = "40...160"
+
+        #Давление настройки без противодавления
+        sheet[f"AH{i}"].value = position["Ppo"] - position["Pp"]
+
+        #Давление начала открытия без противодавления
+        sheet[f"AI{i}"].value = position["Ppo"] - position["Pp"]
+
+        #Давление полного открытия без противодавления
+        sheet[f"AJ{i}"].value = position["Ppo"] - position["Pp"]
+
+        # T окр среды
+        sheet[f"J{i}"].value = f"{position['T_min']} ... {position['T_min']}"
+        
+        #заполнение по словарю
+        for key in data_keys.keys():
+            if type(position[data_keys[key]]) == type(True):
+                if position[data_keys[key]] == True:
+                    sheet[f"{key}{i}"].value = "Да"
+                elif position[data_keys[key]] == False:
+                    sheet[f"{key}{i}"].value = "Нет"
+            else:
+                sheet[f"{key}{i}"].value = position[data_keys[key]]
+        
+        #Создать экземпляр файла
+        wb.save(f"./data/TKP{ID}.xlsx")
