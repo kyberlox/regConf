@@ -381,14 +381,16 @@ def generate(data = Body()):
     ID = 1
 
     #сохранить json
-    f = open(f"TKP{ID}.json", 'w')
+    f = open(f"./data/TKP{ID}.json", 'w')
     json.dump(data, f, indent=4)
     f.close()
+
+    
     
     #генерация файла
     make_XL(data, ID)
 
     #выдать файл
-    return FileResponse(f'ТКП{ID}.xlsx', filename=f'ТКП ПК.xls', media_type='application/xlsx')
+    return FileResponse(f'TKPexample.xlsx', filename=f'ТКП ПК {ID}.xlsx', media_type='application/xlsx')
 
     

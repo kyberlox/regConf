@@ -594,7 +594,6 @@ def get_tightness(dt):
     dt["tightness"] = tightness 
     return dt
 
-
 def make_XL(dt, ID):
     wb = load_workbook("./ТКП.xlsx")
     sheet = wb['Лист1']
@@ -663,10 +662,11 @@ def make_XL(dt, ID):
         sheet[f"K{i}"].value
 
         #Коэффициент расхода, α
-        sheet[f"S{i}"].value = 0.8 if (position["environment"] == "Газ") else 0.6
+        alp = position["environment"] == "Газ"
+        sheet[f"S{i}"].value = 0.8 if alp else 0.6
 
         #Диапазон настройки, кгс/см²
-        if position["PN"] == 16:
+        if int(position["PN"]) == 16:
             sheet[f"AG{i}"].value = "0,5...16"
         elif position["PN"] == 25:
             sheet[f"AG{i}"].value = "6...25"
@@ -698,8 +698,10 @@ def make_XL(dt, ID):
                     sheet[f"{key}{i}"].value = "Да"
                 elif position[data_keys[key]] == False:
                     sheet[f"{key}{i}"].value = "Нет"
+            elif position[data_keys[key]] == "" or position[data_keys[key]] == None:
+                sheet[f"{key}{i}"].value = "Нет"
             else:
                 sheet[f"{key}{i}"].value = position[data_keys[key]]
         
         #Создать экземпляр файла
-        wb.save(f"./data/TKP{ID}.xlsx")
+        wb.save(f"TKPexample.xlsx")
