@@ -579,6 +579,7 @@ def mark_params(dt):
 def get_tightness(dt):
     #класс гкрметичнности
     #бывает ли АА?
+    tightness = []
     if dt["valve_type"] == "Н":
         if dt["contact_type"] == "металл-металл":
             tightness = ["С"]
@@ -590,7 +591,7 @@ def get_tightness(dt):
         else:
             tightness = ["В", "А", "С"]
     else:
-        return {"error" : "Невозможно определить класс гкрметичнности", "value" : f"Некорректое значение типа ПК: {valve_type}"}
+        return {"error" : "Невозможно определить класс гкрметичнности", "value" : f"Некорректое значение типа ПК: {dt['valve_type']}"}
 
     #варианты класса герметичности
     dt["tightness"] = tightness 
