@@ -55,20 +55,22 @@ def searchT2(T, Pn):
     ans = False
 
     #найти самы подходящий - MIN по DNS и P1
-    minT = request[0].T
-    minPn = request[0].Pn
-    for example in request:
-        if (example.T <= minT) and (example.Pn <= minPn):
-            minT = example.T
-            minPn = example.Pn
-            ans = {
-                "ID" : example.id,  
-                "T" : example.T, 
-                "Pn" : example.Pn, 
-                "PN" : example.P
-            }
+    if (len(request) > 0):
+        minT = request[0].T
+        minPn = request[0].Pn
+        for example in request:
+            if (example.T <= minT) and (example.Pn <= minPn):
+                minT = example.T
+                minPn = example.Pn
+                ans = {
+                    "ID" : example.id,  
+                    "T" : example.T, 
+                    "Pn" : example.Pn, 
+                    "PN" : example.P
+                }
+        return ans
     
-    return ans
+    
 
 def searchT10(T, Pn):
     #найти все подходящие строки их DNS и P1 - больше искомых
@@ -389,10 +391,10 @@ def Raschet(dt):
     new_dt = {
         "T_min" : T_min,     #Минимальная рабочая температура
         "T_max" : T_max,     #Максивальная рабочая температура
-        "Pno" : Pno * 0.1,   #Давление начала открытия с противодавлением
-        "Ppo" : Ppo * 0.1,   #Давление полного открытия с противодавлением
-        "P1" : P1 * 0.1,     #Давление на входе
-        "P2" : P2 * 0.1,     #Давление на выходе
+        "Pno" : Pno * 10,   #Давление начала открытия с противодавлением
+        "Ppo" : Ppo * 10,   #Давление полного открытия с противодавлением
+        "P1" : P1 * 10,     #Давление на входе
+        "P2" : P2 * 10,     #Давление на выходе
         "Kw" : Kw,           #Коэффициент, учитывающий эффект неполного открытия разгруженных ПК из-за противодавления
         "Gideal" : Gideal,   #Массовая скорость
         "pre_DN" : pre_DN,   #DN предворительный
@@ -405,14 +407,16 @@ def Raschet(dt):
         ex = searchT2(T, Pn)
     else:
         ex = searchT10(T, Pn)
-    PN = ex["PN"]
+    PN = ex["PN"] * 10
+    print("PN по T и Pn:", PN)
 
     #Деаметр ПК
     new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
-    example = searchParams(DN_s, 0.098067 * Pn, PN)#P1 перевести из МПа в кгс/см2
+    example = searchParams(DN_s, Pn, PN)
     
     new_dt["DN"] = example["DN"] #Номинальный диаметр
     new_dt["PN"] = example["PN"] #Номиннальное давление
+    print("PN по DN:", example["PN"])
 
     DN2 = {
         25.0 : 40.0,
@@ -437,10 +441,9 @@ def Raschet(dt):
     new_dt["spring_number"] = example["spring_number"]
     
 
-    #подбор сильфона !!!!!!!!!!!!!!!!!!!!! сильфон только на пружине?
+    #подбор сильфона !!!!!!!!!!!!!!!!!!!!! сильфон только на пружине
     if (dt["valve_type"] == 'В') and  ( ( (example["spring_material"] == '51ХФА') and (T > 120) ) or ( (example["spring_material"] == '50ХФА') and (T > 250) ) ):
         new_dt["need_bellows"] = True
-
 
     all_dt = dt | new_dt
     return all_dt
