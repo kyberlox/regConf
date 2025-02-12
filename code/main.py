@@ -299,7 +299,7 @@ def migration():
 
 #подбор сред
 @app.get("/api/get_table")
-def get_table():
+async def get_table():
     #вывод словаря
     environments = []
     lines = db.query(Table).all()
@@ -325,7 +325,7 @@ def get_table():
 
 #подбор смесей
 @app.post("/api/get_compound")
-def get_compound(data = Body()):
+async def get_compound(data = Body()):
     environments = []
     lines = db.query(Table).all()
     for line in lines:
@@ -365,15 +365,31 @@ def get_pressure(data = Body()):
 
 #подбор оборудования
 @app.post("/api/get_mark_params")
-def get_mark_params(data = Body()):
+async def get_mark_params(data = Body()):
     return mark_params(data)
 
 @app.post("/api/get_tightness")
-def get_tightness(data = Body()):
+async def web_get_tightness(data = Body()):
     return get_tightness(data)
 
+
+
+#авторизазия => генерация токена, начало сессии
+
+#добавить в корзину элемент
+
+#выгрузить из корзины элемент
+
+#изменить элемент
+
+#удалить из корзиный элемент
+
+#просмотр корзины
+
+#выгрузка корзины -> опустошение -> сохранить в БД
+
 #генерация документации
-@app.post("/api/generate")
+@app.post("/api/generate") #проверка сессии
 def generate(data = Body()):
     #запись в БД
 
@@ -392,5 +408,3 @@ def generate(data = Body()):
 
     #выдать файл
     return FileResponse(f'TKPexample.xlsx', filename=f'ТКП ПК {ID}.xlsx', media_type='application/xlsx')
-
-    
