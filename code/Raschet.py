@@ -584,6 +584,7 @@ def mark_params(dt):
         dt["contact_type"] = contact_type       #тип присоединения
         dt["inlet_flange"] = inlet_flange       #варианты фланца на входе
         dt["outlet_flange"] = outlet_flange     #варианты фланца на выходе
+        dt["detonation_node"] = False #Узел подрыва недоступен для заказа
         dt = dt | new_dt
         return dt
 
