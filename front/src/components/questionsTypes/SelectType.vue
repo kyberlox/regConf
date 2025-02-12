@@ -4,6 +4,7 @@
                 :id="question.inputName"
                 :key="question.answers.length"
                 class="card-body__select"
+                :value="selectValue"
                 @change="saveNewValue(question.inputName, $event.target.value)">
             <option disabled
                     selected
@@ -19,19 +20,26 @@
 </template>
 
 <script>
-import { watch } from 'vue';
+import { watch, onMounted, ref } from 'vue';
 export default {
     props: ["question", "selectedOptions"],
     emits: ["saveNewValue"],
     setup(props, { emit }) {
+        const selectValue = ref();
+
+        const saveNewValue = (name, value) => {
+            selectValue.value = value;
+            emit("saveNewValue", name, value);
+        }
+
+        onMounted(() => {
+            selectValue.value = props.question.defaultValue;
+            saveNewValue(props.question.inputName, selectValue.value);
+        })
 
         watch(() => props.question.answers.length, () => {
             saveNewValue(props.question.inputName, null);
         })
-
-        const saveNewValue = (name, value) => {
-            emit("saveNewValue", name, value);
-        }
 
         const checkDuplicate = (id) => {
             if (props.selectedOptions) {
@@ -42,7 +50,8 @@ export default {
 
         return {
             saveNewValue,
-            checkDuplicate
+            checkDuplicate,
+            selectValue
         }
     }
 };

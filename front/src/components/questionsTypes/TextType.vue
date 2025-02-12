@@ -1,10 +1,11 @@
 <template>
-    <input class="card-body__input"
-           :name="question.inputName"
-           :placeholder="question.placeholder"
-           @input="saveNewValue(question.inputName, $event.target.value)"
-           v-model="defaultValue" 
-           :ref="el => questionInGroup[question.inputName] = el"/>
+    <div :ref="el => questionInGroup[question.inputName] = el">
+        <input class="card-body__input"
+               :name="question.inputName"
+               :placeholder="question.placeholder"
+               @input="saveNewValue(question.inputName, $event.target.value)"
+               v-model="defaultValue" />
+    </div>
 </template>
 
 <script>

@@ -29,7 +29,7 @@ export const useQuestionsStore = defineStore('questions', {
             }
         },
 
-        setAnswers(questionName, questionValue, deep = true) {            
+        setAnswers(questionName, questionValue, deep = true) {
             if (deep) {
                 const targetQuestion = this.findQuestion(questionName).inner;
                 targetQuestion.forEach(item => {
@@ -46,7 +46,7 @@ export const useQuestionsStore = defineStore('questions', {
             }
         },
 
-        setQuestionDisabled(questionName, disabled){
+        setQuestionDisabled(questionName, disabled) {
             const targetQuestion = this.findQuestion(questionName);
             targetQuestion.disabled = disabled;
         },

@@ -1,7 +1,7 @@
 <template>
     <TransitionGroup name="list">
         <div class="card-body__inner--oneLine"
-             v-for="(item, groupIndex) in envTypeVariants"
+             v-for="(item, groupIndex) in question.inner"
              :key="'variant' + groupIndex">
             <div v-for="(part, index) in item"
                  :key="'variant-part' + index"
@@ -10,7 +10,8 @@
                 <SelectType v-if="part.type == 'SelectType'"
                             :question="part"
                             :selectedOptions="question.value"
-                            @change="saveSelectText($event.target.value, groupIndex)" />
+                            @change="saveSelectText($event.target.value, groupIndex)"
+                            @saveNewValue="(value, unit) => saveSelectText(unit, groupIndex)" />
                 <TextType v-if="part.type == 'TextType'"
                           :question="part"
                           @input="saveSelectValue($event.target.value, groupIndex)" />
@@ -30,6 +31,8 @@
 <script>
 import SelectType from "@/components/questionsTypes/SelectType.vue";
 import TextType from "@/components/questionsTypes/TextType.vue";
+import { changeToMpa } from '@/utils/changeToMpa';
+import { changeToKgInHour } from '@/utils/changeToKgInHour';
 import { useQuestionsStore } from "@/store/questions";
 import { ref } from "vue";
 
@@ -46,26 +49,43 @@ export default {
     },
     emits: ["saveNewValue"],
     setup(props, { emit }) {
+        const conversions = {
+            'convertToMpa': changeToMpa,
+            'convertToKg': changeToKgInHour,
+        };
+        const convert = ref(false);
+
+        const modifier = props.question.modifiers?.find(mod => conversions[mod]);
+        if (modifier) {
+            convert.value = conversions[modifier];
+        }
+
         const questionStore = useQuestionsStore();
         const optionsCounter = ref(1);
         const optionsLimit = ref(false);
-
         const answer = ref({ id: null, value: null });
+        const currentInput = ref();
 
         const saveSelectText = (value, groupIndex) => {
             answer.value.id = value;
             if (answer.value.value) {
+                if (convert.value) {
+                    answer.value.value = convert.value(answer.value.id, currentInput.value);
+                }
                 emit("saveNewValue", props.question.inputName, answer.value, 'oneLine', groupIndex);
             }
         };
         const saveSelectValue = (value, groupIndex) => {
+            currentInput.value = value;
             answer.value.value = value;
+
             if (answer.value.id) {
+                if (convert.value) {
+                    answer.value.value = convert.value(answer.value.id, currentInput.value);
+                }
                 emit("saveNewValue", props.question.inputName, answer.value, 'oneLine', groupIndex);
             }
         };
-
-        const envTypeVariants = ref(props.question.inner);
 
         const cloneQuestion = () => {
             answer.value = { id: null, value: null };
@@ -84,7 +104,6 @@ export default {
         return {
             saveSelectText,
             saveSelectValue,
-            envTypeVariants,
             cloneQuestion,
             removeLine,
             optionsLimit

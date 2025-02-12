@@ -7,9 +7,11 @@ import { useQuestionsStore } from "@/store/questions";
 import { useHelperStore } from "@/store/helper";
 import { useEnvModuleStore } from "@/store/envModule";
 import { changeToMpa } from "@/utils/changeToMpa";
+import { changeToKgInHour } from "@/utils/changeToKgInHour";
 import Api from "@/utils/Api";
+import Validator from "@/utils/Validator";
 import { usePageStore } from "@/store/page";
-import climateGroup from "@/assets/staticJsons/climateGroup.json";
+// import climateGroup from "@/assets/staticJsons/climateGroup.json";
 
 export default {
     setup() {
@@ -49,16 +51,27 @@ export default {
             }
         })
 
-        const paramsToGetMark = computed(()=>{
-            return{
+        const paramsToGetMark = computed(() => {
+            return {
                 joiningType: questions.value.find((e) => e.inputName == 'joining_type'),
+                needBellows: questions.value.find((e) => e.inputName == 'need_bellows'),
+            }
+        })
+
+        const paramsToGetTightness = computed(() => {
+            return {
+                contactType: questions.value.find((e) => e.inputName == 'contact_type'),
+                inletFlange: questions.value.find((e) => e.inputName == 'inlet_flange'),
+                outletFlange: questions.value.find((e) => e.inputName == 'outlet_flange'),
+                color: questions.value.find((e) => e.inputName == 'color'),
+                packaging: questions.value.find((e) => e.inputName == 'packaging'),
             }
         })
 
         // обработка ошибок
         watch(
             () => [...errors.value],
-            (newErrors) =>{ helperStore.handleErrorHighlight(newErrors, nodeRefs)},
+            (newErrors) => { helperStore.handleErrorHighlight(newErrors, nodeRefs) },
             { deep: true }
         );
 
@@ -88,8 +101,8 @@ export default {
         })
 
         // проверка суммы всех состояний
-        const checkEnvSum = () => {            
-            const isSecondEnv = paramsToGetCompound.value.isSecondEnv.value;            
+        const checkEnvSum = () => {
+            const isSecondEnv = paramsToGetCompound.value.isSecondEnv.value;
 
             const summary = ref([]);
             isSecondEnv ?
@@ -125,7 +138,7 @@ export default {
         }
 
         // запрос (#2, get_compound) на параметры для конкр сред (Вязкость, материал, молекулярная масса, вязкость)
-        watch([paramsToGetCompound.value.environment, paramsToGetCompound.value.secondEnv], ([EnvVal, secVal]) => {            
+        watch([paramsToGetCompound.value.environment, paramsToGetCompound.value.secondEnv], ([EnvVal, secVal]) => {
             if (checkEnvSum()) {
                 const envParamsToGet = ['molecular_weight', 'density', 'material', 'viscosity'];
                 let dataToSend = [];
@@ -153,28 +166,35 @@ export default {
             };
         }, { deep: true })
 
-        // Проверка, что давление настройки > Противодавления статического >= Динамического противодавления
-        watch([paramsToGetPressure.value.pn, paramsToGetPressure.value.pp, paramsToGetPressure.value.ppDin], ([pn, pp, ppDin]) => {
-                    if (Number(pn.value[0].value) >= Number(pp.value) && Number(pn.value[0].value) >= Number(ppDin.value)){
-                        helperStore.deleteErrorMessage('pp');
-                         
-                    } else {
-                        helperStore.setErrorMessage('pp');
-                    }
-                
-            // }
-        })
+
 
         // запрос (#3, get_pressure) на "Pno", "Ppo", "P1", "P2","Kw", "Gideal", "pre_DN","DN"
         watch(paramsToGetPressure, (newVal) => {
+            Validator.validTemperature(newVal.T.value, helperStore);
+
+            // Проверка давления
+            let settingPressure = { unit: newVal.pn.value[0]?.id, value: newVal.pn.value[0]?.value };
+            let staticPressure = { unit: newVal.pp.value[0]?.id, value: newVal.pp.value[0]?.value };
+            let dynamicPressure = { unit: newVal.ppDin.value[0]?.id, value: newVal.ppDin.value[0]?.value };
+
+            if (settingPressure) {
+                Validator.validPressure(settingPressure, 'Pn', null, helperStore, changeToMpa);
+                if (staticPressure) {
+                    Validator.validPressure(staticPressure, 'Pp', settingPressure.value, helperStore, changeToMpa);
+                }
+                if (dynamicPressure) {
+                    Validator.validPressure(dynamicPressure, 'Pp_din', settingPressure.value, helperStore, changeToMpa);
+                }
+            }
+
             if (newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.value && newVal.n.value && newVal.T.value && newVal.climate.value && newVal.valveType.value) {
-                const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', "DN_s", 'DN', "PN", "need_bellows"];
+                const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', "DN_s", 'DN', "PN", "need_bellows", "PN2", "DN2"];
 
                 const formattedData = {
-                    "Pn": Number(changeToMpa(newVal.pn.value[0].id, newVal.pn.value[0].value)),
-                    "Pp": Number(newVal.pp.value),
-                    "Pp_din": Number(newVal.ppDin.value),
-                    "Gab": Number(newVal.gab.value),
+                    "Pn": Number(newVal.pn.value[0].value),
+                    "Pp": Number(newVal.pp.value[0].value),
+                    "Pp_din": Number(newVal.ppDin.value[0].value),
+                    "Gab": Number(newVal.gab.value[0].value),
                     "N": Number(newVal.n.value),
                     "pre_Kc": Number(newVal.preKc.value),
                     "T": Number(newVal.T.value),
@@ -193,13 +213,19 @@ export default {
 
                     envModuleStore.setAfterGetCompoundValue(data);
                     paramsToGet.map((key) => {
-                        if(key == 'need_bellows'){
-                            questionsStore.setQuestionValue(key, data[key]);
-                            questionsStore.setQuestionDisable('need_bellows', true);
+                        if (key == 'need_bellows') {
+                            if (data[key]) {
+                                if (typeof (data[key]) == 'string') {
+                                    questionsStore.setQuestionValue(key, data[key]);
+                                    questionsStore.setQuestionDisabled('need_bellows', true);
+                                }
+                            }
+                            else {
+                                questionsStore.setQuestionDisabled('need_bellows', false);
+                            }
                         }
                         else {
                             questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'pressureAnswersGroup');
-                            questionsStore.setQuestionDisable('need_bellows', false);
                         }
                     })
                 })
@@ -225,13 +251,14 @@ export default {
         //     }
         // })
 
-            // запрос (#4, get_mark_params) на "Pno", "Ppo", "P1", "P2","Kw", "Gideal", "pre_DN","DN"
-            watch(paramsToGetMark, (newVal) => {            
-            if (newVal.joiningType.value) {                
-                const paramsToGet = ['contact_type', 'tightness', 'open_close_type', 'inlet_flange', 'outlet_flange'];
+        // запрос (#4, get_mark_params) на "Pno", "Ppo", "P1", "P2","Kw", "Gideal", "pre_DN","DN"
+        watch(paramsToGetMark, (newVal) => {
+            if (newVal.joiningType.value || newVal.needBellows.value) {
+                const paramsToGet = ['contact_type', 'open_close_type', 'inlet_flange', 'outlet_flange', 'color', 'packaging', 'assignment'];
 
                 const formattedData = {
                     "joining_type": newVal.joiningType.value,
+                    "need_bellows": newVal.needBellows.value,
                 };
 
                 envModuleStore.pushToAfterGetCompoundValue(formattedData);
@@ -243,12 +270,40 @@ export default {
                 ).then((data) => {
                     envModuleStore.setAfterGetCompoundValue(data);
                     paramsToGet.map((key) => {
-                        if (key == 'tightness'){
-                            questionsStore.setAnswers(key, data[key], false);
+                        if (key == 'open_close_type' || key == 'assignment') {
+                            questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'markAnswersGroup');
                         }
                         else {
-                        questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'markAnswersGroup');
-                    }
+                            questionsStore.setAnswers(key, data[key], false);
+                        }
+                    })
+                })
+            }
+        }, { deep: true })
+
+        // запрос №5, get_tightness 
+        watch(paramsToGetTightness, (newVal) => {
+            if (newVal.contactType.value && newVal.inletFlange.value && newVal.outletFlange.value && newVal.color.value) {
+                const paramsToGet = ['tightness'];
+
+                const formattedData = {
+                    "contact_type": newVal.contactType.value,
+                    "inlet_flange": newVal.inletFlange.value,
+                    "outlet_flange": newVal.outletFlange.value,
+                    "color": newVal.color.value,
+                    "packaging": newVal.packaging.value,
+                };
+
+                envModuleStore.pushToAfterGetCompoundValue(formattedData);
+
+                const dataToSend = computed(() => envModuleStore.getAfterGetCompoundValue);
+
+                Api.post(API_URL + '/get_tightness',
+                    dataToSend.value
+                ).then((data) => {
+                    envModuleStore.setAfterGetCompoundValue(data);
+                    paramsToGet.map((key) => {
+                        questionsStore.setAnswers(key, data[key], false);
                     })
                 })
             }

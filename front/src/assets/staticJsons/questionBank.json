@@ -136,13 +136,44 @@
     ]
   },
   {
+    "id": 14,
+    "name": "Тип предохранительного клапана:",
+    "type": "RadioType",
+    "inputName": "valve_type",
+    "value": null,
+    "answers": [
+      {
+        "name": "Пилотный",
+        "value": "Н"
+      },
+      {
+        "name": "Пружинный",
+        "value": "В"
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "name": "Устройство принудительного открытия:",
+    "type": "CheckboxType",
+    "inputName": "force_open",
+    "value": false,
+    "answers": [
+      {
+        "name": "Да",
+        "value": true
+      }
+    ]
+  },
+  {
     "id": 6,
     "name": "Давление настройки:",
     "inputName": "Pn",
     "type": "oneLineType",
     "modifiers": [
       "inputBeforeSelect",
-      "noAddButton"
+      "noAddButton",
+      "convertToMpa"
     ],
     "value": [],
     "inner": [
@@ -160,6 +191,7 @@
           "name": "",
           "type": "SelectType",
           "inputName": "pnUnit",
+          "defaultValue": "Мпа",
           "value": null,
           "answers": [
             {
@@ -191,22 +223,158 @@
     "id": 7,
     "name": "Противодавление статическое:",
     "inputName": "Pp",
-    "type": "TextType",
-    "value": null
+    "type": "oneLineType",
+    "modifiers": [
+      "inputBeforeSelect",
+      "noAddButton",
+      "convertToMpa"
+    ],
+    "value": [],
+    "inner": [
+      [
+        {
+          "id": 7.1,
+          "name": "",
+          "type": "TextType",
+          "inputName": "PpValue",
+          "placeholder": "Укажите значение",
+          "value": null
+        },
+        {
+          "id": 7.2,
+          "name": "",
+          "type": "SelectType",
+          "inputName": "ppUnit",
+          "defaultValue": "Мпа",
+          "value": null,
+          "answers": [
+            {
+              "name": "Мпа",
+              "value": "Мпа"
+            },
+            {
+              "name": "Кпа",
+              "value": "Кпа"
+            },
+            {
+              "name": "Па",
+              "value": "Па"
+            },
+            {
+              "name": "бар",
+              "value": "бар"
+            },
+            {
+              "name": "кгс/см2",
+              "value": "кгс/см2"
+            }
+          ]
+        }
+      ]
+    ]
   },
   {
     "id": 8,
-    "name": "Динамическое противодавление:",
+    "name": "Противодавление динамическое:",
     "inputName": "Pp_din",
-    "type": "TextType",
-    "value": null
+    "type": "oneLineType",
+    "modifiers": [
+      "inputBeforeSelect",
+      "noAddButton",
+      "convertToMpa"
+    ],
+    "value": [],
+    "inner": [
+      [
+        {
+          "id": 8.1,
+          "name": "",
+          "type": "TextType",
+          "inputName": "Pp_dinValue",
+          "placeholder": "Укажите значение",
+          "value": null
+        },
+        {
+          "id": 8.2,
+          "name": "",
+          "type": "SelectType",
+          "inputName": "Pp_dinUnit",
+          "defaultValue": "Мпа",
+          "value": null,
+          "answers": [
+            {
+              "name": "Мпа",
+              "value": "Мпа"
+            },
+            {
+              "name": "Кпа",
+              "value": "Кпа"
+            },
+            {
+              "name": "Па",
+              "value": "Па"
+            },
+            {
+              "name": "бар",
+              "value": "бар"
+            },
+            {
+              "name": "кгс/см2",
+              "value": "кгс/см2"
+            }
+          ]
+        }
+      ]
+    ]
   },
   {
     "id": 9,
-    "name": "Максимальный аварийный расход жидкости и газа (кг/час):",
+    "name": "Максимальный аварийный расход жидкости и газа:",
     "inputName": "Gab",
-    "type": "TextType",
-    "value": null
+    "type": "oneLineType",
+    "modifiers": [
+      "inputBeforeSelect",
+      "noAddButton",
+      "convertToKg"
+    ],
+    "value": [],
+    "inner": [
+      [
+        {
+          "id": 9.1,
+          "name": "",
+          "type": "TextType",
+          "inputName": "gabValue",
+          "placeholder": "Укажите значение",
+          "value": null
+        },
+        {
+          "id": 9.2,
+          "name": "",
+          "type": "SelectType",
+          "inputName": "gabUnit",
+          "defaultValue": "Кг/час",
+          "answers": [
+            {
+              "name": "Кг/час",
+              "value": "Кг/час"
+            },
+            {
+              "name": "м3/час",
+              "value": "м3/час"
+            },
+            {
+              "name": "Нм3/час",
+              "value": "Нм3/час"
+            },
+            {
+              "name": "T/час",
+              "value": "T/час"
+            }
+          ]
+        }
+      ]
+    ]
   },
   {
     "id": 10,
@@ -231,7 +399,7 @@
   },
   {
     "id": 12,
-    "name": "Температура рабочей среды:",
+    "name": "Температура рабочей среды, в °С:",
     "inputName": "T",
     "type": "TextType",
     "placeholder": "Укажите значение"
@@ -262,51 +430,34 @@
     ]
   },
   {
-    "id": 14,
-    "name": "Тип предохранительного клапана:",
-    "type": "RadioType",
-    "inputName": "valve_type",
-    "value": null,
-    "answers": [
-      {
-        "name": "Пилотный",
-        "value": "Н"
-      },
-      {
-        "name": "Пружинный",
-        "value": "В"
-      }
-    ]
-  },
-  {
     "id": 15,
     "inputName": "pressureAnswersGroup",
     "type": "inputGroup",
     "answers": [
       {
         "id": 15.1,
-        "name": "Давление начала открытия с противодавлением:",
+        "name": "Давление начала открытия с противодавлением, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "Pno",
         "value": null
       },
       {
         "id": 15.2,
-        "name": "Давление полного открытия с противодавлением:",
+        "name": "Давление полного открытия с противодавлением, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "Ppo",
         "value": null
       },
       {
         "id": 15.3,
-        "name": "Давление на входе:",
+        "name": "Давление на входе, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "P1",
         "value": null
       },
       {
         "id": 15.4,
-        "name": "Давление на выходе:",
+        "name": "Давление на выходе, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "P2",
         "value": null
@@ -327,7 +478,7 @@
       },
       {
         "id": 15.7,
-        "name": "DN предворительный:",
+        "name": "Диаметр предворительный:",
         "type": "DisabledType",
         "inputName": "pre_DN",
         "value": null
@@ -341,32 +492,31 @@
       },
       {
         "id": 15.9,
-        "name": "Номинальный диаметр:",
+        "name": "Диаметр номинальный:",
         "type": "DisabledType",
         "inputName": "DN",
         "value": null
       },
       {
         "id": 15.10,
-        "name": "Номинальное давление:",
+        "name": "Номинальное давление, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "PN",
         "value": null
-      }
-    ]
-  },
-  {
-    "id": 15.1,
-    "name": "Переменное противодавление или необходим сильфон на пружинные ПК по требованию ОЛ:",
-    "type": "CheckboxType",
-    "inputName": "need_bellows",
-    "value": false,
-    "disabled": false,
-    "answers": [
+      },
       {
-        "name": "Да",
-        "value": "true",
-        "checkToHide": 5
+        "id": 15.11,
+        "name": "Номинальный диаметр на выходе, в кгс/см2:",
+        "type": "DisabledType",
+        "inputName": "DN2",
+        "value": null
+      },
+      {
+        "id": 15.12,
+        "name": "Номинальное давление на выходе, в кгс/см2:",
+        "type": "DisabledType",
+        "inputName": "PN2",
+        "value": null
       }
     ]
   },
@@ -384,6 +534,10 @@
       {
         "name": "Под приварку",
         "value": "Под приварку"
+      },
+      {
+        "name": "Штуцерное",
+        "value": "Штуцерное"
       },
       {
         "name": "Штуцерно-торцовое",
@@ -404,54 +558,101 @@
       {
         "name": "Комбинированное",
         "value": "Комбинированное"
+      },
+      {
+        "name": "Цапковое",
+        "value": "Цапковое"
       }
     ]
   },
   {
-  "id": 17,
-  "inputName": "markAnswersGroup",
-  "type": "inputGroup",
-  "answers": [
-    {
-      "id": 17.1,
-      "name": "Тип контакта:",
-      "inputName": "contact_type",
-      "type": "DisabledType",
-      "hidden": false,
-      "value": null
-    },
-    {
-      "id": 17.2,
-      "name": "тип ПК:",
-      "inputName": "open_close_type",
-      "type": "DisabledType",
-      "hidden": false,
-      "value": null
-    },
-    {
-      "id": 17.3,
-      "name": "Фланец на входе:",
-      "inputName": "inlet_flange",
-      "type": "DisabledType",
-      "hidden": false,
-      "value": null
-    },
-    {
-      "id": 17.4,
-      "name": "Фланец на выходе:",
-      "inputName": "outlet_flange",
-      "type": "DisabledType",
-      "hidden": false,
-      "value": null
-    }
-  ]
-},
-{
-  "id": 18,
-  "name": "Герметичность затвора по ГОСТ 9544-2015:",
-  "type": "SelectType",
-  "inputName": "tightness",
-  "value": null,
-  "answers": []
-}
+    "id": 15.1,
+    "name": "Переменное противодавление или необходим сильфон на пружинные ПК по требованию ОЛ:",
+    "type": "CheckboxType",
+    "inputName": "need_bellows",
+    "value": false,
+    "disabled": false,
+    "answers": [
+      {
+        "name": "Да",
+        "value": "true",
+        "checkToHide": 5
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "inputName": "markAnswersGroup",
+    "type": "inputGroup",
+    "answers": [
+      {
+        "id": 17.2,
+        "name": "тип ПК:",
+        "inputName": "open_close_type",
+        "type": "DisabledType",
+        "hidden": false,
+        "value": null
+      },
+      {
+        "id": 17.2,
+        "name": "Срок эксплуатации:",
+        "inputName": "assignment",
+        "type": "DisabledType",
+        "hidden": false,
+        "value": null
+      }
+    ]
+  },
+  {
+    "id": 17.1,
+    "name": "Тип контакта:",
+    "inputName": "contact_type",
+    "type": "SelectType",
+    "hidden": false,
+    "value": null,
+    "answers": []
+  },
+  {
+    "id": 17.3,
+    "name": "Фланец на входе:",
+    "inputName": "inlet_flange",
+    "type": "SelectType",
+    "hidden": false,
+    "value": null,
+    "answers": []
+  },
+  {
+    "id": 17.4,
+    "name": "Фланец на выходе:",
+    "inputName": "outlet_flange",
+    "type": "SelectType",
+    "hidden": false,
+    "value": null,
+    "answers": []
+  },
+  {
+    "id": 16,
+    "name": "Покраска:",
+    "inputName": "color",
+    "type": "SelectType",
+    "value": null,
+    "answers": []
+  },
+  {
+    "id": 17.2,
+    "name": "Упаковка:",
+    "inputName": "packaging",
+    "type": "SelectType",
+    "hidden": false,
+    "value": null,
+    "answers": []
+  },
+  {
+    "id": 18,
+    "name": "Герметичность затвора по ГОСТ 9544-2015:",
+    "type": "SelectType",
+    "inputName": "tightness",
+    "value": null,
+    "answers": []
+  }
 ]
