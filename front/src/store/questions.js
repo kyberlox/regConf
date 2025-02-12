@@ -5,6 +5,29 @@ import { useEnvModuleStore } from './envModule';
 export const useQuestionsStore = defineStore('questions', {
     state: () => ({
         questions: questionsBank,
+        // questionsGroups: {
+        //     compound: {
+        //         min: 1,
+        //         max: 5,
+        //     },
+        //     pressure: {
+        //         min: 6,
+        //         max: 16,
+        //     },
+        //     mark: {
+        //         min: 17,
+        //         max: 19,
+        //     },
+        //     tightness: {
+        //         min: 20,
+        //         max: 25,
+        //     }
+        // },
+        resetGroups: {
+            'compound': ['pressure', 'mark', 'tightness'],
+            'pressure': ['mark', 'tightness'],
+            'mark': ['tightness'],
+        }
     }),
 
     actions: {
@@ -26,6 +49,10 @@ export const useQuestionsStore = defineStore('questions', {
             }
             else {
                 targetQuestion.value = questionValue;
+            }
+
+            if (type !== 'inputGroup') {
+                this.resetQuestionGroup(targetQuestion.group);
             }
         },
 
@@ -80,6 +107,22 @@ export const useQuestionsStore = defineStore('questions', {
             const target = this.findQuestion(name);
             target.value.splice(index, 1);
             target.inner.splice(index, 1);
+        },
+        resetQuestionGroup(group) {
+            const targetGroups = this.resetGroups[group];
+            if (!targetGroups) return;
+
+            this.questions.map((item) => {
+                if (targetGroups.includes(item.group)) {
+                    if (item.type == 'oneLineType') {
+                        item.value = [];
+                        item.inner.map((e) => {
+                            e.value = null;
+                        })
+                    } else
+                        item.value = null;
+                }
+            })
         }
     }
 });

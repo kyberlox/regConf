@@ -1,6 +1,7 @@
 [
   {
     "id": 1,
+    "group": "compound",
     "name": "Агрегатное состояние несущей рабочей среды:",
     "type": "RadioType",
     "inputName": "environmentType",
@@ -18,6 +19,7 @@
   },
   {
     "id": 2,
+    "group": "compound",
     "name": "Мольная доля состава рабочей среды, %:",
     "type": "oneLineType",
     "inputName": "environment",
@@ -45,6 +47,7 @@
   },
   {
     "id": 3,
+    "group": "compound",
     "name": "Наличие растворенной среды в другом агрегатном состоянии:",
     "type": "CheckboxType",
     "inputName": "isSecondEnv",
@@ -59,6 +62,7 @@
   },
   {
     "id": 4,
+    "group": "compound",
     "name": "Другое агрегатное состояние, %:",
     "type": "oneLineType",
     "inputName": "secondEnv",
@@ -88,6 +92,7 @@
   },
   {
     "id": 5,
+    "group": "compound",
     "inputName": "envAnswersGroup",
     "type": "inputGroup",
     "answers": [
@@ -136,7 +141,8 @@
     ]
   },
   {
-    "id": 14,
+    "id": 6,
+    "group": "pressure",
     "name": "Тип предохранительного клапана:",
     "type": "RadioType",
     "inputName": "valve_type",
@@ -153,7 +159,8 @@
     ]
   },
   {
-    "id": 14,
+    "id": 7,
+    "group": "pressure",
     "name": "Устройство принудительного открытия:",
     "type": "CheckboxType",
     "inputName": "force_open",
@@ -166,7 +173,8 @@
     ]
   },
   {
-    "id": 6,
+    "id": 8,
+    "group": "pressure",
     "name": "Давление настройки:",
     "inputName": "Pn",
     "type": "oneLineType",
@@ -179,7 +187,7 @@
     "inner": [
       [
         {
-          "id": 6.1,
+          "id": 8.1,
           "name": "",
           "type": "TextType",
           "inputName": "pnValue",
@@ -187,7 +195,7 @@
           "value": null
         },
         {
-          "id": 6.2,
+          "id": 8.2,
           "name": "",
           "type": "SelectType",
           "inputName": "pnUnit",
@@ -220,7 +228,8 @@
     ]
   },
   {
-    "id": 7,
+    "id": 9,
+    "group": "pressure",
     "name": "Противодавление статическое:",
     "inputName": "Pp",
     "type": "oneLineType",
@@ -233,7 +242,7 @@
     "inner": [
       [
         {
-          "id": 7.1,
+          "id": 9.1,
           "name": "",
           "type": "TextType",
           "inputName": "PpValue",
@@ -241,7 +250,7 @@
           "value": null
         },
         {
-          "id": 7.2,
+          "id": 9.2,
           "name": "",
           "type": "SelectType",
           "inputName": "ppUnit",
@@ -274,7 +283,8 @@
     ]
   },
   {
-    "id": 8,
+    "id": 10,
+    "group": "pressure",
     "name": "Противодавление динамическое:",
     "inputName": "Pp_din",
     "type": "oneLineType",
@@ -287,7 +297,7 @@
     "inner": [
       [
         {
-          "id": 8.1,
+          "id": 10.1,
           "name": "",
           "type": "TextType",
           "inputName": "Pp_dinValue",
@@ -295,7 +305,7 @@
           "value": null
         },
         {
-          "id": 8.2,
+          "id": 10.2,
           "name": "",
           "type": "SelectType",
           "inputName": "Pp_dinUnit",
@@ -328,7 +338,8 @@
     ]
   },
   {
-    "id": 9,
+    "id": 11,
+    "group": "pressure",
     "name": "Максимальный аварийный расход жидкости и газа:",
     "inputName": "Gab",
     "type": "oneLineType",
@@ -341,7 +352,7 @@
     "inner": [
       [
         {
-          "id": 9.1,
+          "id": 11.1,
           "name": "",
           "type": "TextType",
           "inputName": "gabValue",
@@ -349,7 +360,7 @@
           "value": null
         },
         {
-          "id": 9.2,
+          "id": 11.2,
           "name": "",
           "type": "SelectType",
           "inputName": "gabUnit",
@@ -377,14 +388,16 @@
     ]
   },
   {
-    "id": 10,
+    "id": 12,
+    "group": "pressure",
     "name": "Количество параллельно установленных и одновременно работающих клапанов (шт):",
     "inputName": "N",
     "type": "TextType",
     "value": null
   },
   {
-    "id": 11,
+    "id": 13,
+    "group": "pressure",
     "name": "Мембранно-предохранительное устройство:",
     "inputName": "Pre_Kc",
     "type": "CheckboxType",
@@ -398,14 +411,16 @@
     ]
   },
   {
-    "id": 12,
+    "id": 14,
+    "group": "pressure",
     "name": "Температура рабочей среды, в °С:",
     "inputName": "T",
     "type": "TextType",
     "placeholder": "Укажите значение"
   },
   {
-    "id": 13,
+    "id": 15,
+    "group": "pressure",
     "name": "Климатическое исполнение:",
     "inputName": "climate",
     "type": "SelectType",
@@ -430,89 +445,90 @@
     ]
   },
   {
-    "id": 15,
+    "id": 16,
+    "group": "pressure",
     "inputName": "pressureAnswersGroup",
     "type": "inputGroup",
     "answers": [
       {
-        "id": 15.1,
+        "id": 16.1,
         "name": "Давление начала открытия с противодавлением, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "Pno",
         "value": null
       },
       {
-        "id": 15.2,
+        "id": 16.2,
         "name": "Давление полного открытия с противодавлением, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "Ppo",
         "value": null
       },
       {
-        "id": 15.3,
+        "id": 16.3,
         "name": "Давление на входе, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "P1",
         "value": null
       },
       {
-        "id": 15.4,
+        "id": 16.4,
         "name": "Давление на выходе, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "P2",
         "value": null
       },
       {
-        "id": 15.5,
+        "id": 16.5,
         "name": "Коэффициент, учитывающий эффект неполного открытия разгруженных ПК из-за противодавления:",
         "type": "DisabledType",
         "inputName": "Kw",
         "value": null
       },
       {
-        "id": 15.6,
+        "id": 16.6,
         "name": "Массовая скорость:",
         "type": "DisabledType",
         "inputName": "Gideal",
         "value": null
       },
       {
-        "id": 15.7,
+        "id": 16.7,
         "name": "Диаметр предворительный:",
         "type": "DisabledType",
         "inputName": "pre_DN",
         "value": null
       },
       {
-        "id": 15.8,
+        "id": 16.8,
         "name": "Диаметр седла клапана:",
         "type": "DisabledType",
         "inputName": "DN_s",
         "value": null
       },
       {
-        "id": 15.9,
+        "id": 16.9,
         "name": "Диаметр номинальный:",
         "type": "DisabledType",
         "inputName": "DN",
         "value": null
       },
       {
-        "id": 15.10,
+        "id": 16.10,
         "name": "Номинальное давление, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "PN",
         "value": null
       },
       {
-        "id": 15.11,
+        "id": 16.11,
         "name": "Номинальный диаметр на выходе, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "DN2",
         "value": null
       },
       {
-        "id": 15.12,
+        "id": 16.12,
         "name": "Номинальное давление на выходе, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "PN2",
@@ -521,7 +537,8 @@
     ]
   },
   {
-    "id": 16,
+    "id": 17,
+    "group": "mark",
     "name": "Тип присоединения:",
     "inputName": "joining_type",
     "type": "SelectType",
@@ -566,7 +583,8 @@
     ]
   },
   {
-    "id": 15.1,
+    "id": 18,
+    "group": "mark",
     "name": "Переменное противодавление или необходим сильфон на пружинные ПК по требованию ОЛ:",
     "type": "CheckboxType",
     "inputName": "need_bellows",
@@ -581,12 +599,13 @@
     ]
   },
   {
-    "id": 17,
+    "id": 19,
+    "group": "mark",
     "inputName": "markAnswersGroup",
     "type": "inputGroup",
     "answers": [
       {
-        "id": 17.2,
+        "id": 19.2,
         "name": "тип ПК:",
         "inputName": "open_close_type",
         "type": "DisabledType",
@@ -594,7 +613,7 @@
         "value": null
       },
       {
-        "id": 17.2,
+        "id": 19.2,
         "name": "Срок эксплуатации:",
         "inputName": "assignment",
         "type": "DisabledType",
@@ -604,7 +623,8 @@
     ]
   },
   {
-    "id": 17.1,
+    "id": 20,
+    "group": "tightness",
     "name": "Тип контакта:",
     "inputName": "contact_type",
     "type": "SelectType",
@@ -613,7 +633,8 @@
     "answers": []
   },
   {
-    "id": 17.3,
+    "id": 21,
+    "group": "tightness",
     "name": "Фланец на входе:",
     "inputName": "inlet_flange",
     "type": "SelectType",
@@ -622,7 +643,8 @@
     "answers": []
   },
   {
-    "id": 17.4,
+    "id": 22,
+    "group": "tightness",
     "name": "Фланец на выходе:",
     "inputName": "outlet_flange",
     "type": "SelectType",
@@ -631,7 +653,8 @@
     "answers": []
   },
   {
-    "id": 16,
+    "id": 23,
+    "group": "tightness",
     "name": "Покраска:",
     "inputName": "color",
     "type": "SelectType",
@@ -639,7 +662,8 @@
     "answers": []
   },
   {
-    "id": 17.2,
+    "id": 24,
+    "group": "tightness",
     "name": "Упаковка:",
     "inputName": "packaging",
     "type": "SelectType",
@@ -648,7 +672,8 @@
     "answers": []
   },
   {
-    "id": 18,
+    "id": 25,
+    "group": "tightness",
     "name": "Герметичность затвора по ГОСТ 9544-2015:",
     "type": "SelectType",
     "inputName": "tightness",

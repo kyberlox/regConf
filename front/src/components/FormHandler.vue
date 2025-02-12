@@ -273,6 +273,9 @@ export default {
                         if (key == 'open_close_type' || key == 'assignment') {
                             questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'markAnswersGroup');
                         }
+                        else if (key == 'contact_type' && typeof data[key] == 'string') {
+                            questionsStore.setAnswers(key, [data[key]], false);
+                        }
                         else {
                             questionsStore.setAnswers(key, data[key], false);
                         }

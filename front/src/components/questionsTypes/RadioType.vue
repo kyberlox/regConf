@@ -7,6 +7,7 @@
                :type="'radio'"
                :id="question.inputName + questionInfo.value"
                :value="questionInfo.value"
+               :checked="question.value === questionInfo.value"
                class="form-check-input card-body__radio" />
         <label :for="question.inputName + questionInfo.value"
                class="form-check-label card-body__radio-label">{{ questionInfo.name }}</label>
