@@ -531,7 +531,7 @@ def mark_params(dt):
     elif dt["material"] == "12Х18Н9ТЛ" and T > 200:
         material_spool = "12Х18Н10Т"
     elif dt["material"] == "12Х18Н9ТЛ" and T <= 200:
-        material_spool = "14Х17Н2"
+        material_spool = "12Х18Н10Т"
     else:
         material_spool = "10Х17Н13М3Т"
     
