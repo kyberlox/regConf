@@ -8,6 +8,10 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import create_engine, MetaData, Column, Integer, Text, Float
 
+import openpyxl
+from openpyxl import load_workbook
+from openpyxl import Workbook
+
 engine = create_engine('postgresql+psycopg2://kyberlox:4179@postgres/pdb')
 
 class Base(DeclarativeBase): pass
@@ -39,10 +43,6 @@ class Table10(Base):
 Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autoflush=True, bind=engine)
 db = SessionLocal()
-
-import openpyxl
-from openpyxl import load_workbook
-from openpyxl import Workbook
 
 
 
@@ -528,8 +528,12 @@ def mark_params(dt):
         material_spool = "12Х18Н10Т"
     elif dt["material"] == "20ГЛ" and T <= 200:
         material_spool = "14Х17Н2"
+    elif dt["material"] == "12Х18Н9ТЛ" and T > 200:
+        material_spool = "12Х18Н10Т"
+    elif dt["material"] == "12Х18Н9ТЛ" and T <= 200:
+        material_spool = "14Х17Н2"
     else:
-        material_spool = "10Х17Н13М2Т"
+        material_spool = "10Х17Н13М3Т"
     
     if dt["material"] == "25Л":
         color = [
@@ -568,7 +572,7 @@ def mark_params(dt):
     new_dt = {
         "material_bellows" : material_bellows,      #Материал сильфона
         "material_spool" : material_spool,          #Материал золотника
-        "material_saddle" : "",                     #Материал седла
+        "material_saddle" : material_spool,         #Материал седла
         "weight" : "",                              #Маccа
         "color" : color,                            #Цвет
         "painting_area" : "",                       #Площадь под покраску
