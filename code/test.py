@@ -12,6 +12,7 @@ engine = create_engine('postgresql+psycopg2://kyberlox:4179@postgres/pdb')
 
 class Base(DeclarativeBase): pass
 
+'''
 class Table2(Base):
     __tablename__ = 'table2'
     id = Column(Integer, primary_key=True)
@@ -25,64 +26,41 @@ class Table10(Base):
     T = Column(Float, nullable=True)
     Pn = Column(Float, nullable=True)
     P = Column(Float, nullable=True)
+'''
+
+class pakingParams(Base):
+    __tablename__ = 'paking_params'
+    id = Column(Integer, primary_key=True)
+    mark = Column(Text, nullable=True)
+    DN = Column(Float, nullable=True)
+    PN = Column(Float, nullable=True)
+    M = Column(Float, nullable=True)
+    S = Column(Float, nullable=True)
 
 Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autoflush=True, bind=engine)
 db = SessionLocal()
 
 def migration():
-    result = []
-    wb1 = load_workbook("./Table2.xlsx")
-    sheet = wb1['Лист1']
+    wb3 = load_workbook("./paking_params.xlsx")
+    sheet = wb3["result"]
 
-    par_result = {"added" : [], "exists" : []}
-    for i in range(2, sheet.max_row+1):
-        T = float(sheet[f"A{i}"].value)
-        Pn = float(sheet[f"B{i}"].value)
-        P = float(sheet[f"C{i}"].value)
-
-        #print(i, T, Pn, P)
-
-        example = Table2(T=T, Pn=Pn, P=P)
-        request = db.query(Table2).filter(Table2.T == T, Table2.Pn == Table2.Pn, Table2.P == P).first()
-
-        #если нет - добавить
-        if request == None:
-            db.add(example)
-            db.commit()
-
-            curr = {
-                "№" : i,
-                "ID" : example.id,  
-                "T" : T, 
-                "Pn" : Pn, 
-                "P" : P
-            }
-            par_result["added"].append(curr)
-        #если есть - пропустить
+    pak_res = {"added" : [], "exists" : []}
+    for i in range(2, sheet.max_row):
+        mark = str(sheet[f"A{i}"].value)
+        DN = float(sheet[f"B{i}"].value)
+        PN = float(sheet[f"C{i}"].value)
+        M = sheet[f"D{i}"].value
+        S = float(sheet[f"E{i}"].value)
+        if type(M) == type("") or type(M) == type(1.0):
+            M = float(sheet[f"D{i}"].value)
         else:
-            curr = {
-                "ID" : request.id,  
-                "T" : request.T, 
-                "Pn" : request.Pn, 
-                "P" : request.P
-            }
-            par_result["exists"].append(curr)
+            M = None
+        print(mark, DN, PN, M, S)
+
+        example = pakingParams(mark=mark, DN=DN, PN=PN, M=M, S=S)
         
-    result.append(par_result)
-
-    wb2 = load_workbook("./Table10.xlsx")
-    sheet = wb2['Лист1']
-
-    par_result = {"added" : [], "exists" : []}
-
-    for i in range(2, sheet.max_row+1):
-        T = float(sheet[f"A{i}"].value)
-        Pn = float(sheet[f"B{i}"].value)
-        P = float(sheet[f"C{i}"].value)
-
-        example = Table10(T=T, Pn=Pn, P=P)
-        request = db.query(Table10).filter(Table10.T == T, Table10.Pn == Table10.Pn, Table10.P == P).first()
+        request = db.query(pakingParams).filter(pakingParams.mark == mark, pakingParams.DN == DN, pakingParams.PN == PN).first()
         
         #если нет - добавить
         if request == None:
@@ -92,73 +70,25 @@ def migration():
             curr = {
                 "№" : i,
                 "ID" : example.id,  
-                "T" : T, 
-                "Pn" : Pn, 
-                "P" : P
+                "mark" : mark, 
+                "DN" : DN, 
+                "PN" : PN,
+                "M" : M,
+                "S" : S
             }
-            par_result["added"].append(curr)
+            pak_res["added"].append(curr)
         #если есть - пропустить
         else:
             curr = {
-                "ID" : request.id,  
-                "T" : request.T, 
-                "Pn" : request.Pn, 
-                "P" : request.P
-            }
-            par_result["exists"].append(curr)
-            
-        result.append(par_result)
-
-    return result
-
-def searchT2(T, Pn):
-    #найти все подходящие строки их DNS и P1 - больше искомых
-    request = db.query(Table2).filter(Table2.T >= T, Table2.Pn >= Pn).all()
-
-    if request == None:
-        return False
-    ans = False
-
-    #найти самы подходящий - MIN по DNS и P1
-    minT = request[0].T
-    minPn = request[0].Pn
-    for example in request:
-        if (example.T <= minT) and (example.Pn <= minPn):
-            minT = example.T
-            minPn = example.Pn
-            ans = {
+                "№" : i,
                 "ID" : example.id,  
-                "T" : example.T, 
-                "Pn" : example.Pn, 
-                "PN" : example.P
+                "mark" : mark, 
+                "DN" : DN, 
+                "PN" : PN,
+                "M" : M,
+                "S" : S
             }
-    
-    return ans
+            pak_res["exists"].append(curr)
+    return pak_res
 
-def searchT10(T, Pn):
-    #найти все подходящие строки их DNS и P1 - больше искомых
-    request = db.query(Table10).filter(Table10.T >= T, Table10.Pn >= Pn).all()
-
-    if request == None:
-        return False
-    ans = False
-
-    #найти самы подходящий - MIN по DNS и P1
-    minT = request[0].T
-    minPn = request[0].Pn
-    for example in request:
-        if (example.T <= minT) and (example.Pn <= minPn):
-            minT = example.T
-            minPn = example.Pn
-            ans = {
-                "ID" : example.id,  
-                "T" : example.T, 
-                "Pn" : example.Pn, 
-                "PN" : example.P
-            }
-    
-    return ans
-
-print(searchT2(251, 15))
-
-print(searchT10(251, 15))
+print(migration())

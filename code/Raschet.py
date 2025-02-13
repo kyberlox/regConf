@@ -74,7 +74,7 @@ def searchT2(T, Pn):
             ans = {
                 "ID" : example.id,  
                 "T" : example.T, 
-                "Pn" : example.Pn, 
+                "Pn" : example.Pn * 10, 
                 "PN" : example.P
             }
     return ans
@@ -116,9 +116,10 @@ def searchParams(DNS, curP1, PN, valve_type):
     minP1 = request[0].P1
     minPN = request[0].PN
     for example in request:
-        if (example.DNS <= minDNS) and (example.P1 <= minP1) and (example.PN <= minPN):
+        if (example.DNS <= minDNS) and (example.P1 <= minP1) and (example.PN == minPN):
             minDNS = example.DNS
             minP1 = example.P1
+            minPN = example.PN
             ans = {
                 "ID" : example.id,  
                 "DNS" : example.DNS, 
@@ -136,9 +137,12 @@ def get_by_mark(mark, DN, PN):
     mark = mark[2:5]
     request = db.query(pakingParams).filter(pakingParams.mark == mark, pakingParams.DN == DN, pakingParams.PN == PN).first()
     if request == None:
-        return ("", "")
+        return ("Нет данных", "Нет данных")
     else:
-        return (request.M, request.S) 
+        if request.M == None:
+            return ("Нет данных", request.S) 
+        else:
+            return (request.M, request.S) 
 
 
 
@@ -243,6 +247,11 @@ def mixture(envs : list):
     return result
 
 def Raschet(dt):
+    kys = ["viscosity", "Pn", "Pp", "Pp_din", "Gab", "N", "pre_Kc", "density", "climate", "material", "environment"]
+    for param in kys:
+        if param not in dt:
+            return {"err" : f"Key \'{param}\' does not exists"}
+        
     P_atm = 0.101320
     R = 8.31446261815324 #Газовая постоянная ( Па / (моль * K))
 
@@ -308,6 +317,8 @@ def Raschet(dt):
     B = P2 / P1
        
     if dt["environment"] == "Газ":
+        if "molar_mass" not in dt:
+            return {"err" : f"Key \'molar_mass\' does not exists"}
         M = dt["molar_mass"]
 
         p1 = P1 * 1000 * M / (R  * (T+273.15))
@@ -415,8 +426,8 @@ def Raschet(dt):
         ex = searchT2(T, Pn)
     else:
         ex = searchT10(T, Pn)
-    PN = ex["PN"] * 10
-    print("PN по T и Pn:", PN)
+    PN = ex["PN"]
+    #print("PN по T и Pn:", PN)
 
     #Деаметр ПК
     new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
@@ -488,6 +499,11 @@ def Raschet(dt):
     return all_dt
 
 def mark_params(dt):
+    kys = ["valve_type", "PN", "PN2", "DN", "T", "joining_type", "need_bellows", "material", "mark"]
+    for param in kys:
+        if param not in dt:
+            return {"err" : f"Key \'{param}\' does not exists"}
+        
     valve_type = dt["valve_type"]
     PN = dt["PN"]
     PN2 = dt["PN2"]
@@ -575,6 +591,7 @@ def mark_params(dt):
             ]
 
     weight, painting_area = get_by_mark(dt["mark"], DN, PN)
+    print(weight, "", painting_area)
 
     packaging = [
         "Упаковка на европаллет (1200х800)",
@@ -595,9 +612,9 @@ def mark_params(dt):
         "material_bellows" : material_bellows,      #Материал сильфона
         "material_spool" : material_spool,          #Материал золотника
         "material_saddle" : material_spool,         #Материал седла
-        "weight" : "",                              #Маccа
+        "weight" : weight,                          #Маccа
         "color" : color,                            #Цвет
-        "painting_area" : "",                       #Площадь под покраску
+        "painting_area" : painting_area,            #Площадь под покраску
         "packaging" : packaging,                    #Упаковка
         "trials" : "",                              #Испытания
         "assignment" : assignment,                  #Срок службы
@@ -614,7 +631,12 @@ def mark_params(dt):
         return dt
 
 def get_tightness(dt):
-    #класс гкрметичнности
+    kys = ["valve_type", "contact_type", "DN"]
+    for param in kys:
+        if param not in dt:
+            return {"err" : f"Key \'{param}\' does not exists"}
+            
+    #класс герметичнности
     #бывает ли АА?
     tightness = []
     if dt["valve_type"] == "Н":
@@ -678,13 +700,19 @@ def make_XL(dt, ID):
         "AV" : "packaging",
         "AW" : "acceptance",
         "AX" : "trials",
-        "AY" : "warranty",
         "AZ" : "assignment",
         "BA" : "additionally"
     }
-
+       
     for i, position in enumerate(dt, start=3):
-        #нумерация 
+        #проверка 
+        kys = list(data_keys.values())
+        kys += ["valve_type", "open_close_type", "environment"]
+        for param in kys:
+            if param not in position:
+                return {"err" : f"Key \'{param}\' does not exists"}
+                
+        #номерация 
         sheet[f"A{i}"].value = int(sheet[f"A3"].value) + i-3
 
         #изготовитель
@@ -694,6 +722,7 @@ def make_XL(dt, ID):
         sheet[f"D{i}"].value = "Общепромышленное"
 
         #Номер документа
+        print(i)
         sheet[f"E{i}"].value = "ТУ 3742-003-38877941-2012Б" if position["valve_type"] == 'В' else "ТУ 3742-013-38877941-2016"
 
         type_name = "Пружинный" if position["valve_type"] == 'В' else "Пилотный"
@@ -730,6 +759,9 @@ def make_XL(dt, ID):
 
         #Давление полного открытия без противодавления
         sheet[f"AJ{i}"].value = position["Ppo"] - position["Pp"]
+
+        #Гарантийный срок службы, мес.
+        sheet[f"AY{i}"].value = 12
 
         # T окр среды
         sheet[f"J{i}"].value = f"{position['T_min']} ... {position['T_min']}"

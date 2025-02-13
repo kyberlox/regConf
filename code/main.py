@@ -308,7 +308,7 @@ def migration():
 
     result.append(t10_result)
 
-    wb3 = load_workbook("./packing_params")
+    wb3 = load_workbook("./paking_params.xlsx")
     sheet = wb3["result"]
 
     pak_res = {"added" : [], "exists" : []}
@@ -316,11 +316,15 @@ def migration():
         mark = str(sheet[f"A{i}"].value)
         DN = float(sheet[f"B{i}"].value)
         PN = float(sheet[f"C{i}"].value)
-        M = float(sheet[f"D{i}"].value)
+        M = sheet[f"D{i}"].value
         S = float(sheet[f"E{i}"].value)
+        if type(M) == type("") or type(M) == type(1.0):
+            M = float(sheet[f"D{i}"].value)
+        else:
+            M = None
 
         example = pakingParams(mark=mark, DN=DN, PN=PN, M=M, S=S)
-        request = db.query(pakingParams).filter(pakingParams.mark == mark, pakingParams.DN == DN, pakingParams.PN == pakingParams).first()
+        request = db.query(pakingParams).filter(pakingParams.mark == mark, pakingParams.DN == DN, pakingParams.PN == PN).first()
 
         #если нет - добавить
         if request == None:
@@ -455,10 +459,8 @@ def generate(data = Body()):
 
     #сохранить json
     f = open(f"./data/TKP{ID}.json", 'w')
-    json.dump(data, f, indent=4)
+    json.dump(data, f)
     f.close()
-
-    
     
     #генерация файла
     make_XL(data, ID)
