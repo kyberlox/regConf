@@ -7,6 +7,7 @@
         <div class="card-body">
             <component :is="question.type"
                        :question="question"
+                       v-bind="question.type === 'TextType' ? { inputText: question.value } : {}"
                        @saveNewValue="saveNewValue" />
             {{ question.value }}
         </div>

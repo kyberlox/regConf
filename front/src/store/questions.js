@@ -24,6 +24,7 @@ export const useQuestionsStore = defineStore('questions', {
         //     }
         // },
         resetGroups: {
+            'getTable': ['compound', 'pressure', 'mark', 'tightness'],
             'compound': ['pressure', 'mark', 'tightness'],
             'pressure': ['mark', 'tightness'],
             'mark': ['tightness'],
@@ -115,8 +116,15 @@ export const useQuestionsStore = defineStore('questions', {
             this.questions.map((item) => {
                 if (targetGroups.includes(item.group)) {
                     if (item.type == 'oneLineType') {
-                        item.value = [];
+                        item.value.map((e) => {
+                            e.value = null;
+                            e.id = null;
+                        })
                         item.inner.map((e) => {
+                            e.value = null;
+                        })
+                    } else if (item.type == 'inputGroup') {
+                        item.answers.map((e) => {
                             e.value = null;
                         })
                     } else

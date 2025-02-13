@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "group": "compound",
+    "group": "getTable",
     "name": "Агрегатное состояние несущей рабочей среды:",
     "type": "RadioType",
     "inputName": "environmentType",
@@ -23,6 +23,9 @@
     "name": "Мольная доля состава рабочей среды, %:",
     "type": "oneLineType",
     "inputName": "environment",
+    "modifiers": [
+      "canClone"
+    ],
     "value": [],
     "inner": [
       [
@@ -68,6 +71,9 @@
     "inputName": "secondEnv",
     "hidden": true,
     "optionsLimit": 3,
+    "modifiers": [
+      "canClone"
+    ],
     "value": [],
     "inner": [
       [

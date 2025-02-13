@@ -14,6 +14,7 @@
                             @saveNewValue="(value, unit) => saveSelectText(unit, groupIndex)" />
                 <TextType v-if="part.type == 'TextType'"
                           :question="part"
+                          :fullquestion="question"
                           :inputText="question.value"
                           @input="saveSelectValue($event.target.value, groupIndex)" />
             </div>
@@ -32,10 +33,10 @@
 <script>
 import SelectType from "@/components/questionsTypes/SelectType.vue";
 import TextType from "@/components/questionsTypes/TextType.vue";
-import { changeToMpa } from '@/utils/changeToMpa';
-import { changeToKgInHour } from '@/utils/changeToKgInHour';
+import { changeToMpa } from "@/utils/changeToMpa";
+import { changeToKgInHour } from "@/utils/changeToKgInHour";
 import { useQuestionsStore } from "@/store/questions";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 export default {
     components: {
@@ -51,12 +52,13 @@ export default {
     emits: ["saveNewValue"],
     setup(props, { emit }) {
         const conversions = {
-            'convertToMpa': changeToMpa,
-            'convertToKg': changeToKgInHour,
+            convertToMpa: changeToMpa,
+            convertToKg: changeToKgInHour,
         };
         const convert = ref(false);
+        const lineIndex = ref(0);
 
-        const modifier = props.question.modifiers?.find(mod => conversions[mod]);
+        const modifier = props.question.modifiers?.find((mod) => conversions[mod]);
         if (modifier) {
             convert.value = conversions[modifier];
         }
@@ -68,15 +70,17 @@ export default {
         const currentInput = ref();
 
         const saveSelectText = (value, groupIndex) => {
+            lineIndex.value = groupIndex;
             answer.value.id = value;
             if (answer.value.value) {
                 if (convert.value) {
                     answer.value.value = convert.value(answer.value.id, currentInput.value);
                 }
-                emit("saveNewValue", props.question.inputName, answer.value, 'oneLine', groupIndex);
+                emit("saveNewValue", props.question.inputName, answer.value, "oneLine", groupIndex);
             }
         };
         const saveSelectValue = (value, groupIndex) => {
+            lineIndex.value = groupIndex;
             currentInput.value = value;
             answer.value.value = value;
 
@@ -84,7 +88,7 @@ export default {
                 if (convert.value) {
                     answer.value.value = convert.value(answer.value.id, currentInput.value);
                 }
-                emit("saveNewValue", props.question.inputName, answer.value, 'oneLine', groupIndex);
+                emit("saveNewValue", props.question.inputName, answer.value, "oneLine", groupIndex);
             }
         };
 
@@ -96,18 +100,26 @@ export default {
             if (optionsCounter.value >= props.question.optionsLimit) {
                 optionsLimit.value = true;
             }
-        }
+        };
 
         const removeLine = (groupIndex) => {
             questionStore.removeLine(props.question.inputName, groupIndex);
-        }
+        };
+
+        watch(answer.value, (newVal) => {
+            if (newVal.id == '') {
+                answer.value.id = '';
+                answer.value.value = null;
+                emit("saveNewValue", props.question.inputName, answer.value, "oneLine", lineIndex.value);
+            }
+        })
 
         return {
             saveSelectText,
             saveSelectValue,
             cloneQuestion,
             removeLine,
-            optionsLimit
+            optionsLimit,
         };
     },
 };

@@ -2,7 +2,7 @@
     <div class="card-body__select__wrapper">
         <select :name="question.inputName"
                 :id="question.inputName"
-                :key="question.answers.length"
+                :key="'select' + question.id"
                 class="card-body__select"
                 :value="selectValue"
                 @change="saveNewValue(question.inputName, $event.target.value)">
@@ -37,9 +37,15 @@ export default {
             saveNewValue(props.question.inputName, selectValue.value);
         })
 
-        watch(() => props.question.answers.length, () => {
-            saveNewValue(props.question.inputName, null);
+        watch(() => props.question.answers, (newVal, oldVal) => {
+            if (newVal !== oldVal) {
+                saveNewValue(props.question.inputName, '');
+            }
         })
+
+        watch(() => props.question.value, (newValue) => {
+            selectValue.value = newValue;
+        });
 
         const checkDuplicate = (id) => {
             if (props.selectedOptions) {
