@@ -14,7 +14,7 @@
                             @saveNewValue="(value, unit) => saveSelectText(unit, groupIndex)" />
                 <TextType v-if="part.type == 'TextType'"
                           :question="part"
-                          :fullquestion="question"
+                          :oneLine="true"
                           :inputText="question.value"
                           @input="saveSelectValue($event.target.value, groupIndex)" />
             </div>

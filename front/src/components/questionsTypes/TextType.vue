@@ -12,11 +12,12 @@
 import { ref, onMounted, watch } from 'vue';
 import { usePageStore } from "@/store/page";
 export default {
-    props: ["question", "inputText", "fullquestion"],
+    props: ["question", "inputText", "oneLine"],
     emits: ["saveNewValue"],
     setup(props, { emit }) {
         const pageStore = usePageStore();
         const questionInGroup = ref({});
+        const defaultValue = ref();
 
         onMounted(() => {
             if (questionInGroup.value) {
@@ -24,18 +25,9 @@ export default {
             }
         })
 
-        const defaultValue = ref();
-
         watch(() => props.inputText, (newValue) => {
-            if (newValue && props.fullquestion && newValue[0].value == null) {
-                saveNewValue(props.question.inputName, '')
-                defaultValue.value = null;
-            }
-            else {
-                if (newValue == null) {
-                    saveNewValue(props.question.inputName, null)
-                    defaultValue.value = null;
-                }
+            if ((newValue && props.oneLine && newValue[0].value == null) || newValue == null) {
+                saveNewValue(props.question.inputName, null)
             }
         }, { deep: true });
 
