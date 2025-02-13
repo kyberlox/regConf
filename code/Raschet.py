@@ -8,6 +8,10 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import create_engine, MetaData, Column, Integer, Text, Float
 
+import openpyxl
+from openpyxl import load_workbook
+from openpyxl import Workbook
+
 engine = create_engine('postgresql+psycopg2://kyberlox:4179@postgres/pdb')
 
 class Base(DeclarativeBase): pass
@@ -20,7 +24,8 @@ class Params(Base):
     DN = Column(Float, nullable=True)
     PN = Column(Float, nullable=True)
     spring_material = Column(Text, nullable=True)
-    spring_number = Column(Integer, nullable=True)
+    spring_number = Column(Text, nullable=True)
+    valve_type = Column(Text, nullable=True)
 
 class Table2(Base):
     __tablename__ = 'table2'
@@ -36,13 +41,18 @@ class Table10(Base):
     Pn = Column(Float, nullable=True)
     P = Column(Float, nullable=True)
 
+class pakingParams(Base):
+    __tablename__ = 'paking_params'
+    id = Column(Integer, primary_key=True)
+    mark = Column(Text, nullable=True)
+    DN = Column(Float, nullable=True)
+    PN = Column(Float, nullable=True)
+    M = Column(Float, nullable=True)
+    S = Column(Float, nullable=True)
+
 Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autoflush=True, bind=engine)
 db = SessionLocal()
-
-import openpyxl
-from openpyxl import load_workbook
-from openpyxl import Workbook
 
 
 
@@ -93,15 +103,15 @@ def searchT10(T, Pn):
     
     return ans
 
-def searchParams(DNS, curP1, PN):
+def searchParams(DNS, curP1, PN, valve_type):
     #найти все подходящие строки их DNS и P1 - больше искомых
-    request = db.query(Params).filter(Params.DNS >= DNS, Params.P1 >= curP1, Params.PN >= PN).all()
+    request = db.query(Params).filter(Params.DNS >= DNS, Params.P1 >= curP1, Params.PN >= PN, valve_type == valve_type).all()
 
     if request == None:
         return False
     ans = False
 
-    #найти самы подходящий - MIN по DNS и P1
+    #найти самый подходящий - MIN по DNS и P1
     minDNS = request[0].DNS
     minP1 = request[0].P1
     minPN = request[0].PN
@@ -116,10 +126,21 @@ def searchParams(DNS, curP1, PN):
                 "DN" : example.DN, 
                 "PN" : example.PN, 
                 "spring_material" : example.spring_material,
-                "spring_number" : example.spring_number
+                "spring_number" : example.spring_number,
+                "valve_type" : valve_type
             }
-    print(ans)
+
     return ans
+
+def get_by_mark(mark, DN, PN):
+    mark = mark[2:5]
+    request = db.query(pakingParams).filter(pakingParams.mark == mark, pakingParams.DN == DN, pakingParams.PN == PN).first()
+    if request == None:
+        return ("", "")
+    else:
+        return (request.M, request.S) 
+
+
 
 def mixture(envs : list):
     result = {
@@ -136,7 +157,6 @@ def mixture(envs : list):
         "compressibility_factor" : 0
     }
 
-    
     env_type = set()
     for env in envs:
         env_type.add(env["environment"])
@@ -197,7 +217,7 @@ def mixture(envs : list):
             result["viscosity"] = viscosity_сh / viscosity_zn
             result["adiabatic_index"] = adiabatic_index
     else:
-        result["environment"] = "Раствор газа в жидкости"
+        result["environment"] = "Смесь"
         density_ch = 0
         density_zn = 0
         pre_u = 0
@@ -400,7 +420,7 @@ def Raschet(dt):
 
     #Деаметр ПК
     new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
-    example = searchParams(DN_s, Pn, PN)
+    example = searchParams(DN_s, Pn, PN, dt["valve_type"])
     
     new_dt["DN"] = example["DN"] #Номинальный диаметр
     new_dt["PN"] = example["PN"] #Номиннальное давление
@@ -411,6 +431,7 @@ def Raschet(dt):
         50.0 : 80.0,
         80.0 : 100.0,
         100.0 : 150.0,
+        150.0 : 200.0,
         200.0 : 300.0
     }
     new_dt["DN2"] = DN2[new_dt["DN"]]
@@ -428,7 +449,6 @@ def Raschet(dt):
     new_dt["spring_material"] = example["spring_material"]
     new_dt["spring_number"] = example["spring_number"]
     
-
     #подбор сильфона !!!!!!!!!!!!!!!!!!!!! сильфон только на пружине
     if (dt["valve_type"] == 'В') and  ( ( (example["spring_material"] == '51ХФА') and (T > 120) ) or ( (example["spring_material"] == '50ХФА') and (T > 250) ) ):
         new_dt["need_bellows"] = True
@@ -528,8 +548,12 @@ def mark_params(dt):
         material_spool = "12Х18Н10Т"
     elif dt["material"] == "20ГЛ" and T <= 200:
         material_spool = "14Х17Н2"
+    elif dt["material"] == "12Х18Н9ТЛ" and T > 200:
+        material_spool = "12Х18Н10Т"
+    elif dt["material"] == "12Х18Н9ТЛ" and T <= 200:
+        material_spool = "12Х18Н10Т"
     else:
-        material_spool = "10Х17Н13М2Т"
+        material_spool = "10Х17Н13М3Т"
     
     if dt["material"] == "25Л":
         color = [
@@ -550,6 +574,8 @@ def mark_params(dt):
             f"Красный RAL3020 по СТО Газпром 9.1-018-2012" #Газпром
             ]
 
+    weight, painting_area = get_by_mark(dt["mark"], DN, PN)
+
     packaging = [
         "Упаковка на европаллет (1200х800)",
         "Упаковка груза в ящики из OSB по ТУ “АО НПО Регулятор”",
@@ -568,7 +594,7 @@ def mark_params(dt):
     new_dt = {
         "material_bellows" : material_bellows,      #Материал сильфона
         "material_spool" : material_spool,          #Материал золотника
-        "material_saddle" : "",                     #Материал седла
+        "material_saddle" : material_spool,         #Материал седла
         "weight" : "",                              #Маccа
         "color" : color,                            #Цвет
         "painting_area" : "",                       #Площадь под покраску
@@ -584,7 +610,6 @@ def mark_params(dt):
         dt["contact_type"] = contact_type       #тип присоединения
         dt["inlet_flange"] = inlet_flange       #варианты фланца на входе
         dt["outlet_flange"] = outlet_flange     #варианты фланца на выходе
-        dt["detonation_node"] = False #Узел подрыва недоступен для заказа
         dt = dt | new_dt
         return dt
 
@@ -614,12 +639,13 @@ def make_XL(dt, ID):
     sheet = wb['Лист1']
 
     data_keys = {
+        "B" : "OL_num",
         "C" : "mark",
         "F" : "quantity",
+        "G" : "pipe_material",
         "H" : "name",
         "I" : "T",
-        "L" : "climate", 
-        "M" : "detonation_node",
+        "L" : "climate",
         "N" : "need_bellows",
         "O" : "DN",
         "P" : "PN",
@@ -660,21 +686,23 @@ def make_XL(dt, ID):
     for i, position in enumerate(dt, start=3):
         #нумерация 
         sheet[f"A{i}"].value = int(sheet[f"A3"].value) + i-3
-        sheet[f"B{i}"].value = int(sheet[f"A3"].value) + i-3
+
         #изготовитель
         sheet[f"BB{i}"].value = sheet[f"BB3"].value
 
         #Назначение
-        sheet[f"D{i}"].value
+        sheet[f"D{i}"].value = "Общепромышленное"
 
         #Номер документа
-        sheet[f"E{i}"].value
+        sheet[f"E{i}"].value = "ТУ 3742-003-38877941-2012Б" if position["valve_type"] == 'В' else "ТУ 3742-013-38877941-2016"
 
-        #Материал и размер трубопровода
-        sheet[f"G{i}"].value
-
+        type_name = "Пружинный" if position["valve_type"] == 'В' else "Пилотный"
+        do = "прямого действия, " if position["valve_type"] == 'В' else ""
         #Тип клапана
-        sheet[f"K{i}"].value
+        sheet[f"K{i}"].value = f"{type_name} предохранительный, сбросной, угловой, {do}{position['open_close_type']}"
+
+        #Узел подрыва недоступен для заказа
+        sheet[f"M{i}"].value = "Нет"
 
         #Коэффициент расхода, α
         alp = position["environment"] == "Газ"
@@ -718,5 +746,5 @@ def make_XL(dt, ID):
             else:
                 sheet[f"{key}{i}"].value = position[data_keys[key]]
         
-        #Создать экземпляр файла
-        wb.save(f"TKPexample.xlsx")
+    #Создать экземпляр файла
+    wb.save(f"TKPexample.xlsx")
