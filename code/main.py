@@ -73,7 +73,8 @@ class Params(Base):
     DN = Column(Float, nullable=True)
     PN = Column(Float, nullable=True)
     spring_material = Column(Text, nullable=True)
-    spring_number = Column(Integer, nullable=True)
+    spring_number = Column(Text, nullable=True)
+    valve_type = Column(Text, nullable=True)
 
 class Table2(Base):
     __tablename__ = 'table2'
@@ -88,6 +89,15 @@ class Table10(Base):
     T = Column(Float, nullable=True)
     Pn = Column(Float, nullable=True)
     P = Column(Float, nullable=True)
+
+class pakingParams(Base):
+    __tablename__ = 'paking_params'
+    id = Column(Integer, primary_key=True)
+    mark = Column(Text, nullable=True)
+    DN = Column(Float, nullable=True)
+    PN = Column(Float, nullable=True)
+    M = Column(Float, nullable=True)
+    S = Column(Float, nullable=True)
 
 Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autoflush=True, bind=engine)
@@ -168,7 +178,7 @@ def migration():
                 db.commit()
     
     #миграция параметров DN и PN
-    WB = load_workbook("./DNtoPN.xlsx")
+    WB = load_workbook("./PNtoDN.xlsx")
     sheet = WB['full']
 
     par_result = {"added" : [], "exists" : []}
@@ -179,13 +189,14 @@ def migration():
         DN = float(sheet[f"C{i}"].value)
         PN = float(sheet[f"B{i}"].value)
         spring_material = str(sheet[f"F{i}"].value)
-        spring_number = int(sheet[f"E{i}"].value)
+        spring_number = str(sheet[f"E{i}"].value)
+        valve_type = str(sheet[f"H{i}"].value)
 
         #экземпляр таблицы параметров
-        example = Params(DNS = DNS, P1 = P1_max, DN = DN, PN = PN, spring_material = spring_material, spring_number = spring_number)
+        example = Params(DNS = DNS, P1 = P1_max, DN = DN, PN = PN, spring_material = spring_material, spring_number = spring_number, valve_type = valve_type)
         
         #есть ли такая запись?
-        request = db.query(Params).filter(Params.DNS == DNS, Params.P1 == P1_max, Params.DN == DN, Params.PN == PN, Params.spring_material == spring_material, Params.spring_number == spring_number).first()
+        request = db.query(Params).filter(Params.DNS == DNS, Params.P1 == P1_max, Params.DN == DN, Params.PN == PN, Params.spring_material == spring_material, Params.spring_number == spring_number, Params.valve_type == valve_type).first()
         #print(request)
 
         #если нет - добавить
@@ -201,7 +212,8 @@ def migration():
                 "DN" : DN, 
                 "PN" : PN, 
                 "spring_material" : spring_material,
-                "spring_number" : spring_number
+                "spring_number" : spring_number,
+                "valve_type" : valve_type
             }
             par_result["added"].append(curr)
 
@@ -214,7 +226,8 @@ def migration():
                 "DN" : request.DN, 
                 "PN" : request.PN, 
                 "spring_material" : request.spring_material,
-                "spring_number" : spring_number
+                "spring_number" : spring_number,
+                "valve_type" : valve_type
             }
             par_result["exists"].append(curr)
 
@@ -295,7 +308,51 @@ def migration():
 
     result.append(t10_result)
 
-    return {"environmentTable" : result, "valveParametrsTable" : par_result, "Table2" : t2_result, "Table10" : t10_result}
+    wb3 = load_workbook("./packing_params")
+    sheet = wb3["result"]
+
+    pak_res = {"added" : [], "exists" : []}
+    for i in range(2, sheet.max_row):
+        mark = str(sheet[f"A{i}"].value)
+        DN = float(sheet[f"B{i}"].value)
+        PN = float(sheet[f"C{i}"].value)
+        M = float(sheet[f"D{i}"].value)
+        S = float(sheet[f"E{i}"].value)
+
+        example = pakingParams(mark=mark, DN=DN, PN=PN, M=M, S=S)
+        request = db.query(pakingParams).filter(pakingParams.mark == mark, pakingParams.DN == DN, pakingParams.PN == pakingParams).first()
+
+        #если нет - добавить
+        if request == None:
+            db.add(example)
+            db.commit()
+
+            curr = {
+                "№" : i,
+                "ID" : example.id,  
+                "mark" : mark, 
+                "DN" : DN, 
+                "PN" : PN,
+                "M" : M,
+                "S" : S
+            }
+            pak_res["added"].append(curr)
+        #если есть - пропустить
+        else:
+            curr = {
+                "№" : i,
+                "ID" : example.id,  
+                "mark" : mark, 
+                "DN" : DN, 
+                "PN" : PN,
+                "M" : M,
+                "S" : S
+            }
+            pak_res["exists"].append(curr)
+
+
+
+    return {"environmentTable" : result, "valveParametrsTable" : par_result, "Table2" : t2_result, "Table10" : t10_result, "PackingParams" : pak_res}
 
 #подбор сред
 @app.get("/api/get_table")
