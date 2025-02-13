@@ -14,6 +14,7 @@
                             @saveNewValue="(value, unit) => saveSelectText(unit, groupIndex)" />
                 <TextType v-if="part.type == 'TextType'"
                           :question="part"
+                          :inputText="question.value"
                           @input="saveSelectValue($event.target.value, groupIndex)" />
             </div>
             <button v-if="(!question.modifiers || !question.modifiers.includes('noAddButton')) && groupIndex !== 0"

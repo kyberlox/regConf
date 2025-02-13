@@ -9,10 +9,10 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { usePageStore } from "@/store/page";
 export default {
-    props: ["question"],
+    props: ["question", "inputText"],
     emits: ["saveNewValue"],
     setup(props, { emit }) {
         const pageStore = usePageStore();
@@ -24,8 +24,20 @@ export default {
             }
         })
 
-        const defaultValue = ref(props.question.value);
+        const defaultValue = ref(props.inputText);
+
+        watch(() => props.inputText, (newValue) => {
+            console.log(newValue.length);
+            // console.log(newValue);
+
+            if (newValue.length == 0) {
+
+                defaultValue.value = '';
+            }
+        });
+
         const saveNewValue = (name, value) => {
+            defaultValue.value = value;
             emit("saveNewValue", name, value);
         }
         return {
