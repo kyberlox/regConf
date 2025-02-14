@@ -24,7 +24,9 @@
     <!-- <Passport /> -->
     <div class="download-button__wrapper">
         <div class="download-button"
-             @click="download">Скачать</div>
+             @click="download('TKP')">Скачать ТКП</div>
+        <div class="download-button"
+             @click="download('OL')">Скачать ОЛ</div>
     </div>
     <FormHandler />
 </template>
@@ -74,13 +76,21 @@ export default {
             }
         }
 
-        const download = () => {
+        const download = (type) => {
             const dataToSend = computed(() => envModuleStore.getAfterGetCompoundValue);
-            Api.post(
-                API_URL + '/generate',
-                [dataToSend.value],
-                true
-            )
+            if (type == 'TKP') {
+                Api.post(
+                    API_URL + '/generate',
+                    [dataToSend.value],
+                    true
+                )
+            } else if (type == 'OL') {
+                Api.post(
+                    API_URL + '/makeOL',
+                    dataToSend.value,
+                    true
+                )
+            }
         }
 
         return {
@@ -101,7 +111,7 @@ export default {
     align-items: center;
     width: 230px;
     height: 60px;
-    margin: auto;
+    // margin: auto;
     background-color: white;
     border: 2px solid var(--emk-brand-color);
     border-radius: 8px;
@@ -124,6 +134,9 @@ export default {
 
     &__wrapper {
         padding-bottom: 30px;
+        display: flex;
+        justify-content: center;
+        gap: 30px;
     }
 }
 </style>

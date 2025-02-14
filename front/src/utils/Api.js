@@ -26,7 +26,7 @@ export default class Api {
             );
             const link = document.createElement('a');
             link.href = downloadUrl;
-            link.download = 'ТКП.xlsx';
+            link.download = 'Доументация.xlsx';
             document.body.appendChild(link);
             link.click();
             link.remove();
