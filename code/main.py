@@ -5,7 +5,7 @@ from starlette.responses import RedirectResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import HTTPException
 
-from Raschet import Raschet, mixture, mark_params, get_tightness, make_XL
+from Raschet import Raschet, mixture, mark_params, get_tightness, make_XL, make_OL
 
 import openpyxl
 from openpyxl import load_workbook
@@ -308,7 +308,7 @@ def migration():
 
     result.append(t10_result)
 
-    wb3 = load_workbook("./packing_params")
+    wb3 = load_workbook("./paking_params.xlsx")
     sheet = wb3["result"]
 
     pak_res = {"added" : [], "exists" : []}
@@ -316,11 +316,15 @@ def migration():
         mark = str(sheet[f"A{i}"].value)
         DN = float(sheet[f"B{i}"].value)
         PN = float(sheet[f"C{i}"].value)
-        M = float(sheet[f"D{i}"].value)
+        M = sheet[f"D{i}"].value
         S = float(sheet[f"E{i}"].value)
+        if type(M) == type("") or type(M) == type(1.0):
+            M = float(sheet[f"D{i}"].value)
+        else:
+            M = None
 
         example = pakingParams(mark=mark, DN=DN, PN=PN, M=M, S=S)
-        request = db.query(pakingParams).filter(pakingParams.mark == mark, pakingParams.DN == DN, pakingParams.PN == pakingParams).first()
+        request = db.query(pakingParams).filter(pakingParams.mark == mark, pakingParams.DN == DN, pakingParams.PN == PN).first()
 
         #если нет - добавить
         if request == None:
@@ -454,14 +458,36 @@ def generate(data = Body()):
     ID = 1
 
     #сохранить json
-    f = open(f"./data/TKP{ID}.json", 'w')
-    json.dump(data, f, indent=4)
+    f = open(f"./data/TKP.json", 'w')
+    json.dump(data, f)
     f.close()
-
-    
     
     #генерация файла
-    make_XL(data, ID)
+    res = make_XL(data, ID)
 
     #выдать файл
-    return FileResponse(f'TKPexample.xlsx', filename=f'ТКП ПК {ID}.xlsx', media_type='application/xlsx')
+    if res == True:
+        return FileResponse(f'./data/TKPexample.xlsx', filename=f'ТКП ПК.xlsx', media_type='application/xlsx')
+    else:
+        return res
+
+@app.post("/api/makeOL")
+def mk_OL(data = Body()):
+    #запись в БД
+
+    #удалить предыдущий эксель файл и чтение ID
+    ID = 1
+
+    #сохранить json
+    f = open(f"./data/OL.json", 'w')
+    json.dump(data, f)
+    f.close()
+    
+    #генерация файла
+    res = make_OL(data)
+    #return res
+    #выдать файл
+    if res == True:
+        return FileResponse(f'./data/OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx')
+    else:
+        return res

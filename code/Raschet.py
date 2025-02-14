@@ -74,7 +74,7 @@ def searchT2(T, Pn):
             ans = {
                 "ID" : example.id,  
                 "T" : example.T, 
-                "Pn" : example.Pn, 
+                "Pn" : example.Pn * 10, 
                 "PN" : example.P
             }
     return ans
@@ -116,9 +116,10 @@ def searchParams(DNS, curP1, PN, valve_type):
     minP1 = request[0].P1
     minPN = request[0].PN
     for example in request:
-        if (example.DNS <= minDNS) and (example.P1 <= minP1) and (example.PN <= minPN):
+        if (example.DNS <= minDNS) and (example.P1 <= minP1) and (example.PN == minPN):
             minDNS = example.DNS
             minP1 = example.P1
+            minPN = example.PN
             ans = {
                 "ID" : example.id,  
                 "DNS" : example.DNS, 
@@ -136,9 +137,12 @@ def get_by_mark(mark, DN, PN):
     mark = mark[2:5]
     request = db.query(pakingParams).filter(pakingParams.mark == mark, pakingParams.DN == DN, pakingParams.PN == PN).first()
     if request == None:
-        return ("", "")
+        return ("Нет данных", "Нет данных")
     else:
-        return (request.M, request.S) 
+        if request.M == None:
+            return ("Нет данных", request.S) 
+        else:
+            return (request.M, request.S) 
 
 
 
@@ -243,6 +247,11 @@ def mixture(envs : list):
     return result
 
 def Raschet(dt):
+    kys = ["viscosity", "Pn", "Pp", "Pp_din", "Gab", "N", "pre_Kc", "density", "climate", "material", "environment"]
+    for param in kys:
+        if param not in dt:
+            return {"err" : f"Key \'{param}\' does not exists"}
+        
     P_atm = 0.101320
     R = 8.31446261815324 #Газовая постоянная ( Па / (моль * K))
 
@@ -308,6 +317,8 @@ def Raschet(dt):
     B = P2 / P1
        
     if dt["environment"] == "Газ":
+        if "molar_mass" not in dt:
+            return {"err" : f"Key \'molar_mass\' does not exists"}
         M = dt["molar_mass"]
 
         p1 = P1 * 1000 * M / (R  * (T+273.15))
@@ -415,8 +426,8 @@ def Raschet(dt):
         ex = searchT2(T, Pn)
     else:
         ex = searchT10(T, Pn)
-    PN = ex["PN"] * 10
-    print("PN по T и Pn:", PN)
+    PN = ex["PN"]
+    #print("PN по T и Pn:", PN)
 
     #Деаметр ПК
     new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
@@ -488,6 +499,11 @@ def Raschet(dt):
     return all_dt
 
 def mark_params(dt):
+    kys = ["valve_type", "PN", "PN2", "DN", "T", "joining_type", "need_bellows", "material", "mark"]
+    for param in kys:
+        if param not in dt:
+            return {"err" : f"Key \'{param}\' does not exists"}
+        
     valve_type = dt["valve_type"]
     PN = dt["PN"]
     PN2 = dt["PN2"]
@@ -595,9 +611,9 @@ def mark_params(dt):
         "material_bellows" : material_bellows,      #Материал сильфона
         "material_spool" : material_spool,          #Материал золотника
         "material_saddle" : material_spool,         #Материал седла
-        "weight" : "",                              #Маccа
+        "weight" : weight,                          #Маccа
         "color" : color,                            #Цвет
-        "painting_area" : "",                       #Площадь под покраску
+        "painting_area" : painting_area,            #Площадь под покраску
         "packaging" : packaging,                    #Упаковка
         "trials" : "",                              #Испытания
         "assignment" : assignment,                  #Срок службы
@@ -614,7 +630,12 @@ def mark_params(dt):
         return dt
 
 def get_tightness(dt):
-    #класс гкрметичнности
+    kys = ["valve_type", "contact_type", "DN"]
+    for param in kys:
+        if param not in dt:
+            return {"err" : f"Key \'{param}\' does not exists"}
+            
+    #класс герметичнности
     #бывает ли АА?
     tightness = []
     if dt["valve_type"] == "Н":
@@ -635,8 +656,8 @@ def get_tightness(dt):
     return dt
 
 def make_XL(dt, ID):
-    wb = load_workbook("./ТКП.xlsx")
-    sheet = wb['Лист1']
+    WB = load_workbook("ТКП.xlsx")
+    sheet = WB['Лист1']
 
     data_keys = {
         "B" : "OL_num",
@@ -678,13 +699,19 @@ def make_XL(dt, ID):
         "AV" : "packaging",
         "AW" : "acceptance",
         "AX" : "trials",
-        "AY" : "warranty",
         "AZ" : "assignment",
         "BA" : "additionally"
     }
-
+       
     for i, position in enumerate(dt, start=3):
-        #нумерация 
+        #проверка 
+        kys = list(data_keys.values())
+        kys += ["valve_type", "open_close_type", "environment"]
+        for param in kys:
+            if param not in position:
+                return {"err" : f"Key \'{param}\' does not exists"}
+                
+        #номерация 
         sheet[f"A{i}"].value = int(sheet[f"A3"].value) + i-3
 
         #изготовитель
@@ -694,6 +721,7 @@ def make_XL(dt, ID):
         sheet[f"D{i}"].value = "Общепромышленное"
 
         #Номер документа
+        print(i)
         sheet[f"E{i}"].value = "ТУ 3742-003-38877941-2012Б" if position["valve_type"] == 'В' else "ТУ 3742-013-38877941-2016"
 
         type_name = "Пружинный" if position["valve_type"] == 'В' else "Пилотный"
@@ -731,6 +759,9 @@ def make_XL(dt, ID):
         #Давление полного открытия без противодавления
         sheet[f"AJ{i}"].value = position["Ppo"] - position["Pp"]
 
+        #Гарантийный срок службы, мес.
+        sheet[f"AY{i}"].value = 12
+
         # T окр среды
         sheet[f"J{i}"].value = f"{position['T_min']} ... {position['T_min']}"
         
@@ -747,4 +778,114 @@ def make_XL(dt, ID):
                 sheet[f"{key}{i}"].value = position[data_keys[key]]
         
     #Создать экземпляр файла
-    wb.save(f"TKPexample.xlsx")
+    WB.save("./data/TKPexample.xlsx")
+
+    return True
+
+def make_OL(data):
+    wb = load_workbook("ОЛ.xlsx")
+    sheet = wb['Table 1']
+
+    #Трассировка данных
+    params = {
+        3 : "OL_num",
+        5 : "quantity",
+        6 : "valve_type", #переделать в слова
+        7 : "environment",
+        8 : "name",
+        9 : "T",
+        10 : "abrasive_particles",
+        11 : "density",
+        12 : "molecular_weight", #если есть
+        13 : "adiabatic_index", #если есть
+        14 : "viscosity", #если жидкость
+        15 : "Pn",
+        16 : "Pno",
+        17 : "Ppo",
+        18 : "Pp",
+        19 : "Gab",
+        20 : "pre_Kc",
+        21 : "DN_s",
+        22 : "joining_type",
+        23 : "inlet_flange",
+        24 : "outlet_flange",
+        25 : "need_bellows",
+        26 : "force_open",
+        27 : "DN",
+        28 : "DN2",
+        29 : "PN",
+        30 : "PN2",
+        31 : "climate",
+        32 : "Tokr",
+        33 : "trials",
+        34 : "material",
+        35 : "need_ZIP",
+        36 : "reciprocal_connections",
+        37 : "trials",
+        38 : "color",
+        39 : "packaging",
+        40 : "acceptance",
+        41 : "additionally"
+    }
+
+    '''Форматирование данных'''
+
+    valve_type = "Пружинный" if data["valve_type"] == 'В' else "Пилотный"
+    data["valve_type"] = valve_type
+
+    #с противодавлением и перевести в МПа => /10
+    Pn = float(data["Pn"]) * 0.1 - float(data['Pp']) * 0.1
+
+    data['Pn'] = Pn
+
+    #Давление начала открытия
+    if Pn <= 0.3:
+        Pno = Pn + 0.02
+        data['Pno'] = Pno
+    elif (Pn > 0.3) and (Pn <= 6):
+        Pno = 1.07 * Pn
+        data['Pno'] = Pno
+    elif Pn > 6:
+        Pno = 1.05 * Pn
+        data['Pno'] = Pno
+    
+
+    # Давление полного открытия
+    if Pn <= 0.3:
+        Ppo = Pn + 0.05
+        data['Ppo'] = Ppo
+    elif (Pn > 0.3) and (Pn <= 6):
+        Ppo = 1.15 * Pn
+        data['Ppo'] = Ppo
+    elif Pn > 6:
+        Ppo = 1.1 * Pn
+        data['Ppo'] = Ppo
+    
+
+    #Перевести в МПа => /10
+    Pp = data["Pp"] * 0.1
+    data['Pp'] = Pp
+
+    Tokr = f"{data['T_min']} ... {data['T_max']}"
+    data['Tokr'] = Tokr
+
+    '''Автозаполнение'''
+    for i in params.keys():
+        #Проверка
+        if params[i] not in data:
+            return {"err" : f"Некорректный ввод параметра \'{params[i]}\' "}
+        else:
+            if type(data[params[i]]) == type(True):
+                if data[params[i]] == True:
+                    sheet[f"C{i}"] = "Да"
+                elif data[params[i]] == False:
+                    sheet[f"C{i}"] = "Нет"
+            elif data[params[i]] == "" or data[params[i]] == None:
+                sheet[f"C{i}"] = "Нет"
+            else:
+                sheet[f"C{i}"] = data[params[i]]
+
+    # Создать экземпляр файла
+    wb.save("./data/OLexample.xlsx")
+
+    return True
