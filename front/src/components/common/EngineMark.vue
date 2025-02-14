@@ -149,6 +149,7 @@ export default {
         markArr.value[5] +
         markArr.value[6] + '.' +
         markArr.value[7];
+      questionsStore.setQuestionValue('mark', mark.value)
     }
 
     watch(paramToMark, (newVal) => {

@@ -605,13 +605,21 @@
     ]
   },
   {
+    "id": 100,
+    "group": "hiddenMark",
+    "name": "Маркировка",
+    "inputName": "mark",
+    "value": null,
+    "hidden": true
+  },
+  {
     "id": 19,
     "group": "mark",
     "inputName": "markAnswersGroup",
     "type": "inputGroup",
     "answers": [
       {
-        "id": 19.2,
+        "id": 19.1,
         "name": "тип ПК:",
         "inputName": "open_close_type",
         "type": "DisabledType",
@@ -625,6 +633,62 @@
         "type": "DisabledType",
         "hidden": false,
         "value": null
+      },
+      {
+        "id": 102,
+        "group": "hiddenMark",
+        "name": "Материал",
+        "inputName": "material_bellows",
+        "value": null,
+        "hidden": true
+      },
+      {
+        "id": 19.3,
+        "inputName": "material_spool",
+        "group": "hiddenMark",
+        "type": "DisabledType",
+        "hidden": true,
+        "value": null
+      },
+      {
+        "id": 19.4,
+        "inputName": "material_saddle",
+        "group": "hiddenMark",
+        "type": "DisabledType",
+        "hidden": true,
+        "value": null
+      },
+      {
+        "id": 19.5,
+        "inputName": "weight",
+        "group": "hiddenMark",
+        "type": "DisabledType",
+        "hidden": true,
+        "value": null
+      },
+      {
+        "id": 19.6,
+        "inputName": "painting_area",
+        "group": "hiddenMark",
+        "type": "DisabledType",
+        "hidden": true,
+        "value": null
+      },
+      {
+        "id": 19.7,
+        "inputName": "trials",
+        "group": "hiddenMark",
+        "type": "DisabledType",
+        "hidden": true,
+        "value": null
+      },
+      {
+        "id": 19.8,
+        "inputName": "assignment",
+        "group": "hiddenMark",
+        "type": "DisabledType",
+        "hidden": true,
+        "value": null
       }
     ]
   },
@@ -634,12 +698,11 @@
     "name": "Тип контакта:",
     "inputName": "contact_type",
     "type": "SelectType",
-    "hidden": false,
     "value": null,
     "answers": []
   },
   {
-    "id": 21,
+    "id": 20.1,
     "group": "tightness",
     "name": "Фланец на входе:",
     "inputName": "inlet_flange",
@@ -649,7 +712,7 @@
     "answers": []
   },
   {
-    "id": 22,
+    "id": 20.2,
     "group": "tightness",
     "name": "Фланец на выходе:",
     "inputName": "outlet_flange",
@@ -659,7 +722,7 @@
     "answers": []
   },
   {
-    "id": 23,
+    "id": 21,
     "group": "tightness",
     "name": "Покраска:",
     "inputName": "color",
@@ -668,7 +731,7 @@
     "answers": []
   },
   {
-    "id": 24,
+    "id": 22,
     "group": "tightness",
     "name": "Упаковка:",
     "inputName": "packaging",
@@ -678,12 +741,128 @@
     "answers": []
   },
   {
-    "id": 25,
+    "id": 23,
     "group": "tightness",
     "name": "Герметичность затвора по ГОСТ 9544-2015:",
     "type": "SelectType",
     "inputName": "tightness",
     "value": null,
     "answers": []
+  },
+  {
+    "id": 26,
+    "group": "additional",
+    "inputName": "additionalAnswersGroup",
+    "type": "CheckboxType",
+    "modifiers": [
+      "checkboxGroup"
+    ],
+    "value": [],
+    "answers": [
+      {
+        "id": 26,
+        "group": "additional",
+        "name": "Поворотные заглушки",
+        "type": "CheckboxType",
+        "inputName": "rotary_plugs",
+        "value": false
+      },
+      {
+        "id": 27,
+        "group": "additional",
+        "name": "Термочехол",
+        "type": "CheckboxType",
+        "inputName": "thermal_cover",
+        "value": false
+      },
+      {
+        "id": 32,
+        "group": "additional",
+        "name": "ZIP",
+        "type": "CheckboxType",
+        "inputName": "need_ZIP",
+        "value": false
+      },
+      {
+        "id": 29,
+        "group": "additional",
+        "name": "Приемка",
+        "type": "CheckboxType",
+        "inputName": "acceptance",
+        "value": false
+      },
+      {
+        "id": 30,
+        "group": "additional",
+        "name": "Переходники",
+        "type": "CheckboxType",
+        "inputName": "adapters",
+        "value": false
+      },
+      {
+        "id": 31,
+        "group": "additional",
+        "name": "КОФ",
+        "type": "CheckboxType",
+        "inputName": "needKOF",
+        "value": false
+      },
+      {
+        "id": 28,
+        "group": "additional",
+        "name": "Наличие в рабочей среде абразивных частиц",
+        "type": "CheckboxType",
+        "inputName": "abrasive_particles",
+        "value": false
+      },
+      {
+        "id": 33,
+        "group": "additional",
+        "name": "Комплект ответных присоединительных частей",
+        "type": "CheckboxType",
+        "inputName": "reciprocal_connections",
+        "value": false
+      }
+    ]
+  },
+  {
+    "id": 36,
+    "group": "additional",
+    "name": "Сопроводительная документация:",
+    "type": "TextAreaType",
+    "inputName": "docs",
+    "value": null
+  },
+  {
+    "id": 34,
+    "group": "additional",
+    "name": "Материал и размер трубопровода:",
+    "type": "TextAreaType",
+    "inputName": "pipe_material",
+    "value": null
+  },
+  {
+    "id": 37,
+    "group": "additional",
+    "name": "Дополнительные требования:",
+    "type": "TextAreaType",
+    "inputName": "additionally",
+    "value": null
+  },
+  {
+    "id": 35,
+    "group": "additional",
+    "name": "Количество:",
+    "type": "TextType",
+    "inputName": "quantity",
+    "value": null
+  },
+  {
+    "id": 38,
+    "group": "additional",
+    "name": "Номер опросного листа:",
+    "type": "TextType",
+    "inputName": "OL_num",
+    "value": null
   }
 ]

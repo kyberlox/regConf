@@ -174,3 +174,13 @@
         color: #212529;
     }
 }
+
+
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 8px;
+}

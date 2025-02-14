@@ -38,7 +38,7 @@ export default {
         })
 
         watch(() => props.question.answers, (newVal, oldVal) => {
-            if (newVal !== oldVal) {
+            if (Array.isArray(newVal) && Array.isArray(oldVal) && newVal.length !== oldVal.length) {
                 saveNewValue(props.question.inputName, '');
             }
         })

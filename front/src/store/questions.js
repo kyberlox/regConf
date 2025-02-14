@@ -5,30 +5,12 @@ import { useEnvModuleStore } from './envModule';
 export const useQuestionsStore = defineStore('questions', {
     state: () => ({
         questions: questionsBank,
-        // questionsGroups: {
-        //     compound: {
-        //         min: 1,
-        //         max: 5,
-        //     },
-        //     pressure: {
-        //         min: 6,
-        //         max: 16,
-        //     },
-        //     mark: {
-        //         min: 17,
-        //         max: 19,
-        //     },
-        //     tightness: {
-        //         min: 20,
-        //         max: 25,
-        //     }
-        // },
         resetGroups: {
             'getTable': ['compound', 'pressure', 'mark', 'tightness'],
             'compound': ['pressure', 'mark', 'tightness'],
             'pressure': ['mark', 'tightness'],
             'mark': ['tightness'],
-        }
+        },
     }),
 
     actions: {
@@ -69,6 +51,8 @@ export const useQuestionsStore = defineStore('questions', {
                 });
             }
             else {
+                console.log(questionName);
+
                 const targetQuestion = this.findQuestion(questionName);
                 targetQuestion.answers = questionValue;
             }
