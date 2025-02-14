@@ -591,7 +591,6 @@ def mark_params(dt):
             ]
 
     weight, painting_area = get_by_mark(dt["mark"], DN, PN)
-    print(weight, "", painting_area)
 
     packaging = [
         "Упаковка на европаллет (1200х800)",
@@ -657,8 +656,8 @@ def get_tightness(dt):
     return dt
 
 def make_XL(dt, ID):
-    wb = load_workbook("./ТКП.xlsx")
-    sheet = wb['Лист1']
+    WB = load_workbook("ТКП.xlsx")
+    sheet = WB['Лист1']
 
     data_keys = {
         "B" : "OL_num",
@@ -779,4 +778,108 @@ def make_XL(dt, ID):
                 sheet[f"{key}{i}"].value = position[data_keys[key]]
         
     #Создать экземпляр файла
-    wb.save(f"TKPexample.xlsx")
+    WB.save("./data/TKPexample.xlsx")
+
+    return True
+
+def mk_OL(data):
+    wb = load_workbook("JK.xlsx")
+    sheet = wb['Table 1']
+
+    #Трассировка данных
+    params = {
+        3 : "OL_num",
+        5 : "quantity",
+        6 : "valve_type", #переделать в слова
+        7 : "environment",
+        8 : "name",
+        9 : "T",
+        10 : "abrasive_particles",
+        11 : "density",
+        12 : "molecular_weight", #если есть
+        13 : "adiabatic_index", #если есть
+        14 : "viscosity", #если жидкость
+        15 : "Pn",
+        16 : "Pno",
+        17 : "Ppo",
+        18 : "Pp",
+        19 : "Gab",
+        20 : "pre_Kc",
+        21 : "DN_s",
+        22 : "joining_type",
+        23 : "inlet_flange",
+        24 : "outlet_flange",
+        25 : "need_bellows",
+        26 : "force_open",
+        27 : "DN",
+        28 : "DN2",
+        29 : "PN",
+        30 : "PN2",
+        31 : "climate",
+        32 : "Tokr",
+        33 : "trials",
+        34 : "material",
+        35 : "need_ZIP",
+        36 : "reciprocal_connections",
+        37 : "trials",
+        38 : "color",
+        39 : "packaging",
+        40 : "acceptance",
+        41 : "additionally"
+    }
+
+    '''Форматирование данных'''
+
+    valve_type = "Пружинный" if data["valve_type"] == 'В' else "Пилотный"
+    data["valve_type"] = valve_type
+
+    #с противодавлением и перевести в МПа => /10
+    Pn = float(data["Pn"]) * 0.1 - float(data['Pp']) * 0.1
+
+    data['Pn'] = Pn
+
+    #Давление начала открытия
+    if Pn <= 0.3:
+        Pno = Pn + 0.02
+    elif (Pn > 0.3) and (Pn <= 6):
+        Pno = 1.07 * Pn
+    elif Pn > 6:
+        Pno = 1.05 * Pn
+    data['Pno'] = Pno
+
+    # Давление полного открытия
+    if Pn <= 0.3:
+        Ppo = Pn + 0.05
+    elif (Pn > 0.3) and (Pn <= 6):
+        Ppo = 1.15 * Pn
+    elif Pn > 6:
+        Ppo = 1.1 * Pn
+    data['Ppo'] = Ppo
+
+    #Перевести в МПа => /10
+    Pp = data["Pp"] * 0.1
+    data['Pp'] = Pp
+
+    Tokr = f"{data['T_min']} ... {data['T_max']}"
+    data['Tokr'] = Tokr
+
+    '''Автозаполнение'''
+    for i in params.keys():
+        #Проверка
+        if params[i] not in data:
+            return {"err" : f"Некорректный ввод параметра \'{params[i]}\' "}
+        else:
+            if type(data[params[i]]) == type(True):
+                if data[params[i]] == True:
+                    sheet[f"C{i}"] = "Да"
+                elif data[params[i]] == False:
+                    sheet[f"C{i}"] = "Нет"
+            elif data[params[i]] == "" or data[params[i]] == None:
+                sheet[f"C{i}"] = "Нет"
+            else:
+                sheet[f"C{i}"] = data[params[i]]
+
+    # Создать экземпляр файла
+    wb.save("./data/OLexample.xlsx")
+
+    return True

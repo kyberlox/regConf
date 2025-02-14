@@ -5,7 +5,7 @@ from starlette.responses import RedirectResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import HTTPException
 
-from Raschet import Raschet, mixture, mark_params, get_tightness, make_XL
+from Raschet import Raschet, mixture, mark_params, get_tightness, make_XL, mk_OL
 
 import openpyxl
 from openpyxl import load_workbook
@@ -463,7 +463,31 @@ def generate(data = Body()):
     f.close()
     
     #генерация файла
-    make_XL(data, ID)
+    res = make_XL(data, ID)
 
     #выдать файл
-    return FileResponse(f'TKPexample.xlsx', filename=f'ТКП ПК {ID}.xlsx', media_type='application/xlsx')
+    if res == True:
+        return FileResponse(f'./data/TKPexample.xlsx', filename=f'ТКП ПК.xlsx', media_type='application/xlsx')
+    else:
+        return res
+
+@app.post("/api/makeOL")
+def mk_OL(data = Body()):
+    #запись в БД
+
+    #удалить предыдущий эксель файл и чтение ID
+    ID = 1
+
+    #сохранить json
+    f = open(f"./data/OL.json", 'w')
+    json.dump(data, f)
+    f.close()
+    
+    #генерация файла
+    res = mk_OL(data)
+    return res
+    #выдать файл
+    if res == True:
+        return FileResponse(f'./data/OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx')
+    else:
+        return res
