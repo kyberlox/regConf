@@ -768,7 +768,7 @@ def make_XL(dt, ID):
         sheet[f"AY{i}"].value = 12
 
         # T окр среды
-        sheet[f"J{i}"].value = f"{position['T_min']} ... {position['T_min']}"
+        sheet[f"J{i}"].value = f"{position['T_min']} ... {position['T_max']}"
         
         #заполнение по словарю
         for key in data_keys.keys():
