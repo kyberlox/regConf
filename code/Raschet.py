@@ -782,8 +782,8 @@ def make_XL(dt, ID):
 
     return True
 
-def mk_OL(data):
-    wb = load_workbook("JK.xlsx")
+def make_OL(data):
+    wb = load_workbook("ОЛ.xlsx")
     sheet = wb['Table 1']
 
     #Трассировка данных
@@ -841,20 +841,26 @@ def mk_OL(data):
     #Давление начала открытия
     if Pn <= 0.3:
         Pno = Pn + 0.02
+        data['Pno'] = Pno
     elif (Pn > 0.3) and (Pn <= 6):
         Pno = 1.07 * Pn
+        data['Pno'] = Pno
     elif Pn > 6:
         Pno = 1.05 * Pn
-    data['Pno'] = Pno
+        data['Pno'] = Pno
+    
 
     # Давление полного открытия
     if Pn <= 0.3:
         Ppo = Pn + 0.05
+        data['Ppo'] = Ppo
     elif (Pn > 0.3) and (Pn <= 6):
         Ppo = 1.15 * Pn
+        data['Ppo'] = Ppo
     elif Pn > 6:
         Ppo = 1.1 * Pn
-    data['Ppo'] = Ppo
+        data['Ppo'] = Ppo
+    
 
     #Перевести в МПа => /10
     Pp = data["Pp"] * 0.1
