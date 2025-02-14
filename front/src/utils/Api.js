@@ -4,7 +4,7 @@ export default class Api {
         return await response.json();
     }
 
-    static async post(url, body) {
+    static async post(url, body, download = false) {
         const response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -17,6 +17,22 @@ export default class Api {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        return await response.json();
+        if (download) {
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(
+                new Blob([blob], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                })
+            );
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = 'ТКП.xlsx';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(downloadUrl);
+        } else {
+            return await response.json();
+        }
     }
 }

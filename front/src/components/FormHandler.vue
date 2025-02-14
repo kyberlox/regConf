@@ -48,6 +48,7 @@ export default {
                 T: questions.value.find((e) => e.inputName == 'T'),
                 climate: questions.value.find((e) => e.inputName == 'climate'),
                 valveType: questions.value.find((e) => e.inputName == 'valve_type'),
+                forceOpen: questions.value.find((e) => e.inputName == 'force_open'),
             }
         })
 
@@ -55,6 +56,7 @@ export default {
             return {
                 joiningType: questions.value.find((e) => e.inputName == 'joining_type'),
                 needBellows: questions.value.find((e) => e.inputName == 'need_bellows'),
+                mark: questions.value.find((e) => e.inputName == 'mark'),
             }
         })
 
@@ -65,6 +67,33 @@ export default {
                 outletFlange: questions.value.find((e) => e.inputName == 'outlet_flange'),
                 color: questions.value.find((e) => e.inputName == 'color'),
                 packaging: questions.value.find((e) => e.inputName == 'packaging'),
+                materialBellows: questions.value.find((e) => e.inputName == 'markAnswersGroup').answers.find((e) => e.inputName == 'material_bellows'),
+                materialSpool: questions.value.find((e) => e.inputName == 'markAnswersGroup').answers.find((e) => e.inputName == 'material_spool'),
+                materialSaddle: questions.value.find((e) => e.inputName == 'markAnswersGroup').answers.find((e) => e.inputName == 'material_saddle'),
+                weight: questions.value.find((e) => e.inputName == 'markAnswersGroup').answers.find((e) => e.inputName == 'weight'),
+                paintingArea: questions.value.find((e) => e.inputName == 'markAnswersGroup').answers.find((e) => e.inputName == 'painting_area'),
+                trials: questions.value.find((e) => e.inputName == 'markAnswersGroup').answers.find((e) => e.inputName == 'trials'),
+                assignment: questions.value.find((e) => e.inputName == 'markAnswersGroup').answers.find((e) => e.inputName == 'assignment'),
+
+            }
+        })
+
+        const paramsToGenerateDoc = computed(() => {
+            return {
+                docs: questions.value.find((e) => e.inputName == 'docs'),
+                pipeMaterial: questions.value.find((e) => e.inputName == 'pipe_material'),
+                additionally: questions.value.find((e) => e.inputName == 'additionally'),
+                quantity: questions.value.find((e) => e.inputName == 'quantity'),
+                olNum: questions.value.find((e) => e.inputName == 'OL_num'),
+                tightness: questions.value.find((e) => e.inputName == 'tightness'),
+                rotaryPlugs: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'rotary_plugs'),
+                needZip: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'need_ZIP'),
+                thermalCover: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'thermal_cover'),
+                acceptance: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'acceptance'),
+                adapters: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'adapters'),
+                needKof: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'needKOF'),
+                abrasiveParticles: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'abrasive_particles'),
+                reciprocalConnections: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'reciprocal_connections'),
             }
         })
 
@@ -157,7 +186,6 @@ export default {
                 Api.post(API_URL + '/get_compound',
                     formattedData
                 ).then(data => {
-                    if (data.error) return;
                     envModuleStore.setAfterGetCompoundValue(data);
                     envParamsToGet.map((key) => {
                         questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'envAnswersGroup');
@@ -200,6 +228,7 @@ export default {
                     "T": Number(newVal.T.value),
                     "climate": newVal.climate.value,
                     "valve_type": newVal.valveType.value,
+                    "force_open": newVal.forceOpen.value,
                 };
 
                 envModuleStore.pushToAfterGetCompoundValue(formattedData);
@@ -209,7 +238,7 @@ export default {
                 Api.post(API_URL + '/get_pressure',
                     dataToSend.value
                 ).then((data) => {
-                    if (data.error) return;
+                    // if (data.err) return;
 
                     envModuleStore.setAfterGetCompoundValue(data);
                     paramsToGet.map((key) => {
@@ -253,30 +282,41 @@ export default {
 
         // запрос (#4, get_mark_params) на "Pno", "Ppo", "P1", "P2","Kw", "Gideal", "pre_DN","DN"
         watch(paramsToGetMark, (newVal) => {
-            if (newVal.joiningType.value || newVal.needBellows.value) {
-                const paramsToGet = ['contact_type', 'open_close_type', 'inlet_flange', 'outlet_flange', 'color', 'packaging', 'assignment'];
+            if ((newVal.joiningType.value || newVal.needBellows.value)) {
+                const paramsToGet = ['contact_type', 'open_close_type', 'inlet_flange', 'outlet_flange', 'color', 'packaging', 'assignment', 'material_bellows', 'material_spool', 'material_saddle', 'weight', 'painting_area', 'trials'];
 
                 const formattedData = {
                     "joining_type": newVal.joiningType.value,
                     "need_bellows": newVal.needBellows.value,
+                    "mark": newVal.mark.value,
                 };
 
                 envModuleStore.pushToAfterGetCompoundValue(formattedData);
-
                 const dataToSend = computed(() => envModuleStore.getAfterGetCompoundValue);
 
                 Api.post(API_URL + '/get_mark_params',
                     dataToSend.value
                 ).then((data) => {
-                    envModuleStore.setAfterGetCompoundValue(data);
+                    // if (data.err) return;
                     paramsToGet.map((key) => {
-                        if (key == 'open_close_type' || key == 'assignment') {
+                        if (key == 'open_close_type' || key == 'assignment' || key == 'material_bellows' || key == 'material_spool' || key == 'material_saddle' || key == 'weight' || key == 'painting_area' || key == 'trials') {
                             questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'markAnswersGroup');
                         }
                         else if (key == 'contact_type' && typeof data[key] == 'string') {
                             questionsStore.setAnswers(key, [data[key]], false);
                         }
-                        else {
+                        else if (key == 'inlet_flange' || key == 'outlet_flange') {
+                            if (data[key] == null) {
+                                paramsToGetTightness.value.inletFlange.hidden = true;
+                                paramsToGetTightness.value.outletFlange.hidden = true;
+                                questionsStore.setAnswers(key, null, false);
+                            }
+                            else {
+                                paramsToGetTightness.value.inletFlange.hidden = false;
+                                paramsToGetTightness.value.outletFlange.hidden = false;
+                                questionsStore.setAnswers(key, data[key], false);
+                            }
+                        } else {
                             questionsStore.setAnswers(key, data[key], false);
                         }
                     })
@@ -286,8 +326,10 @@ export default {
 
         // запрос №5, get_tightness 
         watch(paramsToGetTightness, (newVal) => {
-            if (newVal.contactType.value && newVal.inletFlange.value && newVal.outletFlange.value && newVal.color.value) {
+            if (newVal.contactType.value && newVal.color.value && typeof newVal.color.value == 'string') {
                 const paramsToGet = ['tightness'];
+                console.log(newVal);
+
 
                 const formattedData = {
                     "contact_type": newVal.contactType.value,
@@ -295,15 +337,22 @@ export default {
                     "outlet_flange": newVal.outletFlange.value,
                     "color": newVal.color.value,
                     "packaging": newVal.packaging.value,
+                    "material_bellows": newVal.materialBellows.value,
+                    "material_spool": newVal.materialSpool.value,
+                    'material_saddle': newVal.materialSaddle.value,
+                    'weight': newVal.weight.value,
+                    'painting_area': newVal.paintingArea.value,
+                    'trials': newVal.trials.value,
+                    'assignment': newVal.assignment.value,
                 };
 
                 envModuleStore.pushToAfterGetCompoundValue(formattedData);
-
                 const dataToSend = computed(() => envModuleStore.getAfterGetCompoundValue);
 
                 Api.post(API_URL + '/get_tightness',
                     dataToSend.value
                 ).then((data) => {
+                    // if (data.err) return;
                     envModuleStore.setAfterGetCompoundValue(data);
                     paramsToGet.map((key) => {
                         questionsStore.setAnswers(key, data[key], false);
@@ -311,6 +360,31 @@ export default {
                 })
             }
         }, { deep: true })
+
+        // запрос №6, /generate подготовка параметров на отправку
+        watch(paramsToGenerateDoc, (newVal) => {
+            if (newVal.docs.value || newVal.pipeMaterial.value || newVal.additionally.value || newVal.quantity.value || newVal.olNum.value) {
+                const formattedData = {
+                    "tightness": newVal.tightness.value,
+                    "docs": newVal.docs.value,
+                    "pipe_material": newVal.pipeMaterial.value,
+                    "additionally": newVal.additionally.value,
+                    "quantity": newVal.quantity.value,
+                    "OL_num": newVal.olNum.value,
+                    "rotary_plugs": newVal.rotaryPlugs.value,
+                    "thermal_cover": newVal.needZip.value,
+                    "need_ZIP": newVal.thermalCover.value,
+                    "acceptance": newVal.acceptance.value,
+                    "adapters": newVal.adapters.value,
+                    "needKOF": newVal.needKof.value,
+                    "abrasive_particles": newVal.abrasiveParticles.value,
+                    "reciprocal_connections": newVal.reciprocalConnections.value,
+                };
+
+                envModuleStore.pushToAfterGetCompoundValue(formattedData);
+            }
+        }, { deep: true })
+
     }
 }
 </script>

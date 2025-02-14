@@ -9,7 +9,7 @@
                        :question="question"
                        v-bind="question.type === 'TextType' ? { inputText: question.value } : {}"
                        @saveNewValue="saveNewValue" />
-            {{ question.value }}
+            <!-- {{ question.value }} -->
         </div>
     </div>
 </template>
@@ -22,6 +22,7 @@ import OneLineType from "../questionsTypes/uniqueQuestions/OneLineType.vue";
 import InputGroup from "../questionsTypes/InputGroup.vue";
 
 import { useQuestionsStore } from "@/store/questions";
+import TextAreaType from "../questionsTypes/TextAreaType.vue";
 export default {
     props: {
         question: {
@@ -29,21 +30,25 @@ export default {
             required: true,
         }
     },
+    emits: ['checkDownloadJson'],
     components: {
         SelectType,
         RadioType,
         TextType,
         CheckboxType,
         OneLineType,
-        InputGroup
+        InputGroup,
+        TextAreaType
     },
-    setup() {
+    setup(props, { emit }) {
         const questionsStore = useQuestionsStore();
         const saveNewValue = (name, value, oneLine = false, subquestionId = null) => {
             questionsStore.setQuestionValue(name, value, oneLine, subquestionId);
+            emit('checkDownloadJson');
         }
+
         return {
-            saveNewValue
+            saveNewValue,
         }
     }
 }

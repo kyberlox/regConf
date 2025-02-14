@@ -6,6 +6,8 @@ export const useEnvModuleStore = defineStore('envModule', {
         afterGetCompoundValue: [],
         gasEnvNames: [],
         liquidEnvNames: [],
+
+        readyToDownload: false,
     }),
 
     actions: {
