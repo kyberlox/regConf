@@ -186,8 +186,6 @@ export default {
                 Api.post(API_URL + '/get_compound',
                     formattedData
                 ).then(data => {
-                    console.log(data);
-
                     envModuleStore.setAfterGetCompoundValue(data);
                     envParamsToGet.map((key) => {
                         questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'envAnswersGroup');

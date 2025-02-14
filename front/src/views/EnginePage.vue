@@ -22,10 +22,10 @@
         </transition>
     </div>
     <!-- <Passport /> -->
-    <!-- <div class="download-button__wrapper">
+    <div class="download-button__wrapper">
         <div class="download-button"
              @click="download">Скачать</div>
-    </div> -->
+    </div>
     <FormHandler />
 </template>
 
@@ -78,8 +78,8 @@ export default {
             const dataToSend = computed(() => envModuleStore.getAfterGetCompoundValue);
             Api.post(
                 API_URL + '/generate',
-                JSON.stringify([dataToSend.value]),
-                false
+                [dataToSend.value],
+                true
             )
         }
 

@@ -17,27 +17,22 @@ export default class Api {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        // if (download) {
-        //     try {
-        //         const blob = await response.blob();
-        //         // Check if blob is not empty
-        //         if (blob.size > 0) {
-        //             const downloadUrl = window.URL.createObjectURL(blob);
-        //             const link = document.createElement('a');
-        //             link.href = downloadUrl;
-        //             link.download = 'ТКП.xlsx';
-        //             document.body.appendChild(link);
-        //             link.click();
-        //             link.remove();
-        //             window.URL.revokeObjectURL(downloadUrl);
-        //         } else {
-        //             throw new Error('Downloaded file is empty');
-        //         }
-        //     } catch (error) {
-        //         console.error('Download failed:', error);
-        //         throw new Error('Failed to download file');
-        //     }
-        // } else
-        return await response.json();
+        if (download) {
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(
+                new Blob([blob], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                })
+            );
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = 'ТКП.xlsx';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(downloadUrl);
+        } else {
+            return await response.json();
+        }
     }
 }
