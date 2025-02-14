@@ -235,7 +235,7 @@ def migration():
     sheet = wb1['Лист1']
 
     t2_result = {"added" : [], "exists" : []}
-    for i in range(2, sheet.max_row+1):
+    for i in range(2, 49):
         T = float(sheet[f"A{i}"].value)
         Pn = float(sheet[f"B{i}"].value)
         P = float(sheet[f"C{i}"].value)
@@ -275,7 +275,7 @@ def migration():
 
     t10_result = {"added" : [], "exists" : []}
 
-    for i in range(2, sheet.max_row+1):
+    for i in range(2, 72):
         T = float(sheet[f"A{i}"].value)
         Pn = float(sheet[f"B{i}"].value)
         P = float(sheet[f"C{i}"].value)
