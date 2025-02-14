@@ -691,9 +691,6 @@ def make_XL(dt, ID):
         "AE" : "tightness",
         "AF" : "spring_number",
         "AK" : "Pp",
-        "AL" : "Pn",
-        "AM" : "Pno",
-        "AN" : "Ppo",
         "AO" : "needKOF",
         "AP" : "need_ZIP",
         "AQ" : "adapters",
@@ -715,6 +712,46 @@ def make_XL(dt, ID):
         for param in kys:
             if param not in position:
                 return {"err" : f"Key \'{param}\' does not exists"}
+            
+        
+
+        if position["valve_type"] == 'Н' and not position['need_bellows']:
+            #Давление настройки без противодавления
+            sheet[f"AL{i}"].value = position["Pn"] - position["Pp"]
+
+            #Давление начала открытия без противодавления
+            sheet[f"AM{i}"].value = position["Ppo"] - position["Pp"]
+
+            #Давление полного открытия без противодавления
+            sheet[f"AN{i}"].value = position["Ppo"] - position["Pp"]
+
+            #Давление настройки с противодавлением
+            sheet[f"AH{i}"].value = position["Pn"]
+
+            #Давление начала открытия с противодавлениемпротиводавлением
+            sheet[f"AI{i}"].value = position["Ppo"]
+
+            #Давление полного открытия с противодавлением
+            sheet[f"AJ{i}"].value = position["Ppo"]
+        else:
+            #Давление настройки без противодавления
+            sheet[f"AL{i}"].value = position["Pn"]
+
+            #Давление начала открытия без противодавления
+            sheet[f"AM{i}"].value = position["Ppo"]
+
+            #Давление полного открытия без противодавления
+            sheet[f"AN{i}"].value = position["Ppo"]
+
+            #Давление настройки с противодавлением
+            sheet[f"AH{i}"].value = position["Pn"]
+
+            #Давление начала открытия с противодавлениемпротиводавлением
+            sheet[f"AI{i}"].value = position["Ppo"]
+
+            #Давление полного открытия с противодавлением
+            sheet[f"AJ{i}"].value = position["Ppo"]
+
                 
         #номерация 
         sheet[f"A{i}"].value = int(sheet[f"A3"].value) + i-3
@@ -755,14 +792,7 @@ def make_XL(dt, ID):
         elif position["PN"] == 160:
             sheet[f"AG{i}"].value = "40...160"
 
-        #Давление настройки без противодавления
-        sheet[f"AH{i}"].value = position["Ppo"] - position["Pp"]
-
-        #Давление начала открытия без противодавления
-        sheet[f"AI{i}"].value = position["Ppo"] - position["Pp"]
-
-        #Давление полного открытия без противодавления
-        sheet[f"AJ{i}"].value = position["Ppo"] - position["Pp"]
+        
 
         #Гарантийный срок службы, мес.
         sheet[f"AY{i}"].value = 12
