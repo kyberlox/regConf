@@ -21,6 +21,21 @@ import psycopg2
 
 import json
 
+import os
+from dotenv import load_dotenv
+
+import redis
+
+
+
+load_dotenv()
+
+user = os.getenv('user')
+pswd = os.getenv('pswd')
+port = os.getenv('PORT')
+
+
+
 def DB_exec(command):
     conn = psycopg2.connect(dbname="pdb", host="postgres", user="kyberlox", password="4179", port="5432")
     cursor = conn.cursor()
@@ -45,7 +60,7 @@ def DB_fetchAll(command):
     return answer
 
 
-
+#engine = create_engine(f'postgresql+psycopg2://{user}:{pswd}@postgres/pdb')
 engine = create_engine('postgresql+psycopg2://kyberlox:4179@postgres/pdb')
 
 class Base(DeclarativeBase): pass
@@ -105,6 +120,10 @@ db = SessionLocal()
 
 
 
+r = redis.Redis(host='redis', port=6379, user=user, password=pswd, db=0)
+
+
+
 app = FastAPI()
 
 
@@ -128,6 +147,8 @@ app.add_middleware(
 #миграция и таблицы эксель
 @app.get("/api/migration")
 def migration():
+    print(os.getenv('user'))
+
     #прочитать из таблицы
     wb = load_workbook("./table.xlsx")
     sheet = wb['table']
@@ -464,7 +485,7 @@ def generate(data = Body()):
     f.close()
     
     #генерация файла
-    res = make_XL(data, ID)
+    res = make_XL(data)
 
     #выдать файл
     if res == True:

@@ -1,3 +1,4 @@
 /pSQL/
 /nginx/regconf.emk.ru.crt
 /nginx/regconf.emk.ru.key
+/.env

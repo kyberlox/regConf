@@ -673,7 +673,7 @@ def get_tightness(dt):
     dt["tightness"] = tightness 
     return dt
 
-def make_XL(dt, ID):
+def make_XL(dt):
     WB = load_workbook("ТКП.xlsx")
     sheet = WB['Лист1']
 
@@ -776,7 +776,7 @@ def make_XL(dt, ID):
         sheet[f"D{i}"].value = "Общепромышленное"
 
         #Номер документа
-        print(i)
+        #print(i)
         sheet[f"E{i}"].value = "ТУ 3742-003-38877941-2012Б" if position["valve_type"] == 'В' else "ТУ 3742-013-38877941-2016"
 
         type_name = "Пружинный" if position["valve_type"] == 'В' else "Пилотный"

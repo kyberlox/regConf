@@ -3,3 +3,5 @@ uvicorn
 psycopg2-binary
 SQLAlchemy
 openpyxl
+redis
+dotenv
