@@ -56,6 +56,8 @@ services:
     volumes:
       - ./nginx/:/etc/nginx/conf.d/
       - ./front/:/app/
+      - ./nginx/regconf.emk.ru.crt:/etc/ssl/regconf.emk.ru.crt
+      - ./nginx/regconf.emk.ru.key:/etc/ssl/regconf.emk.ru.key
     networks:
       - app-network
     
