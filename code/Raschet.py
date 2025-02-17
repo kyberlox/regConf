@@ -151,7 +151,7 @@ def get_by_mark(mark, DN, PN):
 
 
 
-def mixture(envs : list):
+def mixture(envs : list, climate : str):
     result = {
         "name" : "",
         "environment" : "",
@@ -249,6 +249,11 @@ def mixture(envs : list):
         result["viscosity"] = pre_u
         #result["viscosity"] = 10**(pre_viscosity)
     
+
+    #если климатика => то материал
+    if ((climate == "ХЛ1") or (climate == "УХЛ1")) and (result["material"] == "25Л"):
+        result["material"] = "20ГЛ"
+
     return result
 
 def Raschet(dt):
@@ -280,10 +285,6 @@ def Raschet(dt):
 
     T_min, T_max = model[climate]
 
-    #если климатика => то материал
-    if ((climate == "ХЛ1") or (climate == "УХЛ1")) and (dt["material"] == "25Л"):
-        dt["material"] = "20ГЛ"
-
     T = dt["T"]
 
     if pre_Kc:
@@ -300,6 +301,8 @@ def Raschet(dt):
         Pno = 1.07 * Pn
     elif Pn > 6:
         Pno = 1.05 * Pn
+    else:
+        return {"err" : f"Невозможно определить давление начала открытия. Давление настройки: {Pn}"}
 
     #Давление полного открытия
     if Pn <= 0.3:
@@ -308,6 +311,8 @@ def Raschet(dt):
         Ppo = 1.15 * Pn
     elif Pn > 6:
         Ppo = 1.1 * Pn
+    else:
+        return {"err" : f"Невозможно определить давление полного открытия. Давление настройки: {Pn}"}
 
     #Максимально допустимое давление аварийного сброса;
     P_ab_max = 1.1 * Pno
@@ -324,6 +329,7 @@ def Raschet(dt):
     if dt["environment"] == "Газ":
         if "molar_mass" not in dt:
             return {"err" : f"Key \'molar_mass\' does not exists"}
+        
         M = dt["molar_mass"]
 
         p1 = P1 * 1000 * M / (R  * (T+273.15))
@@ -343,10 +349,10 @@ def Raschet(dt):
             Kw = 1
         elif ((Ppo / Pn) > 1.1) and ((Ppo / Pn) <= 1.15):
             #Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.22) и (Д.23)
-            pass
+            return {"err" : f"Нет возможности расчитать Kw для соотношения 1.1 < Ppo / Pn <= 1.15, при Ppo={Ppo}, Pn={Pn} и Ppo / Pn = {Ppo / Pn}"}
         elif ((Ppo / Pn) > 1.15) and ((Ppo / Pn) <= 1.2):
             #Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.23) и (Д.24)
-            pass
+            return {"err" : f"Нет возможности расчитать Kw для соотношения 1.15 < Ppo / Pn <= 1.2, при Ppo={Ppo}, Pn={Pn} и Ppo / Pn = {Ppo / Pn}"}
             
         #показатель изоэнтропии
         #dt["isobaric_capacity"] / dt["isochoric_capacity"] = dt["adiabatic_index"]
@@ -373,6 +379,9 @@ def Raschet(dt):
         #P1 * p1
         Gideal = Kp_kr * Kb *sqrt(P1 * p1)
 
+        if Gideal <= 0:
+            return {"err" : f"Одно из значений = 0:\n Ppo : {Ppo}\n Pno : {Kb}\n Pn : {Kb}\n Kp_kr : {Kp_kr}\n Kw : {Kw}\n"}
+
     else:
         alpha = 0.6
         #p1 = dt["density"]
@@ -386,6 +395,9 @@ def Raschet(dt):
         Kp = sqrt(2*(1-B)) #на самом деле, тут корень, но его будем извлекать в конце
         Gideal = Kp * sqrt(P1 * p1)
 
+        if Gideal <= 0:
+            return {"err" : f"Одно из значений = 0:\n Ppo : {Ppo}\n Pno : {Pno}\n Pn : {Pn}\n Pp : {Pp}\n Kw : {Kw}\n"}
+
     #print(Kp_kr, P1, p1)
     #print(Kp, P1, p1)
     #print(Gideal)
@@ -397,7 +409,8 @@ def Raschet(dt):
     while DN_s != pre_DN:
         #print(3.6, alpha, Kv, Kw, Kc, Gideal, N)
         pre_F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
-        print(pi, pre_F)
+        if pre_F == 0:
+            return {"err" : f"Одно из значений = 0:\n Kv : {Kv}\n Kw : {Kw}\n Kc : {Kc}\n Gideal : {Gideal}\n"}
         pre_DN = sqrt((4 * pre_F) / pi)
             
         Re = (Gideal * p1 * pre_DN) / u #Gideal

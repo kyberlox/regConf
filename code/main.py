@@ -393,6 +393,7 @@ async def get_compound(data = Body()):
         for env in data:
             ID = env["id"]
             r = env["r"]
+            climate = env["climate"]
             if line.id == ID:
                 environment = {
                     "id" : line.id,
@@ -412,7 +413,7 @@ async def get_compound(data = Body()):
                         
                 environments.append(environment)
 
-    return mixture(environments)
+    return mixture(environments, climate)
 
 #получение осатльных параметров
 @app.post("/api/get_pressure")
@@ -467,7 +468,7 @@ def generate(data = Body()):
 
     #выдать файл
     if res == True:
-        return FileResponse(f'./data/TKPexample.xlsx', filename=f'ТКП ПК.xlsx', media_type='application/xlsx', status_code=200)
+        return FileResponse(f'./data/TKPexample.xlsx', filename=f'ТКП ПК.xlsx', media_type='application/xlsx', status_code=200, headers = ['Content-Disposition'])
     else:
         return res
 
@@ -490,6 +491,6 @@ def mk_OL(data = Body()):
     #return res
     #выдать файл
     if res == True:
-        return FileResponse(f'./data/OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx')
+        return FileResponse(f'./data/OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx', status_code=200, headers = ['Content-Disposition'])
     else:
         return res
