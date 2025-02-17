@@ -468,7 +468,7 @@ def generate(data = Body()):
 
     #выдать файл
     if res == True:
-        return FileResponse(f'./data/TKPexample.xlsx', filename=f'ТКП ПК.xlsx', media_type='application/xlsx', status_code=200, headers = ['Content-Disposition: attachment'])
+        return FileResponse(f'./data/TKPexample.xlsx', filename=f'ТКП ПК.xlsx', media_type='application/xlsx', status_code=200, headers = ['Content-Disposition=attachment'])
     else:
         return res
 

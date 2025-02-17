@@ -868,7 +868,7 @@ def make_OL(data):
         33 : "trials",
         34 : "material",
         35 : "need_ZIP",
-        36 : "reciprocal_connections",
+        36 : "needKOF",
         37 : "trials",
         38 : "color",
         39 : "packaging",
