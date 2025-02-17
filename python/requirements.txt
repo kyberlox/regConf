@@ -1,0 +1,5 @@
+fastapi[all]
+uvicorn
+psycopg2-binary
+SQLAlchemy
+openpyxl
