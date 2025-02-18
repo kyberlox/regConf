@@ -389,9 +389,10 @@ async def get_table():
 async def get_compound(data = Body()):
     environments = []
     lines = db.query(Table).all()
-    for line in lines:
-        for env in data:
-            if "id" in env:
+    
+    for env in data:
+        if "id" in env and "r" in env:
+            for line in lines:
                 ID = env["id"]
                 r = env["r"]
                 if line.id == ID:
@@ -410,11 +411,12 @@ async def get_compound(data = Body()):
                         "compressibility_factor" : line.compressibility_factor,
                         "r" : r
                     }
+
+                    print(line.density, r)
                         
                     environments.append(environment)
-
-            else:
-                    climate = env["climate"]
+        else:
+            climate = env["climate"]
 
     return mixture(environments, climate)
 
