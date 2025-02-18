@@ -27,6 +27,8 @@ user = os.getenv('user')
 pswd = os.getenv('pswd')
 port = os.getenv('PORT')
 
+print(user, port, pswd)
+
 
 
 def DB_exec(command):
