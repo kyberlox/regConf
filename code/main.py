@@ -1,21 +1,14 @@
-from fastapi import FastAPI, File, UploadFile, Body, Response, Cookie, Request
+from fastapi import FastAPI, Body
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import RedirectResponse, HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.exceptions import HTTPException
 
-from Raschet import Raschet, mixture, mark_params, get_tightness, make_XL, make_OL
+from code.src.Raschet import Raschet, mixture, mark_params, get_tightness, make_XL, make_OL
 
-import openpyxl
 from openpyxl import load_workbook
-from openpyxl import Workbook
 
-from sqlalchemy import create_engine
-from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import create_engine, MetaData, Column, Integer, Text, Float
+from sqlalchemy import create_engine, Column, Integer, Text, Float
 
 import psycopg2
 
@@ -150,7 +143,7 @@ def migration():
     print(os.getenv('user'))
 
     #прочитать из таблицы
-    wb = load_workbook("./table.xlsx")
+    wb = load_workbook("./files/table.xlsx")
     sheet = wb['table']
     column_names = [
         "name",
@@ -199,7 +192,7 @@ def migration():
                 db.commit()
     
     #миграция параметров DN и PN
-    WB = load_workbook("./PNtoDN.xlsx")
+    WB = load_workbook("./files/PNtoDN.xlsx")
     sheet = WB['full']
 
     par_result = {"added" : [], "exists" : []}
@@ -252,7 +245,7 @@ def migration():
             }
             par_result["exists"].append(curr)
 
-    wb1 = load_workbook("./Table2.xlsx")
+    wb1 = load_workbook("./files/Table2.xlsx")
     sheet = wb1['Лист1']
 
     t2_result = {"added" : [], "exists" : []}
@@ -291,7 +284,7 @@ def migration():
         
     result.append(par_result)
 
-    wb2 = load_workbook("./Table10.xlsx")
+    wb2 = load_workbook("./files/Table10.xlsx")
     sheet = wb2['Лист1']
 
     t10_result = {"added" : [], "exists" : []}
@@ -329,7 +322,7 @@ def migration():
 
     result.append(t10_result)
 
-    wb3 = load_workbook("./paking_params.xlsx")
+    wb3 = load_workbook("./files/paking_params.xlsx")
     sheet = wb3["result"]
 
     pak_res = {"added" : [], "exists" : []}

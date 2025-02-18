@@ -57,7 +57,7 @@ db = SessionLocal()
 
 
 def searchT2(T, Pn):
-    print(T, Pn)
+    #print(T, Pn)
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Table2).filter(Table2.T >= T, Table2.Pn >= Pn).all()
 
@@ -78,7 +78,7 @@ def searchT2(T, Pn):
                 "Pn" : example.Pn * 10, 
                 "PN" : example.P
             }
-    print(ans)
+    #print(ans)
     return ans
     
 def searchT10(T, Pn):
@@ -106,7 +106,7 @@ def searchT10(T, Pn):
     return ans
 
 def searchParams(DNS, curP1, PN, valve_type):
-    print(DNS, curP1, PN, valve_type)
+    #print(DNS, curP1, PN, valve_type)
     PN = PN * 10
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Params).filter(Params.DNS >= DNS, Params.PN == PN, valve_type == valve_type).all()
@@ -134,7 +134,7 @@ def searchParams(DNS, curP1, PN, valve_type):
                 "spring_number" : example.spring_number,
                 "valve_type" : valve_type
             }
-    print(ans)
+    #print(ans)
 
     return ans
 
