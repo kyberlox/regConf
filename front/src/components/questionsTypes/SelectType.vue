@@ -51,6 +51,8 @@ export default {
         })
 
         watch(() => props.question.value, (newValue) => {
+            console.log(1);
+
             selectValue.value = newValue;
         });
 

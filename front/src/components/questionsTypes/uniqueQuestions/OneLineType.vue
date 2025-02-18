@@ -10,13 +10,13 @@
                 <SelectType v-if="part.type == 'SelectType'"
                             :question="part"
                             :selectedOptions="question.value"
-                            @change="saveSelectText($event.target.value, groupIndex)"
-                            @saveNewValue="(value, unit) => saveSelectText(unit, groupIndex)" />
+                            @change="saveValue($event.target.value, groupIndex, 'input')"
+                            @saveNewValue="(value, unit) => saveValue(unit, groupIndex, 'input')" />
                 <TextType v-if="part.type == 'TextType'"
                           :question="part"
                           :oneLine="true"
                           :inputText="question.value"
-                          @input="saveSelectValue($event.target.value, groupIndex)" />
+                          @input="saveValue($event.target.value, groupIndex, 'select')" />
             </div>
             <button v-if="(!question.modifiers || !question.modifiers.includes('noAddButton')) && groupIndex !== 0"
                     class="card-footer__button"
@@ -56,7 +56,6 @@ export default {
             convertToKg: changeToKgInHour,
         };
         const convert = ref(false);
-        const lineIndex = ref(0);
 
         const modifier = props.question.modifiers?.find((mod) => conversions[mod]);
         if (modifier) {
@@ -67,30 +66,23 @@ export default {
         const optionsCounter = ref(1);
         const optionsLimit = ref(false);
         const answer = ref({ id: null, value: null });
-        const currentInput = ref();
+        // const currentInput = ref();
+        const answers = ref([]);
 
-        const saveSelectText = (value, groupIndex) => {
-            lineIndex.value = groupIndex;
-            answer.value.id = value;
-            if (answer.value.value) {
-                if (convert.value) {
-                    answer.value.value = convert.value(answer.value.id, currentInput.value);
-                }
-                emit("saveNewValue", props.question.inputName, answer.value, "oneLine", groupIndex);
+        const saveValue = (value, groupIndex, type) => {
+            if (!answers.value[groupIndex]) {
+                answers.value[groupIndex] = { id: null, value: null };
             }
-        };
-        const saveSelectValue = (value, groupIndex) => {
-            lineIndex.value = groupIndex;
-            currentInput.value = value;
-            answer.value.value = value;
+            if (type == 'input') {
+                answers.value[groupIndex].id = value;
+            } else if (type == 'select') {
+                answers.value[groupIndex].value = value;
+            }
 
-            if (answer.value.id) {
-                if (convert.value) {
-                    answer.value.value = convert.value(answer.value.id, currentInput.value);
-                }
-                emit("saveNewValue", props.question.inputName, answer.value, "oneLine", groupIndex);
+            if (answers.value[groupIndex].id || answers.value[groupIndex].value) {
+                emit("saveNewValue", props.question.inputName, answers.value[groupIndex], "oneLine", groupIndex);
             }
-        };
+        }
 
         const cloneQuestion = () => {
             answer.value = { id: null, value: null };
@@ -106,17 +98,18 @@ export default {
             questionStore.removeLine(props.question.inputName, groupIndex);
         };
 
-        watch(answer.value, (newVal) => {
-            if (newVal.id == '') {
-                answer.value.id = '';
-                answer.value.value = null;
-                emit("saveNewValue", props.question.inputName, answer.value, "oneLine", lineIndex.value);
-            }
-        })
+        // watch(answer.value, (newVal) => {
+        //     console.log(answer.value);
+
+        //     if (newVal.id == '') {
+        //         answer.value.id = '';
+        //         answer.value.value = null;
+        //     }
+        //     emit("saveNewValue", props.question.inputName, answer.value, "oneLine", lineIndex.value);
+        // })
 
         return {
-            saveSelectText,
-            saveSelectValue,
+            saveValue,
             cloneQuestion,
             removeLine,
             optionsLimit,

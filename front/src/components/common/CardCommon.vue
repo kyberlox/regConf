@@ -8,7 +8,6 @@
              :ref="el => questionInGroup[question.inputName] = el">
             <component :is="question.type"
                        :question="question"
-                       v-bind="question.type === 'TextType' ? { inputText: question.value } : {}"
                        @saveNewValue="saveNewValue" />
             <div v-if="debugMode">
                 <span> {{ question.value }}</span>
@@ -59,6 +58,11 @@ export default {
 
         const questionsStore = useQuestionsStore();
         const saveNewValue = (name, value, oneLine = false, subquestionId = null) => {
+            if (oneLine == true) {
+                console.log(name);
+                console.log(value);
+                console.log(subquestionId);
+            }
             questionsStore.setQuestionValue(name, value, oneLine, subquestionId);
             emit('checkDownloadJson');
         }

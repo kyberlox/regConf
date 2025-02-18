@@ -5,7 +5,7 @@ export const usePageStore = defineStore('page', {
         return {
             currentPage: '',
             nodeRefs: {},
-            debugMode: false,
+            debugMode: true,
         }
     },
 
