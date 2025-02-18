@@ -15,15 +15,27 @@
 </template>
 
 <script>
+import { ref, onMounted } from 'vue';
+import { usePageStore } from "@/store/page";
 export default {
     props: ["question"],
     emits: ["saveNewValue"],
     setup(props, { emit }) {
+        const pageStore = usePageStore();
+        const questionInGroup = ref({});
+
+        onMounted(() => {
+            if (questionInGroup.value) {
+                pageStore.pushToRefGroup(questionInGroup.value)
+            }
+        })
+
         const saveNewValue = (name, value) => {
             emit("saveNewValue", name, value);
         }
         return {
-            saveNewValue
+            saveNewValue,
+            questionInGroup
         }
     }
 }

@@ -5,6 +5,7 @@ export const usePageStore = defineStore('page', {
         return {
             currentPage: '',
             nodeRefs: {},
+            debugMode: false,
         }
     },
 
@@ -23,6 +24,9 @@ export const usePageStore = defineStore('page', {
                 behavior: 'smooth',
                 block: 'center'
             });
+        },
+        setDebugMode(mode) {
+            this.debugMode = mode;
         }
     },
 

@@ -1,29 +1,21 @@
 <template>
-    <div :ref="el => questionInGroup[question.inputName] = el">
+    <div class="card-body__input__wrapper">
         <input class="card-body__input"
                :name="question.inputName"
                :placeholder="question.placeholder"
+               :type="question.inputType"
                @input="saveNewValue(question.inputName, $event.target.value)"
                :value="defaultValue" />
     </div>
 </template>
 
 <script>
-import { ref, onMounted, watch } from 'vue';
-import { usePageStore } from "@/store/page";
+import { ref, watch } from 'vue';
 export default {
     props: ["question", "inputText", "oneLine"],
     emits: ["saveNewValue"],
     setup(props, { emit }) {
-        const pageStore = usePageStore();
-        const questionInGroup = ref({});
         const defaultValue = ref();
-
-        onMounted(() => {
-            if (questionInGroup.value) {
-                pageStore.pushToRefGroup(questionInGroup.value)
-            }
-        })
 
         watch(() => props.inputText, (newValue) => {
             if ((newValue && props.oneLine && newValue[0].value == null) || newValue == null) {
@@ -38,7 +30,6 @@ export default {
         return {
             saveNewValue,
             defaultValue,
-            questionInGroup
         }
     }
 }

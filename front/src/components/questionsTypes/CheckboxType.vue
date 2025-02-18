@@ -7,7 +7,7 @@
                :name="question.inputName"
                :type="'checkbox'"
                :id="question.inputName + questionInfo.value"
-               :value="questionInfo.value"
+               value=false
                :checked="question.value"
                :disabled="question.disabled"
                class="form-check-input card-body__radio" />
@@ -47,7 +47,6 @@ export default {
             if (!isGroup.value) {
                 emit("saveNewValue", name, event.target.checked);
             } else {
-
                 questionsStore.setQuestionValue(inputName, event.target.checked, 'inputGroup', false, 'additionalAnswersGroup');
                 emit("saveNewValue", name, groupValue.value);
             }

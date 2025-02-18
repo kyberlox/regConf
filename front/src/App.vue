@@ -4,7 +4,7 @@
         <RouterView />
         <MsgModal v-if="showModal"
                   :modalActive="showModal"
-                  @closeModal="showModal = false" />
+                  @closeModal="closeModal" />
     </div>
     <PageFooter @callSupportModal="showModal = true" />
 </template>
@@ -21,8 +21,12 @@ export default {
     },
     setup() {
         const showModal = ref(false);
+        const closeModal = () => {
+            showModal.value = false; console.log(showModal.value);
+        }
         return {
-            showModal
+            showModal,
+            closeModal
         }
     }
 }

@@ -21,11 +21,12 @@
                        class="summary__arrow-icon" />
         </transition>
     </div>
-    <!-- <Passport /> -->
     <div class="download-button__wrapper">
         <div class="download-button"
+             :class="{ 'download-button--disabled': jsonError }"
              @click="download('TKP')">Скачать ТКП</div>
         <div class="download-button"
+             :class="{ 'download-button--disabled': jsonError }"
              @click="download('OL')">Скачать ОЛ</div>
     </div>
     <FormHandler />
@@ -36,6 +37,7 @@ import { ref, computed } from "vue";
 import { usePageStore } from "@/store/page";
 import { useQuestionsStore } from "@/store/questions";
 import { useEnvModuleStore } from "@/store/envModule";
+import { useHelperStore } from "@/store/helper";
 import Validator from "@/utils/Validator";
 
 import ArrowLeft from "@/assets/icons/ArrowLeft.vue";
@@ -44,6 +46,7 @@ import CardCommon from "@/components/common/CardCommon.vue";
 import SideHelper from "@/components/common/SideHelper.vue";
 import FormHandler from "@/components/FormHandler.vue";
 import Api from "@/utils/Api";
+import { watch } from "vue";
 
 export default {
     components: {
@@ -59,37 +62,44 @@ export default {
         const showHelper = ref(true);
         const mainQuestions = computed(() => questionsStore.questions);
         const envModuleStore = useEnvModuleStore();
-        const jsonToDownload = computed(() => envModuleStore.getAfterGetCompoundValue);
-        const jsonReady = ref(false);
-        console.log(jsonToDownload);
-
+        const helperStore = useHelperStore();
+        const jsonError = ref(false);
 
         const goToQuestion = (name) => {
             pageStore.goToQuestion(name)
         }
 
         const checkForDownload = () => {
-            console.log('ds');
-
-            if (typeof jsonToDownload.value == 'object' && jsonToDownload.value.length) {
-                jsonReady.value = Validator.validDownloadJson(jsonToDownload.value);
-            }
+            jsonError.value = Validator.validDownloadJson(mainQuestions.value, helperStore);
         }
 
+        watch(() => jsonError, (oldVal, newVal) => {
+            if (newVal && oldVal !== false) {
+                helperStore.deleteErrorMessage(null, 'emptyValueError');
+            }
+        }, { deep: true })
+
         const download = (type) => {
-            const dataToSend = computed(() => envModuleStore.getAfterGetCompoundValue);
-            if (type == 'TKP') {
-                Api.post(
-                    API_URL + '/generate',
-                    [dataToSend.value],
-                    true
-                )
-            } else if (type == 'OL') {
-                Api.post(
-                    API_URL + '/makeOL',
-                    dataToSend.value,
-                    true
-                )
+            if (!jsonError.value) {
+                const dataToSend = computed(() => envModuleStore.getAfterGetCompoundValue);
+                switch (type) {
+                    case 'TKP':
+                        Api.post(
+                            API_URL + '/generate',
+                            [dataToSend.value],
+                            true
+                        )
+                        break;
+                    case 'OL':
+                        Api.post(
+                            API_URL + '/makeOL',
+                            dataToSend.value,
+                            true
+                        )
+                        break;
+                }
+            } else {
+                helperStore.setErrorMessage(jsonError.value, 'emptyValueError');
             }
         }
 
@@ -99,44 +109,8 @@ export default {
             goToQuestion,
             download,
             checkForDownload,
-            jsonReady
+            jsonError
         };
     }
 };
 </script>
-<style lang="scss">
-.download-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 230px;
-    height: 60px;
-    // margin: auto;
-    background-color: white;
-    border: 2px solid var(--emk-brand-color);
-    border-radius: 8px;
-    font-size: 1.2rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-
-    &:hover {
-        color: var(--emk-brand-color);
-        transform: translateY(-2px);
-        box-shadow: 0 0.7rem 1.5rem rgba(0, 0, 0, 0.15);
-    }
-
-    &:active {
-        transform: translateY(0);
-        box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.1);
-    }
-
-    &__wrapper {
-        padding-bottom: 30px;
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-    }
-}
-</style>

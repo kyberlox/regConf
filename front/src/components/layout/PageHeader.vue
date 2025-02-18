@@ -5,8 +5,8 @@
                 <img class="header__logo"
                      src="/imgs/logo.svg" />
             </RouterLink>
-            <div class="navbar-brand">Конфигуратор Регулятор</div>
-            <button class="navbar-toggler"
+            <div class="header__navbar-brand navbar-brand">Конфигуратор Регулятор</div>
+            <button class="navbar-toggler header__navbar-toggler"
                     type="button"
                     @click="toggleSidebar">
                 <span class="navbar-toggler-icon"></span>

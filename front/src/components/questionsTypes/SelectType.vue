@@ -21,10 +21,14 @@
 
 <script>
 import { watch, onMounted, ref } from 'vue';
+import { usePageStore } from '@/store/page';
 export default {
     props: ["question", "selectedOptions"],
     emits: ["saveNewValue"],
     setup(props, { emit }) {
+        const pageStore = usePageStore();
+        const questionInGroup = ref({});
+
         const selectValue = ref();
 
         const saveNewValue = (name, value) => {
@@ -33,6 +37,9 @@ export default {
         }
 
         onMounted(() => {
+            if (questionInGroup.value) {
+                pageStore.pushToRefGroup(questionInGroup.value)
+            }
             selectValue.value = props.question.defaultValue;
             saveNewValue(props.question.inputName, selectValue.value);
         })
@@ -57,7 +64,8 @@ export default {
         return {
             saveNewValue,
             checkDuplicate,
-            selectValue
+            selectValue,
+            questionInGroup
         }
     }
 };
