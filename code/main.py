@@ -27,8 +27,6 @@ user = os.getenv('user')
 pswd = os.getenv('pswd')
 port = os.getenv('PORT')
 
-print(user, port, pswd)
-
 
 
 def DB_exec(command):
@@ -55,8 +53,8 @@ def DB_fetchAll(command):
     return answer
 
 
-#engine = create_engine(f'postgresql+psycopg2://{user}:{pswd}@postgres/pdb')
-engine = create_engine('postgresql+psycopg2://kyberlox:4179@postgres/pdb')
+engine = create_engine(f'postgresql+psycopg2://{user}:{pswd}@postgres/pdb')
+#engine = create_engine('postgresql+psycopg2://kyberlox:4179@postgres/pdb')
 
 class Base(DeclarativeBase): pass
 

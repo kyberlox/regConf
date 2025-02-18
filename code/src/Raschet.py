@@ -12,7 +12,16 @@ import openpyxl
 from openpyxl import load_workbook
 from openpyxl import Workbook
 
-engine = create_engine('postgresql+psycopg2://kyberlox:4179@postgres/pdb')
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+user = os.getenv('user')
+pswd = os.getenv('pswd')
+port = os.getenv('PORT')
+
+engine = create_engine(f'postgresql+psycopg2://{user}:{pswd}@postgres/pdb')
 
 class Base(DeclarativeBase): pass
 

@@ -8,7 +8,16 @@ import redis
 
 import json
 
-engine = create_engine('postgresql+psycopg2://kyberlox:4179@postgres/pdb')
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+user = os.getenv('user')
+pswd = os.getenv('pswd')
+port = os.getenv('PORT')
+
+engine = create_engine(f'postgresql+psycopg2://{user}:{pswd}@postgres/pdb')
 
 class Base(DeclarativeBase): pass
 
@@ -32,7 +41,7 @@ db = SessionLocal()
 
 class UserRedis:
     def __init__(self, user_id, jsn):
-        self.r = redis.Redis(host='redis', port=6379, user="kyberlox", password="4179", db=0)
+        self.r = redis.Redis(host='redis', port=6379, user=user, password=pswd, db=0)
         self.user_id = user_id
         self.jsn = jsn
 
