@@ -7,17 +7,20 @@
                   @closeModal="closeModal" />
     </div>
     <PageFooter @callSupportModal="showModal = true" />
+    <YandexMetrika />
 </template>
 <script>
 import PageHeader from "./components/layout/PageHeader.vue";
 import MsgModal from "./components/common/MsgModal.vue"
 import PageFooter from "./components/layout/PageFooter.vue";
 import { ref } from "vue";
+import YandexMetrika from "./components/tools/YandexMetrika.vue";
 export default {
     components: {
         PageHeader,
         PageFooter,
-        MsgModal
+        MsgModal,
+        YandexMetrika
     },
     setup() {
         const showModal = ref(false);
