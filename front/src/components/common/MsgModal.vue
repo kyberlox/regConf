@@ -36,8 +36,6 @@ export default {
     },
     emits: ['closeModal'],
     setup(props, { emit }) {
-        console.log(props);
-
         const supportBodyHtml = `                    <p>По вопросам технической поддержки обращайтесь по электронной почте:<br />
                         <b>it.dpm@emk.ru</b>
                     </p>
@@ -53,7 +51,6 @@ export default {
 
         const modalActive = ref(true);
         const modalBodyInner = ref(props.type == 'support' ? supportBodyHtml : downloadBodyHtml);
-        console.log(modalBodyInner);
 
         const closeModal = () => {
             emit('closeModal');
