@@ -199,7 +199,6 @@ export default {
                     'r': Number(obj.value) / 100,
                 }));
                 formattedData.push({ "climate": paramsToGetCompound.value.climate.value })
-                console.log(formattedData);
 
                 Api.post(API_URL + '/get_compound',
                     formattedData
@@ -247,8 +246,6 @@ export default {
 
             // Проверка расхода жидкости и газа
             if (newVal.gab.value.length && newVal.gab.value[0].value == 0) {
-                console.log(newVal.gab.value);
-
                 helperStore.setErrorMessage('Gab');
             } else {
                 helperStore.deleteErrorMessage('Gab');

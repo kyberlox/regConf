@@ -22,7 +22,7 @@ export default {
     setup() {
         const showModal = ref(false);
         const closeModal = () => {
-            showModal.value = false; console.log(showModal.value);
+            showModal.value = false;
         }
         return {
             showModal,
