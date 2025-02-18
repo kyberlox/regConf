@@ -57,10 +57,11 @@ db = SessionLocal()
 
 
 def searchT2(T, Pn):
+    #print(T, Pn)
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Table2).filter(Table2.T >= T, Table2.Pn >= Pn).all()
 
-    if request == None:
+    if request == None or request == []:
         return False
     ans = False
 
@@ -77,13 +78,14 @@ def searchT2(T, Pn):
                 "Pn" : example.Pn * 10, 
                 "PN" : example.P
             }
+    #print(ans)
     return ans
     
 def searchT10(T, Pn):
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Table10).filter(Table10.T >= T, Table10.Pn >= Pn).all()
 
-    if request == None:
+    if request == None or request == []:
         return False
     ans = False
 
@@ -104,21 +106,23 @@ def searchT10(T, Pn):
     return ans
 
 def searchParams(DNS, curP1, PN, valve_type):
+    #print(DNS, curP1, PN, valve_type)
+    PN = PN * 10
     #найти все подходящие строки их DNS и P1 - больше искомых
-    request = db.query(Params).filter(Params.DNS >= DNS, Params.P1 >= curP1, Params.PN >= PN, valve_type == valve_type).all()
+    request = db.query(Params).filter(Params.DNS >= DNS, Params.PN == PN, valve_type == valve_type).all()
 
-    if request == None:
+    if request == None or request == []:
         return False
     ans = False
 
     #найти самый подходящий - MIN по DNS и P1
     minDNS = request[0].DNS
-    minP1 = request[0].P1
+    #minP1 = request[0].P1
     minPN = request[0].PN
     for example in request:
-        if (example.DNS <= minDNS) and (example.P1 <= minP1) and (example.PN == minPN):
+        if (example.DNS <= minDNS)  and (example.PN == minPN):
             minDNS = example.DNS
-            minP1 = example.P1
+            #minP1 = example.P1
             minPN = example.PN
             ans = {
                 "ID" : example.id,  
@@ -130,13 +134,14 @@ def searchParams(DNS, curP1, PN, valve_type):
                 "spring_number" : example.spring_number,
                 "valve_type" : valve_type
             }
+    #print(ans)
 
     return ans
 
 def get_by_mark(mark, DN, PN):
     mark = mark[2:5]
     request = db.query(pakingParams).filter(pakingParams.mark == mark, pakingParams.DN == DN, pakingParams.PN == PN).first()
-    if request == None:
+    if request == None or request == []:
         return ("Нет данных", "Нет данных")
     else:
         if request.M == None:
@@ -146,7 +151,7 @@ def get_by_mark(mark, DN, PN):
 
 
 
-def mixture(envs : list):
+def mixture(envs : list, climate : str):
     result = {
         "name" : "",
         "environment" : "",
@@ -244,6 +249,11 @@ def mixture(envs : list):
         result["viscosity"] = pre_u
         #result["viscosity"] = 10**(pre_viscosity)
     
+
+    #если климатика => то материал
+    if ((climate == "ХЛ1") or (climate == "УХЛ1")) and (result["material"] == "25Л"):
+        result["material"] = "20ГЛ"
+
     return result
 
 def Raschet(dt):
@@ -275,10 +285,6 @@ def Raschet(dt):
 
     T_min, T_max = model[climate]
 
-    #если климатика => то материал
-    if ((climate == "ХЛ1") or (climate == "УХЛ1")) and (dt["material"] == "25Л"):
-        dt["material"] = "20ГЛ"
-
     T = dt["T"]
 
     if pre_Kc:
@@ -295,6 +301,8 @@ def Raschet(dt):
         Pno = 1.07 * Pn
     elif Pn > 6:
         Pno = 1.05 * Pn
+    else:
+        return {"err" : f"Невозможно определить давление начала открытия. Давление настройки: {Pn}"}
 
     #Давление полного открытия
     if Pn <= 0.3:
@@ -303,6 +311,8 @@ def Raschet(dt):
         Ppo = 1.15 * Pn
     elif Pn > 6:
         Ppo = 1.1 * Pn
+    else:
+        return {"err" : f"Невозможно определить давление полного открытия. Давление настройки: {Pn}"}
 
     #Максимально допустимое давление аварийного сброса;
     P_ab_max = 1.1 * Pno
@@ -319,6 +329,7 @@ def Raschet(dt):
     if dt["environment"] == "Газ":
         if "molar_mass" not in dt:
             return {"err" : f"Key \'molar_mass\' does not exists"}
+        
         M = dt["molar_mass"]
 
         p1 = P1 * 1000 * M / (R  * (T+273.15))
@@ -338,10 +349,10 @@ def Raschet(dt):
             Kw = 1
         elif ((Ppo / Pn) > 1.1) and ((Ppo / Pn) <= 1.15):
             #Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.22) и (Д.23)
-            pass
+            return {"err" : f"Нет возможности расчитать Kw для соотношения 1.1 < Ppo / Pn <= 1.15, при Ppo={Ppo}, Pn={Pn} и Ppo / Pn = {Ppo / Pn}"}
         elif ((Ppo / Pn) > 1.15) and ((Ppo / Pn) <= 1.2):
             #Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.23) и (Д.24)
-            pass
+            return {"err" : f"Нет возможности расчитать Kw для соотношения 1.15 < Ppo / Pn <= 1.2, при Ppo={Ppo}, Pn={Pn} и Ppo / Pn = {Ppo / Pn}"}
             
         #показатель изоэнтропии
         #dt["isobaric_capacity"] / dt["isochoric_capacity"] = dt["adiabatic_index"]
@@ -368,6 +379,9 @@ def Raschet(dt):
         #P1 * p1
         Gideal = Kp_kr * Kb *sqrt(P1 * p1)
 
+        if Gideal <= 0:
+            return {"err" : f"Одно из значений = 0:\n Ppo : {Ppo}\n Pno : {Kb}\n Pn : {Kb}\n Kp_kr : {Kp_kr}\n Kw : {Kw}\n"}
+
     else:
         alpha = 0.6
         #p1 = dt["density"]
@@ -381,6 +395,9 @@ def Raschet(dt):
         Kp = sqrt(2*(1-B)) #на самом деле, тут корень, но его будем извлекать в конце
         Gideal = Kp * sqrt(P1 * p1)
 
+        if Gideal <= 0:
+            return {"err" : f"Одно из значений = 0:\n Ppo : {Ppo}\n Pno : {Pno}\n Pn : {Pn}\n Pp : {Pp}\n Kw : {Kw}\n"}
+
     #print(Kp_kr, P1, p1)
     #print(Kp, P1, p1)
     #print(Gideal)
@@ -392,7 +409,8 @@ def Raschet(dt):
     while DN_s != pre_DN:
         #print(3.6, alpha, Kv, Kw, Kc, Gideal, N)
         pre_F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
-        print(pi, pre_F)
+        if pre_F == 0:
+            return {"err" : f"Одно из значений = 0:\n Kv : {Kv}\n Kw : {Kw}\n Kc : {Kc}\n Gideal : {Gideal}\n"}
         pre_DN = sqrt((4 * pre_F) / pi)
             
         Re = (Gideal * p1 * pre_DN) / u #Gideal
@@ -426,16 +444,23 @@ def Raschet(dt):
         ex = searchT2(T, Pn)
     else:
         ex = searchT10(T, Pn)
-    PN = ex["PN"]
+        
+    if ex:
+        PN = ex["PN"]
+    else:
+        return {"err" : f"Нет возможности подобрать PN для T={T} и Pn={Pn}"}
     #print("PN по T и Pn:", PN)
 
     #Деаметр ПК
     new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
     example = searchParams(DN_s, Pn, PN, dt["valve_type"])
-    
-    new_dt["DN"] = example["DN"] #Номинальный диаметр
-    new_dt["PN"] = example["PN"] #Номиннальное давление
-    print("PN по DN:", example["PN"])
+
+    if example:
+        new_dt["DN"] = example["DN"] #Номинальный диаметр
+        new_dt["PN"] = example["PN"] #Номиннальное давление
+        #print("PN по DN:", example["PN"])
+    else:
+        return {"err" : f"Нет возможности подобрать DN для DN_s={DN_s}, Pn={Pn}, PN={PN} и тип клапана - \'{dt['valve_type']}\' "}
 
     DN2 = {
         25.0 : 40.0,
@@ -686,9 +711,6 @@ def make_XL(dt, ID):
         "AE" : "tightness",
         "AF" : "spring_number",
         "AK" : "Pp",
-        "AL" : "Pn",
-        "AM" : "Pno",
-        "AN" : "Ppo",
         "AO" : "needKOF",
         "AP" : "need_ZIP",
         "AQ" : "adapters",
@@ -710,6 +732,46 @@ def make_XL(dt, ID):
         for param in kys:
             if param not in position:
                 return {"err" : f"Key \'{param}\' does not exists"}
+            
+        
+
+        if position["valve_type"] == 'Н' and not position['need_bellows']:
+            #Давление настройки без противодавления
+            sheet[f"AL{i}"].value = position["Pn"] - position["Pp"]
+
+            #Давление начала открытия без противодавления
+            sheet[f"AM{i}"].value = position["Ppo"] - position["Pp"]
+
+            #Давление полного открытия без противодавления
+            sheet[f"AN{i}"].value = position["Ppo"] - position["Pp"]
+
+            #Давление настройки с противодавлением
+            sheet[f"AH{i}"].value = position["Pn"]
+
+            #Давление начала открытия с противодавлением 
+            sheet[f"AI{i}"].value = position["Ppo"]
+
+            #Давление полного открытия с противодавлением
+            sheet[f"AJ{i}"].value = position["Ppo"]
+        else:
+            #Давление настройки без противодавления
+            sheet[f"AL{i}"].value = position["Pn"]
+
+            #Давление начала открытия без противодавления
+            sheet[f"AM{i}"].value = position["Ppo"]
+
+            #Давление полного открытия без противодавления
+            sheet[f"AN{i}"].value = position["Ppo"]
+
+            #Давление настройки с противодавлением
+            sheet[f"AH{i}"].value = position["Pn"]
+
+            #Давление начала открытия с противодавлениемпротиводавлением
+            sheet[f"AI{i}"].value = position["Ppo"]
+
+            #Давление полного открытия с противодавлением
+            sheet[f"AJ{i}"].value = position["Ppo"]
+
                 
         #номерация 
         sheet[f"A{i}"].value = int(sheet[f"A3"].value) + i-3
@@ -750,20 +812,13 @@ def make_XL(dt, ID):
         elif position["PN"] == 160:
             sheet[f"AG{i}"].value = "40...160"
 
-        #Давление настройки без противодавления
-        sheet[f"AH{i}"].value = position["Ppo"] - position["Pp"]
-
-        #Давление начала открытия без противодавления
-        sheet[f"AI{i}"].value = position["Ppo"] - position["Pp"]
-
-        #Давление полного открытия без противодавления
-        sheet[f"AJ{i}"].value = position["Ppo"] - position["Pp"]
+        
 
         #Гарантийный срок службы, мес.
         sheet[f"AY{i}"].value = 12
 
         # T окр среды
-        sheet[f"J{i}"].value = f"{position['T_min']} ... {position['T_min']}"
+        sheet[f"J{i}"].value = f"{position['T_min']} ... {position['T_max']}"
         
         #заполнение по словарю
         for key in data_keys.keys():
@@ -820,7 +875,7 @@ def make_OL(data):
         33 : "trials",
         34 : "material",
         35 : "need_ZIP",
-        36 : "reciprocal_connections",
+        36 : "needKOF",
         37 : "trials",
         38 : "color",
         39 : "packaging",
@@ -868,6 +923,7 @@ def make_OL(data):
 
     Tokr = f"{data['T_min']} ... {data['T_max']}"
     data['Tokr'] = Tokr
+    
 
     '''Автозаполнение'''
     for i in params.keys():
