@@ -113,7 +113,7 @@ db = SessionLocal()
 
 
 
-r = redis.Redis(host='redis', port=6379, user=user, password=pswd, db=0)
+r = redis.Redis(host='redis', port=6379, username=user, password=pswd, db=0)
 
 
 
