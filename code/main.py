@@ -124,7 +124,10 @@ app = FastAPI()
 origins = [
     "http://localhost:8000",
     "http://localhost:5173",
-    "http://reg.conf"
+    "http://regconf.emk.ru",
+    "https://localhost:8000",
+    "https://localhost:5173",
+    "https://regconf.emk.ru"
 ]
 
 app.add_middleware(
@@ -470,6 +473,7 @@ async def web_get_tightness(data = Body()):
 #выгрузка корзины -> опустошение -> сохранить в БД
 
 #генерация документации
+
 @app.post("/api/generate") #проверка сессии
 def generate(data = Body()):
     #запись в БД
