@@ -2,7 +2,7 @@ from fastapi import FastAPI, Body
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from code.src.Raschet import Raschet, mixture, mark_params, get_tightness, make_XL, make_OL
+from src.Raschet import Raschet, mixture, mark_params, get_tightness, make_XL, make_OL
 
 from openpyxl import load_workbook
 
