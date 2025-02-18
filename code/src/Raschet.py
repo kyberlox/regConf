@@ -243,20 +243,21 @@ def mixture(envs : list, climate : str):
             r = env["r"]
             result["name"] += f"{env['name']}:{r} "
 
-            density_ch += env["density"] * r
-            density_zn += r
+            # pre_viscosity += log10(env["viscosity"]) * r
 
-            #pre_viscosity += log10(env["viscosity"]) * r
-            
             if env["environment"] == "Газ":
                 M = env["molar_mass"]
+                density_ch += (env["molar_mass"] / 22.4) * r
+                density_zn += r
             elif env["environment"] == "Жидкость":
                 M = env["molecular_weight"]
+                density_ch += env["density"] * r
+                density_zn += r
             pre_u += r * env["viscosity"] * M
 
         result["density"] = density_ch / density_zn
         result["viscosity"] = pre_u
-        #result["viscosity"] = 10**(pre_viscosity)
+        # result["viscosity"] = 10**(pre_viscosity)
     
 
     #если климатика => то материал
