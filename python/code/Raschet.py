@@ -57,11 +57,11 @@ db = SessionLocal()
 
 
 def searchT2(T, Pn):
-    #print(T, Pn)
+    print(T, Pn)
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Table2).filter(Table2.T >= T, Table2.Pn >= Pn).all()
 
-    if request == None or request == []:
+    if request == None:
         return False
     ans = False
 
@@ -78,14 +78,14 @@ def searchT2(T, Pn):
                 "Pn" : example.Pn * 10, 
                 "PN" : example.P
             }
-    #print(ans)
+    print(ans)
     return ans
     
 def searchT10(T, Pn):
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Table10).filter(Table10.T >= T, Table10.Pn >= Pn).all()
 
-    if request == None or request == []:
+    if request == None:
         return False
     ans = False
 
@@ -106,12 +106,12 @@ def searchT10(T, Pn):
     return ans
 
 def searchParams(DNS, curP1, PN, valve_type):
-    #print(DNS, curP1, PN, valve_type)
+    print(DNS, curP1, PN, valve_type)
     PN = PN * 10
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Params).filter(Params.DNS >= DNS, Params.PN == PN, valve_type == valve_type).all()
 
-    if request == None or request == []:
+    if request == None:
         return False
     ans = False
 
@@ -134,14 +134,14 @@ def searchParams(DNS, curP1, PN, valve_type):
                 "spring_number" : example.spring_number,
                 "valve_type" : valve_type
             }
-    #print(ans)
+    print(ans)
 
     return ans
 
 def get_by_mark(mark, DN, PN):
     mark = mark[2:5]
     request = db.query(pakingParams).filter(pakingParams.mark == mark, pakingParams.DN == DN, pakingParams.PN == PN).first()
-    if request == None or request == []:
+    if request == None:
         return ("Нет данных", "Нет данных")
     else:
         if request.M == None:
@@ -444,23 +444,16 @@ def Raschet(dt):
         ex = searchT2(T, Pn)
     else:
         ex = searchT10(T, Pn)
-        
-    if ex:
-        PN = ex["PN"]
-    else:
-        return {"err" : f"Нет возможности подобрать PN для T={T} и Pn={Pn}"}
+    PN = ex["PN"]
     #print("PN по T и Pn:", PN)
 
     #Деаметр ПК
     new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
     example = searchParams(DN_s, Pn, PN, dt["valve_type"])
-
-    if example:
-        new_dt["DN"] = example["DN"] #Номинальный диаметр
-        new_dt["PN"] = example["PN"] #Номиннальное давление
-        #print("PN по DN:", example["PN"])
-    else:
-        return {"err" : f"Нет возможности подобрать DN для DN_s={DN_s}, Pn={Pn}, PN={PN} и тип клапана - \'{dt['valve_type']}\' "}
+    
+    new_dt["DN"] = example["DN"] #Номинальный диаметр
+    new_dt["PN"] = example["PN"] #Номиннальное давление
+    print("PN по DN:", example["PN"])
 
     DN2 = {
         25.0 : 40.0,

@@ -438,7 +438,6 @@ async def web_get_tightness(data = Body()):
 
 #авторизазия => генерация токена, начало сессии
 
-
 #добавить в корзину элемент
 
 #выгрузить из корзины элемент
@@ -450,8 +449,6 @@ async def web_get_tightness(data = Body()):
 #просмотр корзины
 
 #выгрузка корзины -> опустошение -> сохранить в БД
-
-
 
 #генерация документации
 @app.post("/api/generate") #проверка сессии
@@ -474,6 +471,8 @@ def generate(data = Body()):
         return FileResponse(f'./data/TKPexample.xlsx', filename=f'ТКП ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
     else:
         return res
+
+
 
 @app.post("/api/makeOL")
 def mk_OL(data = Body()):
