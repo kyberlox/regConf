@@ -4,12 +4,17 @@
              v-if="question.id || question.name">
             <h5 class="mb-0">{{ question.id ? question.id + ')' : '' }} {{ question.name }}</h5>
         </div>
-        <div class="card-body">
+        <div class="card-body"
+             :ref="el => questionInGroup[question.inputName] = el">
             <component :is="question.type"
                        :question="question"
                        v-bind="question.type === 'TextType' ? { inputText: question.value } : {}"
                        @saveNewValue="saveNewValue" />
-            <!-- {{ question.value }} -->
+            <div v-if="debugMode">
+                <span> {{ question.value }}</span>
+                <br />
+                <span> {{ question.inputName }}</span>
+            </div>
         </div>
     </div>
 </template>
@@ -23,6 +28,8 @@ import InputGroup from "../questionsTypes/InputGroup.vue";
 
 import { useQuestionsStore } from "@/store/questions";
 import TextAreaType from "../questionsTypes/TextAreaType.vue";
+import { computed, ref, onMounted } from "vue";
+import { usePageStore } from "@/store/page";
 export default {
     props: {
         question: {
@@ -41,6 +48,15 @@ export default {
         TextAreaType
     },
     setup(props, { emit }) {
+        const pageStore = usePageStore();
+        const questionInGroup = ref({});
+
+        onMounted(() => {
+            if (questionInGroup.value) {
+                pageStore.pushToRefGroup(questionInGroup.value)
+            }
+        })
+
         const questionsStore = useQuestionsStore();
         const saveNewValue = (name, value, oneLine = false, subquestionId = null) => {
             questionsStore.setQuestionValue(name, value, oneLine, subquestionId);
@@ -49,6 +65,8 @@ export default {
 
         return {
             saveNewValue,
+            debugMode: computed(() => pageStore.debugMode),
+            questionInGroup
         }
     }
 }

@@ -1,7 +1,23 @@
+@use '@/assets/styles/mixins/resolution-mixins.scss' as *;
+
 .header {
     &__navbar {
         border-bottom: 1px solid var(--emk-brand-color);
         background: white;
+
+        &-brand {
+            flex-grow: 1;
+            text-align: center;
+            margin-right: 0;
+
+            @include sm {
+                font-size: 16px;
+            }
+        }
+
+        &-toggler {
+            margin-left: auto;
+        }
     }
 
     &__logo {
@@ -12,6 +28,10 @@
 
         &:hover {
             transform: scale(1.05);
+        }
+
+        @include md {
+            width: 50px;
         }
     }
 }

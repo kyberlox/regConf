@@ -7,7 +7,6 @@ import { useQuestionsStore } from "@/store/questions";
 import { useHelperStore } from "@/store/helper";
 import { useEnvModuleStore } from "@/store/envModule";
 import { changeToMpa } from "@/utils/changeToMpa";
-import { changeToKgInHour } from "@/utils/changeToKgInHour";
 import Api from "@/utils/Api";
 import Validator from "@/utils/Validator";
 import { usePageStore } from "@/store/page";
@@ -26,6 +25,8 @@ export default {
 
         const nodeRefs = computed(() => pageStore.getNodeRefs);
 
+        const noErrors = computed(() => helperStore.isValid)
+
         const paramsToGetCompound = computed(() => {
             return {
                 environmentType: questions.value.find((e) => e.inputName == 'environmentType'),
@@ -33,7 +34,8 @@ export default {
                 envSumm: questions.value.find((e) => e.inputName == 'envAnswersGroup').answers.find((e) => e.inputName == 'envSumm'),
                 isSecondEnv: questions.value.find((e) => e.inputName == 'isSecondEnv'),
                 secondEnv: questions.value.find((e) => e.inputName == 'secondEnv'),
-                bothEnvSumm: questions.value.find((e) => e.inputName == 'envAnswersGroup').answers.find((e) => e.inputName == 'bothEnvSumm')
+                bothEnvSumm: questions.value.find((e) => e.inputName == 'envAnswersGroup').answers.find((e) => e.inputName == 'bothEnvSumm'),
+                climate: questions.value.find((e) => e.inputName == 'climate')
             }
         })
         const paramsToGetPressure = computed(() => {
@@ -44,9 +46,9 @@ export default {
                 gab: questions.value.find((e) => e.inputName == 'Gab'),
                 n: questions.value.find((e) => e.inputName == 'N'),
                 preKc: questions.value.find((e) => e.inputName == 'Pre_Kc'),
+                climate: questions.value.find((e) => e.inputName == 'climate'),
 
                 T: questions.value.find((e) => e.inputName == 'T'),
-                climate: questions.value.find((e) => e.inputName == 'climate'),
                 valveType: questions.value.find((e) => e.inputName == 'valve_type'),
                 forceOpen: questions.value.find((e) => e.inputName == 'force_open'),
             }
@@ -93,7 +95,6 @@ export default {
                 adapters: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'adapters'),
                 needKof: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'needKOF'),
                 abrasiveParticles: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'abrasive_particles'),
-                reciprocalConnections: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'reciprocal_connections'),
             }
         })
 
@@ -167,8 +168,8 @@ export default {
         }
 
         // запрос (#2, get_compound) на параметры для конкр сред (Вязкость, материал, молекулярная масса, вязкость)
-        watch([paramsToGetCompound.value.environment, paramsToGetCompound.value.secondEnv], ([EnvVal, secVal]) => {
-            if (checkEnvSum()) {
+        watch(paramsToGetCompound, (newVal) => {
+            if (checkEnvSum() && newVal.climate.value && noErrors.value) {
                 const envParamsToGet = ['molecular_weight', 'density', 'material', 'viscosity'];
                 let dataToSend = [];
 
@@ -181,14 +182,20 @@ export default {
 
                 const formattedData = dataToSend.map(obj => ({
                     'id': Number(obj.id),
-                    'r': Number(obj.value) / 100
+                    'r': Number(obj.value) / 100,
+                    "climate": paramsToGetCompound.value.climate.value
                 }));
                 Api.post(API_URL + '/get_compound',
                     formattedData
                 ).then(data => {
+                    helperStore.deleteErrorMessage('', 'serverError');
                     envModuleStore.setAfterGetCompoundValue(data);
                     envParamsToGet.map((key) => {
-                        questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'envAnswersGroup');
+                        if (key == 'climate') {
+                            questionsStore.setQuestionValue(key, data[key])
+                        } else {
+                            questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'envAnswersGroup');
+                        }
                     })
                 })
             };
@@ -215,7 +222,23 @@ export default {
                 }
             }
 
-            if (newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.value && newVal.n.value && newVal.T.value && newVal.climate.value && newVal.valveType.value) {
+            // Проверка работающих клапанов !== 0
+            if (newVal.n.value && newVal.n.value == 0) {
+                helperStore.setErrorMessage('N');
+            } else {
+                helperStore.deleteErrorMessage('N');
+            }
+
+            // Проверка расхода жидкости и газа
+            if (newVal.gab.value.length && newVal.gab.value[0].value == 0) {
+                console.log(newVal.gab.value);
+
+                helperStore.setErrorMessage('Gab');
+            } else {
+                helperStore.deleteErrorMessage('Gab');
+            }
+
+            if (noErrors.value && newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.value && newVal.n.value && newVal.T.value && newVal.valveType.value) {
                 const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', "DN_s", 'DN', "PN", "need_bellows", "PN2", "DN2"];
 
                 const formattedData = {
@@ -224,11 +247,11 @@ export default {
                     "Pp_din": Number(newVal.ppDin.value[0].value),
                     "Gab": Number(newVal.gab.value[0].value),
                     "N": Number(newVal.n.value),
-                    "pre_Kc": Number(newVal.preKc.value),
+                    "pre_Kc": newVal.preKc.value,
                     "T": Number(newVal.T.value),
-                    "climate": newVal.climate.value,
                     "valve_type": newVal.valveType.value,
-                    "force_open": newVal.forceOpen.value,
+                    "force_open": newVal.forceOpen.value == null ? false : newVal.forceOpen.value,
+                    "climate": newVal.climate.value,
                 };
 
                 envModuleStore.pushToAfterGetCompoundValue(formattedData);
@@ -238,51 +261,36 @@ export default {
                 Api.post(API_URL + '/get_pressure',
                     dataToSend.value
                 ).then((data) => {
-                    // if (data.err) return;
-
-                    envModuleStore.setAfterGetCompoundValue(data);
-                    paramsToGet.map((key) => {
-                        if (key == 'need_bellows') {
-                            if (data[key]) {
-                                if (typeof (data[key]) == 'string') {
-                                    questionsStore.setQuestionValue(key, data[key]);
-                                    questionsStore.setQuestionDisabled('need_bellows', true);
+                    if (data.err) {
+                        helperStore.setErrorMessage(data.err, 'serverError')
+                    } else {
+                        helperStore.deleteErrorMessage('', 'serverError');
+                        envModuleStore.setAfterGetCompoundValue(data);
+                        paramsToGet.map((key) => {
+                            if (key == 'need_bellows') {
+                                if (data[key]) {
+                                    if (typeof (data[key]) == 'string') {
+                                        questionsStore.setQuestionValue(key, data[key]);
+                                        questionsStore.setQuestionDisabled('need_bellows', true);
+                                    }
+                                }
+                                else {
+                                    questionsStore.setQuestionDisabled('need_bellows', false);
                                 }
                             }
                             else {
-                                questionsStore.setQuestionDisabled('need_bellows', false);
+                                questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'pressureAnswersGroup');
                             }
-                        }
-                        else {
-                            questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'pressureAnswersGroup');
-                        }
-                    })
+                        })
+                    }
                 })
             }
-        }, { deep: true })
 
-        // подсказки для климатики
-        // watch(paramsToGetPressure.value.T, (newVal) => {
-        //     const numberValue = Number(newVal.value);
-        //     switch (true) {
-        //         case numberValue <= 40 && numberValue >= -40:
-        //             questionsStore.setAnswers('climate', climateGroup, false);
-        //             helperStore.deleteErrorMessage('T');
-        //             break;
-        //         case numberValue < -40 && numberValue >= -60:
-        //             questionsStore.setAnswers('climate', climateGroup.filter((i) => i.value !== 'У1' && i.value !== 'М1'), false);
-        //             helperStore.deleteErrorMessage('T');
-        //             break;
-        //         default:
-        //             questionsStore.setAnswers('climate', [], false);
-        //             helperStore.setErrorMessage('T');
-        //             break;
-        //     }
-        // })
+        }, { deep: true })
 
         // запрос (#4, get_mark_params) на "Pno", "Ppo", "P1", "P2","Kw", "Gideal", "pre_DN","DN"
         watch(paramsToGetMark, (newVal) => {
-            if ((newVal.joiningType.value || newVal.needBellows.value)) {
+            if (((newVal.joiningType.value || newVal.needBellows.value) && noErrors.value)) {
                 const paramsToGet = ['contact_type', 'open_close_type', 'inlet_flange', 'outlet_flange', 'color', 'packaging', 'assignment', 'material_bellows', 'material_spool', 'material_saddle', 'weight', 'painting_area', 'trials'];
 
                 const formattedData = {
@@ -297,6 +305,7 @@ export default {
                 Api.post(API_URL + '/get_mark_params',
                     dataToSend.value
                 ).then((data) => {
+                    helperStore.deleteErrorMessage('', 'serverError');
                     // if (data.err) return;
                     paramsToGet.map((key) => {
                         if (key == 'open_close_type' || key == 'assignment' || key == 'material_bellows' || key == 'material_spool' || key == 'material_saddle' || key == 'weight' || key == 'painting_area' || key == 'trials') {
@@ -326,10 +335,8 @@ export default {
 
         // запрос №5, get_tightness 
         watch(paramsToGetTightness, (newVal) => {
-            if (newVal.contactType.value && newVal.color.value && typeof newVal.color.value == 'string') {
+            if (newVal.contactType.value && newVal.color.value && typeof newVal.color.value == 'string' && noErrors.value) {
                 const paramsToGet = ['tightness'];
-                console.log(newVal);
-
 
                 const formattedData = {
                     "contact_type": newVal.contactType.value,
@@ -352,6 +359,7 @@ export default {
                 Api.post(API_URL + '/get_tightness',
                     dataToSend.value
                 ).then((data) => {
+                    helperStore.deleteErrorMessage('', 'serverError');
                     // if (data.err) return;
                     envModuleStore.setAfterGetCompoundValue(data);
                     paramsToGet.map((key) => {
@@ -363,7 +371,7 @@ export default {
 
         // запрос №6, /generate подготовка параметров на отправку
         watch(paramsToGenerateDoc, (newVal) => {
-            if (newVal.docs.value || newVal.pipeMaterial.value || newVal.additionally.value || newVal.quantity.value || newVal.olNum.value) {
+            if (noErrors.value && (newVal.docs.value || newVal.pipeMaterial.value || newVal.additionally.value || newVal.quantity.value || newVal.olNum.value)) {
                 const formattedData = {
                     "tightness": newVal.tightness.value,
                     "docs": newVal.docs.value,
@@ -378,7 +386,6 @@ export default {
                     "adapters": newVal.adapters.value,
                     "needKOF": newVal.needKof.value,
                     "abrasive_particles": newVal.abrasiveParticles.value,
-                    "reciprocal_connections": newVal.reciprocalConnections.value,
                 };
 
                 envModuleStore.pushToAfterGetCompoundValue(formattedData);

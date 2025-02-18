@@ -11,7 +11,7 @@ import { useQuestionsStore } from '@/store/questions';
 export default {
   setup() {
     const mark = ref();
-    const markArr = ref(['X', "X", "X", "X", "X", "X", "X", "X"]);
+    const markArr = ref(['X', "X", "X", "X", "X", "X", "X", ""]);
     const questionsStore = useQuestionsStore();
     const questions = computed(() => questionsStore.questions);
 
@@ -54,7 +54,7 @@ export default {
           }
         } else if (paramToMark.value.valveType == "Н") {
           if (paramToMark.value.forceOpen) {
-            markArr.value[0] = "AM210"
+            markArr.value[0] = "AM220"
           } else {
             markArr.value[0] = "AM219"
           }
@@ -115,8 +115,8 @@ export default {
     const checkSixthParam = () => {
       const materialParams = {
         "25Л": "1",
-        "20ГЛ": "2",
-        "12Х18Н9ТЛ": "3",
+        "12Х18Н9ТЛ": "2",
+        "20ГЛ": "3",
         "12Х18Н12М3ТЛ": "4"
       }
       if (paramToMark.value.material) {
@@ -127,7 +127,7 @@ export default {
     const checkSevenParam = () => {
       const openCloseType = {
         "открытого типа": "1",
-        "закрытого типа": "2"
+        "закрытого типа": "0"
       }
       if (paramToMark.value.openCloseType) {
         markArr.value[6] = openCloseType[paramToMark.value.openCloseType]
@@ -136,7 +136,7 @@ export default {
 
     const checkEightParam = () => {
       if (paramToMark.value.inletFlange && paramToMark.value.outletFlange) {
-        markArr.value[7] = paramToMark.value.inletFlange + '/' + paramToMark.value.outletFlange
+        markArr.value[7] = '.' + paramToMark.value.inletFlange + '/' + paramToMark.value.outletFlange
       }
     }
 
@@ -144,10 +144,10 @@ export default {
       mark.value = markArr.value[0] + '.' +
         markArr.value[1] + '.' +
         markArr.value[2] + '.' +
-        markArr.value[3] + '.' +
+        markArr.value[3] +
         markArr.value[4] +
         markArr.value[5] +
-        markArr.value[6] + '.' +
+        markArr.value[6] +
         markArr.value[7];
       questionsStore.setQuestionValue('mark', mark.value)
     }

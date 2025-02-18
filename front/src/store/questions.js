@@ -34,7 +34,7 @@ export const useQuestionsStore = defineStore('questions', {
                 targetQuestion.value = questionValue;
             }
 
-            if (type !== 'inputGroup') {
+            if (type !== 'inputGroup' && type !== 'CheckBoxType') {
                 this.resetQuestionGroup(targetQuestion.group);
             }
         },
@@ -51,8 +51,6 @@ export const useQuestionsStore = defineStore('questions', {
                 });
             }
             else {
-                console.log(questionName);
-
                 const targetQuestion = this.findQuestion(questionName);
                 targetQuestion.answers = questionValue;
             }
@@ -111,8 +109,11 @@ export const useQuestionsStore = defineStore('questions', {
                         item.answers.map((e) => {
                             e.value = null;
                         })
-                    } else
+                    } else if (item.type == 'CheckboxType') {
+                        item.value = false;
+                    } else {
                         item.value = null;
+                    }
                 }
             })
         }
