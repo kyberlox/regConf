@@ -41,6 +41,7 @@
           "id": 2.2,
           "name": "",
           "type": "TextType",
+          "inputType": "number",
           "inputName": "environmentPercent",
           "placeholder": "Укажите процент",
           "value": null
@@ -64,7 +65,7 @@
     ]
   },
   {
-    "id": 4,
+    "id": 3.1,
     "group": "compound",
     "name": "Другое агрегатное состояние, %:",
     "type": "oneLineType",
@@ -78,7 +79,7 @@
     "inner": [
       [
         {
-          "id": 4.1,
+          "id": 3.2,
           "name": "",
           "type": "SelectType",
           "inputName": "environmentName",
@@ -86,14 +87,41 @@
           "answers": []
         },
         {
-          "id": 4.2,
+          "id": 3.3,
           "name": "",
           "type": "TextType",
+          "inputType": "number",
           "inputName": "environmentPercent",
           "placeholder": "Укажите процент",
           "value": null
         }
       ]
+    ]
+  },
+  {
+    "id": 4,
+    "group": "compound",
+    "name": "Климатическое исполнение:",
+    "inputName": "climate",
+    "type": "SelectType",
+    "value": null,
+    "answers": [
+      {
+        "name": "У1 (от -40 до +40)",
+        "value": "У1"
+      },
+      {
+        "name": "ХЛ1 (от -60 до +40)",
+        "value": "ХЛ1"
+      },
+      {
+        "name": "УХЛ1 (от -60 до +40)",
+        "value": "УХЛ1"
+      },
+      {
+        "name": "М1 (от -40 до +40)",
+        "value": "М1"
+      }
     ]
   },
   {
@@ -196,6 +224,7 @@
           "id": 8.1,
           "name": "",
           "type": "TextType",
+          "inputType": "number",
           "inputName": "pnValue",
           "placeholder": "Укажите значение",
           "value": null
@@ -252,6 +281,7 @@
           "name": "",
           "type": "TextType",
           "inputName": "PpValue",
+          "inputType": "number",
           "placeholder": "Укажите значение",
           "value": null
         },
@@ -307,6 +337,7 @@
           "name": "",
           "type": "TextType",
           "inputName": "Pp_dinValue",
+          "inputType": "number",
           "placeholder": "Укажите значение",
           "value": null
         },
@@ -362,6 +393,7 @@
           "name": "",
           "type": "TextType",
           "inputName": "gabValue",
+          "inputType": "number",
           "placeholder": "Укажите значение",
           "value": null
         },
@@ -399,6 +431,7 @@
     "name": "Количество параллельно установленных и одновременно работающих клапанов (шт):",
     "inputName": "N",
     "type": "TextType",
+    "inputType": "number",
     "value": null
   },
   {
@@ -422,119 +455,94 @@
     "name": "Температура рабочей среды, в °С:",
     "inputName": "T",
     "type": "TextType",
+    "inputType": "number",
     "placeholder": "Укажите значение"
   },
   {
     "id": 15,
     "group": "pressure",
-    "name": "Климатическое исполнение:",
-    "inputName": "climate",
-    "type": "SelectType",
-    "value": null,
-    "answers": [
-      {
-        "name": "У1 (от -40 до +40)",
-        "value": "У1"
-      },
-      {
-        "name": "ХЛ1 (от -60 до +40)",
-        "value": "ХЛ1"
-      },
-      {
-        "name": "УХЛ1 (от -60 до +40)",
-        "value": "УХЛ1"
-      },
-      {
-        "name": "М1 (от -40 до +40)",
-        "value": "М1"
-      }
-    ]
-  },
-  {
-    "id": 16,
-    "group": "pressure",
     "inputName": "pressureAnswersGroup",
     "type": "inputGroup",
     "answers": [
       {
-        "id": 16.1,
+        "id": 15.1,
         "name": "Давление начала открытия с противодавлением, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "Pno",
         "value": null
       },
       {
-        "id": 16.2,
+        "id": 15.2,
         "name": "Давление полного открытия с противодавлением, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "Ppo",
         "value": null
       },
       {
-        "id": 16.3,
+        "id": 15.3,
         "name": "Давление на входе, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "P1",
         "value": null
       },
       {
-        "id": 16.4,
+        "id": 15.4,
         "name": "Давление на выходе, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "P2",
         "value": null
       },
       {
-        "id": 16.5,
+        "id": 15.5,
         "name": "Коэффициент, учитывающий эффект неполного открытия разгруженных ПК из-за противодавления:",
         "type": "DisabledType",
         "inputName": "Kw",
         "value": null
       },
       {
-        "id": 16.6,
+        "id": 15.6,
         "name": "Массовая скорость:",
         "type": "DisabledType",
         "inputName": "Gideal",
         "value": null
       },
       {
-        "id": 16.7,
+        "id": 15.7,
         "name": "Диаметр предворительный:",
         "type": "DisabledType",
         "inputName": "pre_DN",
         "value": null
       },
       {
-        "id": 16.8,
+        "id": 15.8,
         "name": "Диаметр седла клапана:",
         "type": "DisabledType",
         "inputName": "DN_s",
         "value": null
       },
       {
-        "id": 16.9,
+        "id": 15.9,
         "name": "Диаметр номинальный:",
         "type": "DisabledType",
         "inputName": "DN",
         "value": null
       },
       {
-        "id": 16.10,
+        "id": 15.10,
         "name": "Номинальное давление, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "PN",
         "value": null
       },
       {
-        "id": 16.11,
+        "id": 15.11,
         "name": "Номинальный диаметр на выходе, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "DN2",
         "value": null
       },
       {
-        "id": 16.12,
+        "id": 15.12,
         "name": "Номинальное давление на выходе, в кгс/см2:",
         "type": "DisabledType",
         "inputName": "PN2",
@@ -543,7 +551,7 @@
     ]
   },
   {
-    "id": 17,
+    "id": 16,
     "group": "mark",
     "name": "Тип присоединения:",
     "inputName": "joining_type",
@@ -589,7 +597,7 @@
     ]
   },
   {
-    "id": 18,
+    "id": 17,
     "group": "mark",
     "name": "Переменное противодавление или необходим сильфон на пружинные ПК по требованию ОЛ:",
     "type": "CheckboxType",
@@ -605,7 +613,7 @@
     ]
   },
   {
-    "id": 100,
+    "id": 17.1,
     "group": "hiddenMark",
     "name": "Маркировка",
     "inputName": "mark",
@@ -613,13 +621,13 @@
     "hidden": true
   },
   {
-    "id": 19,
+    "id": 18,
     "group": "mark",
     "inputName": "markAnswersGroup",
     "type": "inputGroup",
     "answers": [
       {
-        "id": 19.1,
+        "id": 18.1,
         "name": "тип ПК:",
         "inputName": "open_close_type",
         "type": "DisabledType",
@@ -627,7 +635,7 @@
         "value": null
       },
       {
-        "id": 19.2,
+        "id": 18.2,
         "name": "Срок эксплуатации:",
         "inputName": "assignment",
         "type": "DisabledType",
@@ -635,55 +643,60 @@
         "value": null
       },
       {
-        "id": 102,
+        "id": 18.3,
         "group": "hiddenMark",
-        "name": "Материал",
+        "name": "Материал сильфона",
         "inputName": "material_bellows",
         "value": null,
         "hidden": true
       },
       {
-        "id": 19.3,
+        "id": 18.3,
+        "group": "hiddenMark",
+        "name": "Материал золотника",
         "inputName": "material_spool",
-        "group": "hiddenMark",
         "type": "DisabledType",
         "hidden": true,
         "value": null
       },
       {
-        "id": 19.4,
+        "id": 18.4,
+        "group": "hiddenMark",
+        "name": "Материал седла",
         "inputName": "material_saddle",
-        "group": "hiddenMark",
         "type": "DisabledType",
         "hidden": true,
         "value": null
       },
       {
-        "id": 19.5,
+        "id": 18.5,
+        "group": "hiddenMark",
+        "name": "вес",
         "inputName": "weight",
-        "group": "hiddenMark",
         "type": "DisabledType",
         "hidden": true,
         "value": null
       },
       {
-        "id": 19.6,
-        "inputName": "painting_area",
+        "id": 18.6,
         "group": "hiddenMark",
+        "name": "площадь покраски",
+        "inputName": "painting_area",
         "type": "DisabledType",
         "hidden": true,
         "value": null
       },
       {
         "id": 19.7,
-        "inputName": "trials",
         "group": "hiddenMark",
+        "name": "испытания",
+        "inputName": "trials",
         "type": "DisabledType",
         "hidden": true,
         "value": null
       },
       {
-        "id": 19.8,
+        "id": 18.8,
         "inputName": "assignment",
         "group": "hiddenMark",
         "type": "DisabledType",
@@ -693,7 +706,7 @@
     ]
   },
   {
-    "id": 20,
+    "id": 19,
     "group": "tightness",
     "name": "Тип контакта:",
     "inputName": "contact_type",
@@ -702,7 +715,7 @@
     "answers": []
   },
   {
-    "id": 20.1,
+    "id": 19.1,
     "group": "tightness",
     "name": "Фланец на входе:",
     "inputName": "inlet_flange",
@@ -712,7 +725,7 @@
     "answers": []
   },
   {
-    "id": 20.2,
+    "id": 19.2,
     "group": "tightness",
     "name": "Фланец на выходе:",
     "inputName": "outlet_flange",
@@ -722,7 +735,7 @@
     "answers": []
   },
   {
-    "id": 21,
+    "id": 20,
     "group": "tightness",
     "name": "Покраска:",
     "inputName": "color",
@@ -731,7 +744,7 @@
     "answers": []
   },
   {
-    "id": 22,
+    "id": 21,
     "group": "tightness",
     "name": "Упаковка:",
     "inputName": "packaging",
@@ -741,7 +754,7 @@
     "answers": []
   },
   {
-    "id": 23,
+    "id": 22,
     "group": "tightness",
     "name": "Герметичность затвора по ГОСТ 9544-2015:",
     "type": "SelectType",
@@ -750,7 +763,7 @@
     "answers": []
   },
   {
-    "id": 26,
+    "id": 23,
     "group": "additional",
     "inputName": "additionalAnswersGroup",
     "type": "CheckboxType",
@@ -760,7 +773,7 @@
     "value": [],
     "answers": [
       {
-        "id": 26,
+        "id": 23.1,
         "group": "additional",
         "name": "Поворотные заглушки",
         "type": "CheckboxType",
@@ -768,7 +781,7 @@
         "value": false
       },
       {
-        "id": 27,
+        "id": 23.2,
         "group": "additional",
         "name": "Термочехол",
         "type": "CheckboxType",
@@ -776,15 +789,15 @@
         "value": false
       },
       {
-        "id": 32,
+        "id": 23.3,
         "group": "additional",
-        "name": "ZIP",
+        "name": "ЗИП",
         "type": "CheckboxType",
         "inputName": "need_ZIP",
         "value": false
       },
       {
-        "id": 29,
+        "id": 23.4,
         "group": "additional",
         "name": "Приемка",
         "type": "CheckboxType",
@@ -792,7 +805,7 @@
         "value": false
       },
       {
-        "id": 30,
+        "id": 23.5,
         "group": "additional",
         "name": "Переходники",
         "type": "CheckboxType",
@@ -800,15 +813,7 @@
         "value": false
       },
       {
-        "id": 31,
-        "group": "additional",
-        "name": "КОФ",
-        "type": "CheckboxType",
-        "inputName": "needKOF",
-        "value": false
-      },
-      {
-        "id": 28,
+        "id": 23.6,
         "group": "additional",
         "name": "Наличие в рабочей среде абразивных частиц",
         "type": "CheckboxType",
@@ -816,17 +821,17 @@
         "value": false
       },
       {
-        "id": 33,
+        "id": 23.7,
         "group": "additional",
         "name": "Комплект ответных присоединительных частей",
         "type": "CheckboxType",
-        "inputName": "reciprocal_connections",
+        "inputName": "needKOF",
         "value": false
       }
     ]
   },
   {
-    "id": 36,
+    "id": 24,
     "group": "additional",
     "name": "Сопроводительная документация:",
     "type": "TextAreaType",
@@ -834,7 +839,7 @@
     "value": null
   },
   {
-    "id": 34,
+    "id": 25,
     "group": "additional",
     "name": "Материал и размер трубопровода:",
     "type": "TextAreaType",
@@ -842,7 +847,7 @@
     "value": null
   },
   {
-    "id": 37,
+    "id": 26,
     "group": "additional",
     "name": "Дополнительные требования:",
     "type": "TextAreaType",
@@ -850,18 +855,20 @@
     "value": null
   },
   {
-    "id": 35,
+    "id": 27,
     "group": "additional",
     "name": "Количество:",
     "type": "TextType",
+    "inputType": "number",
     "inputName": "quantity",
     "value": null
   },
   {
-    "id": 38,
+    "id": 28,
     "group": "additional",
     "name": "Номер опросного листа:",
     "type": "TextType",
+    "inputType": "number",
     "inputName": "OL_num",
     "value": null
   }
