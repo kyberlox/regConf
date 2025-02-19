@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Cookie
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.Raschet import Raschet, mixture, mark_params, get_tightness, make_XL, make_OL
+from src.User import User
 
 from openpyxl import load_workbook
 
@@ -18,6 +19,8 @@ import os
 from dotenv import load_dotenv
 
 import redis
+
+#from typing import Optional
 
 
 
@@ -143,7 +146,6 @@ app.add_middleware(
 #миграция и таблицы эксель
 @app.get("/api/migration")
 def migration():
-    print(os.getenv('user'))
 
     #прочитать из таблицы
     wb = load_workbook("./files/table.xlsx")
@@ -459,6 +461,17 @@ async def web_get_tightness(data = Body()):
 
 
 #авторизазия => генерация токена, начало сессии
+@app.post("/api/auth")
+def login(jsn = Body()):
+    print(jsn)
+    uuid = jsn["uuid"]
+    fio = jsn["fio"]
+    dep = jsn["department"]
+    #запрос на БД
+    usr = User(uuid=uuid, fio=fio, department=dep)
+    tkn = usr.authenticate()
+
+    return {"token" : tkn}
 
 #добавить в корзину элемент
 
@@ -475,11 +488,9 @@ async def web_get_tightness(data = Body()):
 #генерация документации
 
 @app.post("/api/generate") #проверка сессии
-def generate(data = Body()):
+def generate(data = Body(), token = Cookie(default=None)):
     #запись в БД
 
-    #удалить предыдущий эксель файл и чтение ID
-    ID = 1
 
     #сохранить json
     f = open(f"./data/TKP.json", 'w')
