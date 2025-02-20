@@ -36,7 +36,7 @@ class UserData(Base):
 class Cofigurations(Base):
     __tablename__ = 'configuration_table'
     id = Column(Integer, primary_key=True)
-    author_id = Column(Integer, ForeignKey('user_table.id'))
+    author_id = Column(Text, nullable=True)
     name = Column(Text, nullable=True)
     jsn = Column(JSONB, nullable=True)
     date = Column(Date, nullable=True)
