@@ -1,4 +1,3 @@
-from django.db.models import ForeignKey
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from sqlalchemy import create_engine, MetaData, Column, Integer, Text, Float, JSON, Date, Time, Boolean
