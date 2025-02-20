@@ -81,7 +81,7 @@ class UserRedis:
 
 
 class User:
-    def __init__(self, token=encode("", "emk", "HS512"), ip="", Id=0, fio="", uuid="", department="", jsn=dict([])):
+    def __init__(self, token=encode("", "emk", "HS512"), ip="", Id=0, fio="", uuid="", department="", jsn={}):
         self.token = token
         self.ip = ip
         self.Id = Id
