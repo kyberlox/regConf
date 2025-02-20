@@ -130,7 +130,9 @@ origins = [
     "http://regconf.emk.ru",
     "https://localhost:8000",
     "https://localhost:5173",
-    "https://regconf.emk.ru"
+    "https://regconf.emk.ru",
+    "https://portal.emk.ru/intranet",
+    "Https://portal.emk.ru/intranet/tools/regconf.php"
 ]
 
 app.add_middleware(
