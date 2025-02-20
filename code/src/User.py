@@ -98,6 +98,7 @@ class User:
         #uuid = rsa.decrypt(self.token, key_read).decode('utf8')
         try:
             token = decode(self.token, key='emk', algorithms=["HS512"])
+            print(token)
             tkn_valid = True
 
             #ищем пользователя с таким uuid
