@@ -87,7 +87,7 @@ class User:
         self.uuid = uuid
         self.department = department
         self.current_json = jsn
-        self.Redis = UserRedis(self.uuid, self.jsn)
+        self.Redis = UserRedis(self.uuid, self.current_json)
 
     def authenticate(self):
         #проеврка токена
