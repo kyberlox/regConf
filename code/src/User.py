@@ -81,19 +81,19 @@ class UserRedis:
 
 
 class User:
-    def __init__(self, token=encode("", "emk", "HS512"), ip="", Id=0, fio="", uuid="", department="", jsn={}):
+    def __init__(self, token=encode({"uuid" : ""}, "emk", "HS512"), ip="", Id=0, fio="", uuid="", department="", jsn=dict()):
         self.token = token
         self.ip = ip
         self.Id = Id
         self.fio = fio
         self.uuid = uuid
         self.department = department
-        self.current_json = jsn
+        self.current_json = json.dumps(jsn)
         self.Redis = UserRedis(self.uuid, self.current_json)
 
     def authenticate(self):
         #либо есть токен
-        uuid = decode(self.token, key="emk", algorithms=["HS512"])
+        uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         usr_uuid = db.query(UserData).filter_by(uuid=uuid).first()
         usr_ip = db.query(UserData).filter_by(ip=uuid).first()
 
@@ -124,7 +124,7 @@ class User:
                 r = UserRedis(self.uuid, self.current_json)
                 r.set_user()
 
-                self.token = encode(self.uuid, "emk", "HS512")
+                self.token = encode({"uuid" : self.uuid}, "emk", "HS512")
 
                 return self.token
 
@@ -139,7 +139,7 @@ class User:
                 r = UserRedis(self.uuid, self.current_json)
                 r.set_user()
 
-                self.token = encode(self.uuid, "emk", "HS512")
+                self.token = encode({"uuid" : self.uuid}, "emk", "HS512")
                 return self.token
 
         #либо есть ip
@@ -147,6 +147,7 @@ class User:
             usr = db.query(UserData).filter_by(ip=self.ip).first()
             #или такой ip уже был
             if usr is not None:
+                encode({"uuid": self.ip}, "emk", "HS512")
                 return self.token
 
             #или регистрируем
@@ -154,6 +155,8 @@ class User:
                 usr = UserData(ip=self.ip)
                 db.add(usr)
                 db.commit()
+
+                encode({"uuid": self.ip}, "emk", "HS512")
 
                 return self.token
         else:
