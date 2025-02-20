@@ -79,7 +79,7 @@ class UserRedis:
 
 
 class User:
-    def __init__(self, token="", ip="", Id=0, fio="", uuid="", department="", jsn={}):
+    def __init__(self, token="", ip="", Id=0, fio="", uuid="", department="", jsn=dict([])):
         self.token = rsa.encrypt(token.encode('utf8'), key_write)
         self.ip = ip
         self.Id = Id
