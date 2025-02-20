@@ -3,6 +3,8 @@ from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from sqlalchemy import create_engine, MetaData, Column, Integer, Text, Float, JSON, Date, Time, Boolean
 from sqlalchemy.dialects.postgresql import JSONB
 
+from jwt import encode, decode
+
 import rsa
 (key_write, key_read) = rsa.newkeys(512)
 
@@ -80,7 +82,7 @@ class UserRedis:
 
 class User:
     def __init__(self, token="", ip="", Id=0, fio="", uuid="", department="", jsn=dict([])):
-        self.token = rsa.encrypt(token.encode('utf8'), key_write)
+        self.token = token
         self.ip = ip
         self.Id = Id
         self.fio = fio
@@ -93,62 +95,64 @@ class User:
         #проеврка токена
         tkn_valid=False
         #декодируем токен в uuid
-        uuid = rsa.decrypt(self.token, key_read).decode('utf8')
-        #ищем пользователя с таким uuid
-        usr = db.query(UserData).filter_by(uuid=uuid).first()
-        #если пользователь есть
-        if usr != None and usr != []:
+        #uuid = rsa.decrypt(self.token, key_read).decode('utf8')
+        try:
+            token = decode(self.token, key='emk', algorithms=["HS512"])
             tkn_valid = True
 
-        # если токена нет
-        if uuid == "":
+            #ищем пользователя с таким uuid
+            usr = db.query(UserData).filter_by(uuid=uuid).first()
+            #если пользователь есть
 
-            #если запрос валидный
-            if self.uuid != "" and self.fio != "" and self.department != "":
+            # если токена нет
+            if token == "":
 
-                #запрос в БД
-                usr = db.query(UserData).filter_by(uuid=self.uuid).first()
+                #если запрос валидный
+                if self.uuid != "" and self.fio != "" and self.department != "":
 
-                #если в БД есть пользователь -> запустить сессию в редисе и дать токен
-                if usr != None and usr != []:
-                    r = UserRedis(self.uuid, self.current_json)
-                    r.set_user()
+                    #запрос в БД
+                    usr = db.query(UserData).filter_by(uuid=self.uuid).first()
 
-                    self.Id = usr.id
+                    #если в БД есть пользователь -> запустить сессию в редисе и дать токен
+                    if usr != None and usr != []:
+                        r = UserRedis(self.uuid, self.current_json)
+                        r.set_user()
 
-                    self.token = rsa.encrypt(self.uuid.encode('utf8'), key_write)
-                    return self.token
+                        self.Id = usr.id
 
-                #если в БД нет пользователя
+                        self.token = rsa.encrypt(self.uuid.encode('utf8'), key_write)
+                        return self.token
+
+                    #если в БД нет пользователя
+                    else:
+                        #добавить его в БД, запустить сессию в редисе и дать токен
+                        usr = UserData(fio=self.fio, uuid=self.uuid, department=self.department)
+                        db.add(usr)
+                        db.commit()
+
+                        self.Id = usr.id
+
+                        r = UserRedis(self.uuid, self.current_json)
+                        r.set_user()
+
+                        self.token = rsa.encrypt(self.uuid.encode('utf8'), key_write)
+                        return self.token
+
+                #получить ip и не запускать сессию в редисе
                 else:
-                    #добавить его в БД, запустить сессию в редисе и дать токен
-                    usr = UserData(fio=self.fio, uuid=self.uuid, department=self.department)
+                    usr = UserData(ip=self.ip)
                     db.add(usr)
                     db.commit()
 
                     self.Id = usr.id
 
-                    r = UserRedis(self.uuid, self.current_json)
-                    r.set_user()
-
                     self.token = rsa.encrypt(self.uuid.encode('utf8'), key_write)
-                    return self.token
 
-            #получить ip и не запускать сессию в редисе
-            else:
-                usr = UserData(ip=self.ip)
-                db.add(usr)
-                db.commit()
-
-                self.Id = usr.id
-
-                self.token = rsa.encrypt(self.uuid.encode('utf8'), key_write)
-
-        #если токен есть ->валидируем запрос
-        elif tkn_valid:
-            return self.token
-        # если токен не валидный
-        else:
+            #если токен есть ->валидируем запрос
+            elif tkn_valid:
+                return self.token
+            # если токен не валидный
+        except:
             return False
 
     def create_TKP(self, name):
