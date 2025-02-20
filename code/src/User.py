@@ -101,7 +101,7 @@ class User:
             tkn_valid = True
 
         # если токена нет
-        if self.token == "":
+        if uuid == "":
 
             #если запрос валидный
             if self.uuid != "" and self.fio != "" and self.department != "":
