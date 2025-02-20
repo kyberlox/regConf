@@ -1,4 +1,3 @@
-import jwt
 from django.db.models import ForeignKey
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
