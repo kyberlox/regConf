@@ -111,7 +111,7 @@ class User:
 
                 #если в БД есть пользователь -> запустить сессию в редисе и дать токен
                 if usr != None and usr != []:
-                    r = self.Redis(self.uuid, self.current_json)
+                    r = UserRedis(self.uuid, self.current_json)
                     r.set_user()
 
                     self.Id = usr.id
@@ -128,7 +128,7 @@ class User:
 
                     self.Id = usr.id
 
-                    r = self.Redis(self.uuid, self.current_json)
+                    r = UserRedis(self.uuid, self.current_json)
                     r.set_user()
 
                     self.token = rsa.encrypt(self.uuid.encode('utf8'), key_write)
@@ -159,7 +159,7 @@ class User:
 
         #очистить redis
         self.current_json = {}
-        r = self.Redis(self.uuid, self.current_json)
+        r = UserRedis(self.uuid, self.current_json)
         r.set_user()
 
         return True
