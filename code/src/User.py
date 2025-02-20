@@ -60,7 +60,7 @@ db = SessionLocal()
 
 class UserRedis:
     def __init__(self, user_id, jsn):
-        self.r = redis.Redis(host='redis', port=6379, username=user, password=pswd, db=0)
+        self.r = redis.Redis(host='redis', port=6379, password=pswd, db=0)
         self.user_id = user_id
         self.jsn = jsn
 
