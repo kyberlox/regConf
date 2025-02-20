@@ -5,7 +5,8 @@ from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from sqlalchemy import create_engine, MetaData, Column, Integer, Text, Float, JSON, Date, Time, Boolean
 from sqlalchemy.dialects.postgresql import JSONB
 
-from jwt import encode, decode
+import rsa
+(key_write, key_read) = rsa.newkeys(512)
 
 import redis
 
@@ -81,7 +82,7 @@ class UserRedis:
 
 class User:
     def __init__(self, token="", ip="", Id=0, fio="", uuid="", department="", jsn={}):
-        self.token = token
+        self.token = rsa.encrypt(self.token.encode('utf8'), key_write)
         self.ip = ip
         self.Id = Id
         self.fio = fio
@@ -94,7 +95,7 @@ class User:
         #проеврка токена
         tkn_valid=False
         #декодируем токен в uuid
-        uuid = decode(self.token, key='emk', algorithm=["HS512"])
+        uuid = rsa.decrypt(self.token, key_read).decode('utf8')
         #ищем пользователя с таким uuid
         usr = db.query(UserData).filter_by(uuid=uuid).first()
         #если пользователь есть
@@ -117,7 +118,7 @@ class User:
 
                     self.Id = usr.id
 
-                    self.token = encode(payload={"uuid": self.uuid}, key='emk', algorithm="HS512")
+                    self.token = rsa.encrypt(self.uuid.encode('utf8'), key_write)
                     return self.token
 
                 #если в БД нет пользователя
@@ -132,7 +133,7 @@ class User:
                     r = self.Redis(self.uuid, self.current_json)
                     r.set_user()
 
-                    self.token = encode(payload={"uuid": self.uuid}, key='emk', algorithm="HS512")
+                    self.token = rsa.encrypt(self.uuid.encode('utf8'), key_write)
                     return self.token
 
             #получить ip и не запускать сессию в редисе
@@ -143,7 +144,7 @@ class User:
 
                 self.Id = usr.id
 
-                self.token = encode(payload={"uuid": self.uuid}, key='emk', algorithm="HS512")
+                self.token = rsa.encrypt(self.uuid.encode('utf8'), key_write)
 
         #если токен есть ->валидируем запрос
         elif tkn_valid:
