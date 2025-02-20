@@ -465,8 +465,10 @@ async def web_get_tightness(data = Body()):
 def login(jsn = Body()):
     print(jsn)
     uuid = jsn["uuid"]
-    fio = jsn["fio"]
-    dep = jsn["department"]
+    fio = f"{jsn['fio'][1]} {jsn['fio'][0]} {jsn['fio'][2]}"
+    dep = ""
+    for dp in jsn["department"]:
+        dep += dp
     #запрос на БД
     usr = User(uuid=uuid, fio=fio, department=dep)
     tkn = usr.authenticate()
