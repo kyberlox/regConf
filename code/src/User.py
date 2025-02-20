@@ -5,8 +5,8 @@ from sqlalchemy.dialects.postgresql import JSONB
 
 from jwt import encode, decode
 
-import rsa
-(key_write, key_read) = rsa.newkeys(512)
+#import rsa
+#(key_write, key_read) = rsa.newkeys(512)
 
 import redis
 
@@ -81,7 +81,7 @@ class UserRedis:
 
 
 class User:
-    def __init__(self, token="", ip="", Id=0, fio="", uuid="", department="", jsn=dict([])):
+    def __init__(self, token=encode("", "emk", "HS512"), ip="", Id=0, fio="", uuid="", department="", jsn=dict([])):
         self.token = token
         self.ip = ip
         self.Id = Id
@@ -92,13 +92,81 @@ class User:
         self.Redis = UserRedis(self.uuid, self.current_json)
 
     def authenticate(self):
+        #либо есть токен
+        uuid = decode(self.token, key="emk", algorithms=["HS512"])
+        usr_uuid = db.query(UserData).filter_by(uuid=uuid).first()
+        usr_ip = db.query(UserData).filter_by(ip=uuid).first()
+
+        # или есть такой пользователь
+        if uuid != "":
+            #или он == uuid
+            if usr_uuid is not None:
+                r = UserRedis(usr_uuid.uuid, self.current_json)
+                r.set_user()
+
+                return self.token
+
+            #или он == ip
+            elif usr_ip is not None:
+                return self.token
+
+            #или он подделка
+            else:
+                return False
+
+        #либо есть uuid, fio, department
+        elif self.uuid != "" and self.fio != "" and self.department != "":
+            db_usr = db.query(UserData).filter_by(uuid=self.uuid).first()
+
+            #или он уже есть
+            if usr_uuid is not None:
+                self.uuid = usr_uuid.uuid
+                r = UserRedis(self.uuid, self.current_json)
+                r.set_user()
+
+                self.token = encode(self.uuid, "emk", "HS512")
+
+                return self.token
+
+            #или регистрируем
+            else:
+                usr = UserData(fio=self.fio, uuid=self.uuid, department=self.department)
+                db.add(usr)
+                db.commit()
+
+                self.Id = usr.id
+
+                r = UserRedis(self.uuid, self.current_json)
+                r.set_user()
+
+                self.token = encode(self.uuid, "emk", "HS512")
+                return self.token
+
+        #либо есть ip
+        elif self.ip != "":
+            usr = db.query(UserData).filter_by(ip=self.ip).first()
+            #или такой ip уже был
+            if usr is not None:
+                return self.token
+
+            #или регистрируем
+            else:
+                usr = UserData(ip=self.ip)
+                db.add(usr)
+                db.commit()
+
+                return self.token
+        else:
+            return False
+
+    '''
+    def auth(self):
         #проеврка токена
         tkn_valid=False
         #декодируем токен в uuid
         #uuid = rsa.decrypt(self.token, key_read).decode('utf8')
         try:
-            token = decode(self.token, key='emk', algorithms=["HS512"])
-            print(token)
+            uuid = decode(token, key='emk', algorithms=["HS512"])
             tkn_valid = True
 
             #ищем пользователя с таким uuid
@@ -106,7 +174,7 @@ class User:
             #если пользователь есть
 
             # если токена нет
-            if token == "":
+            if uuid == "":
 
                 #если запрос валидный
                 if self.uuid != "" and self.fio != "" and self.department != "":
@@ -155,6 +223,7 @@ class User:
             # если токен не валидный
         except:
             return False
+    '''
 
     def create_TKP(self, name):
         #сохранить в БД
