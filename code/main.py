@@ -480,7 +480,7 @@ def login(jsn = Body()):
 @app.post("/api/check", tags=["Активность пользователей"])
 def check_valid(data = Body(), token = Cookie(default=None)):
     # если есть токен
-    print(token, data)
+    return {token, data}
     if token is not None:
         print(token)
         usr = User(token=token)
