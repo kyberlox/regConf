@@ -477,7 +477,7 @@ def login(jsn = Body()):
     return {"token" : tkn}
 
 #проверка авторизациии
-@app.post("/api/ckeck", tags=["Активность пользователей"])
+@app.post("/api/check", tags=["Активность пользователей"])
 def check_valid(data = Body(), token = Cookie(default=None)):
     # если есть токен
     if token is not None:
