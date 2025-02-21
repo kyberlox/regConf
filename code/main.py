@@ -557,7 +557,9 @@ def generate(name, token = Cookie(default=None)):
 
 
 @app.post("/api/makeOL", tags=["Генерация документации"])
-def mk_OL(data = Body(), token = Cookie(default=None)):
+def mk_OL(request: Request, token: str = Cookie(None)):
+    data = Request.body
+    token = Request.cookies['token']
     #запись в БД
     usr = User(token=token, jsn=data)
     if usr.create_OL():
