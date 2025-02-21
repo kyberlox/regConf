@@ -478,8 +478,8 @@ def login(jsn = Body()):
 
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
-def check_valid(data = Body(), token = Cookie(), req = Request()):
-    print(token, req.cookies)
+def check_valid(data = Body(), token = Cookie()):
+    print(token)
     # если есть токен
     usr = User(token=token)
     return {usr.token}
