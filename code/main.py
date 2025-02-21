@@ -483,7 +483,6 @@ def check_valid(request: Request, token: str = Cookie(None)):
     return {
         "token": token,
         "all_cookies": cookies,
-        "tkn" : cookies["token"],
         "Body" : request.body,
     }
     '''
