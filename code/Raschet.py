@@ -738,22 +738,22 @@ def make_XL(dt, ID):
 
         if position["valve_type"] == 'Н' and not position['need_bellows']:
             #Давление настройки без противодавления
-            sheet[f"AL{i}"].value = position["Pn"] - position["Pp"]
+            sheet[f"AL{i}"].value = position["Pn"]
 
             #Давление начала открытия без противодавления
-            sheet[f"AM{i}"].value = position["Ppo"] - position["Pp"]
+            sheet[f"AM{i}"].value = position["Ppo"]
 
             #Давление полного открытия без противодавления
-            sheet[f"AN{i}"].value = position["Ppo"] - position["Pp"]
+            sheet[f"AN{i}"].value = position["Ppo"]
 
             #Давление настройки с противодавлением
-            sheet[f"AH{i}"].value = position["Pn"]
+            sheet[f"AH{i}"].value = position["Pn"] - position["Pp"]
 
             #Давление начала открытия с противодавлением 
-            sheet[f"AI{i}"].value = position["Ppo"]
+            sheet[f"AI{i}"].value = position["Ppo"] - position["Pp"]
 
             #Давление полного открытия с противодавлением
-            sheet[f"AJ{i}"].value = position["Ppo"]
+            sheet[f"AJ{i}"].value = position["Ppo"] - position["Pp"]
         else:
             #Давление настройки без противодавления
             sheet[f"AL{i}"].value = position["Pn"]
