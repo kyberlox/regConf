@@ -47,10 +47,8 @@ class Cofigurations(Base):
 class Attempts(Base):
     __tablename__ = 'attempts_table'
     id = Column(Integer, primary_key=True)
-    ip = Column(Text, nullable=True)
+    user_id = Column(Integer, nullable=True)
     jsn = Column(JSONB, nullable=True)
-    valid = Column(Boolean, nullable=True)
-    uuid = Column(Text, nullable=True)
     date = Column(Date, nullable=True)
     time = Column(Time, nullable=True)
 
@@ -228,31 +226,83 @@ class User:
             return False
     '''
 
+    def check(self):
+        Redis = UserRedis()
+        self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        if Redis.r.get(self.uuid) is not None:
+            return True
+        else:
+            return False
+
+
+
+    def set_dt(self):
+        #загрузить json
+        self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        self.Redis = UserRedis(user_id=self.uuid, jsn=self.current_json)
+        self.Redis.update_user()
+
+    def get_dt(self):
+        #выгрузить json
+        self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        self.Redis = UserRedis(user_id=self.uuid)
+
+        return self.Redis.get_user()
+
+    def outh(self):
+        #разлогинить пользователя в redis
+        self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        self.Redis = UserRedis(user_id=self.uuid)
+        self.Redis.delete_user()
+
+
+
     def create_TKP(self, name):
+        self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+
+        #взять json из Redis
+        self.current_json = UserRedis().r.get(self.uuid)
+
         #сохранить в БД
         cnf = Cofigurations(author_id=self.Id, name=name, jsn=self.current_json, date=str(datetime.date.today()), time=str(datetime.time.now()))
         db.add(cnf)
         db.commit()
 
         #очистить redis
-        self.current_json = {}
         r = UserRedis(self.uuid, self.current_json)
         r.set_user()
 
-        return True
-
-    def create_OL(self):
-        #сохранить в БД
-        pass
+        return self.current_json
 
     def history(self):
         #история запросов пользователя
         pass
 
-    def outh(self):
-        #разлогинить пользователя в redis
-        pass
-
     def uploadConfiguration(self, id):
         #загрузка ТКП из БД в redis
         pass
+
+
+
+    def create_OL(self):
+        #найти по токену uuid или ip
+        pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        #найти в БД
+        usr_uuid = db.query(UserData).filter_by(uuid=pre_id).first()
+        usr_ip = db.query(UserData).filter_by(ip=pre_id).first()
+
+        if usr_uuid is not None:
+            self.Id = usr_uuid.id
+        elif usr_ip is not None:
+            self.Id = usr_ip.id
+        else:
+            return {'err' : 'пользователь не найден'}
+
+        #сохранить в БД
+        current_time = datetime.datetime.now().time()
+        clock_time = current_time.strftime("%H:%M:%S")
+        OL = Attempts(user_id=self.Id, jsn=self.current_json, date=str(datetime.date.today()), time=clock_time)
+        db.add(OL)
+        db.commit()
+
+        return True

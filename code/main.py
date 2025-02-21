@@ -145,7 +145,7 @@ app.add_middleware(
 #app.mount("/", StaticFiles(directory="../front/dist", html=True), name="static")
 
 #миграция и таблицы эксель
-@app.get("/api/migration")
+@app.get("/api/migration", tags=["Подбор"])
 def migration():
 
     #прочитать из таблицы
@@ -379,7 +379,7 @@ def migration():
     return {"environmentTable" : result, "valveParametrsTable" : par_result, "Table2" : t2_result, "Table10" : t10_result, "PackingParams" : pak_res}
 
 #подбор сред
-@app.get("/api/get_table")
+@app.get("/api/get_table", tags=["Подбор"])
 async def get_table():
     #вывод словаря
     environments = []
@@ -405,7 +405,7 @@ async def get_table():
     return environments
 
 #подбор смесей
-@app.post("/api/get_compound")
+@app.post("/api/get_compound", tags=["Подбор"])
 async def get_compound(data=Body()):
     environments = []
     lines = db.query(Table).all()
@@ -441,7 +441,7 @@ async def get_compound(data=Body()):
     return mixture(environments, climate)
 
 #получение осатльных параметров
-@app.post("/api/get_pressure")
+@app.post("/api/get_pressure", tags=["Подбор"])
 def get_pressure(data = Body()):
     for key in data.keys():
         if ((data[key] == "") or (data[key] == None)):
@@ -451,18 +451,18 @@ def get_pressure(data = Body()):
             return Raschet(data)
 
 #подбор оборудования
-@app.post("/api/get_mark_params")
+@app.post("/api/get_mark_params", tags=["Подбор"])
 async def get_mark_params(data = Body()):
     return mark_params(data)
 
-@app.post("/api/get_tightness")
+@app.post("/api/get_tightness", tags=["Подбор"])
 async def web_get_tightness(data = Body()):
     return get_tightness(data)
 
 
 
 #авторизазия => генерация токена, начало сессии
-@app.post("/api/auth")
+@app.post("/api/auth", tags=["Активность пользователей"])
 def login(jsn = Body()):
     print(jsn)
     uuid = jsn["uuid"]
@@ -476,58 +476,89 @@ def login(jsn = Body()):
 
     return {"token" : tkn}
 
-#добавить в корзину элемент
+#проверка авторизациии
+@app.post("/api/ckeck", tags=["Активность пользователей"])
+def check_valid(data = Body(), token = Cookie(default=None)):
+    # если есть токен
+    if token is not None:
+        usr = User(token=token)
+        return {"token_valid" : usr.check()}
+    #если есть ip
+    elif 'ip' in data:
+        usr = User(ip=data['ip'])
+        ust_token = usr.authenticate()
+        return {"token" : ust_token}
+    # если есть uuid
+    elif 'uuid' in data:
+        #дать токен
+        usr = User(uuid=data['uuid'])
+        user_token = usr.authenticate()
+        return {"token" : user_token}
 
-#выгрузить из корзины элемент
+#записать json в Redis
+@app.post("/api/set_data", tags=["Активность пользователей"])
+def get_data(data = Body, token = Cookie(default=None)):
+    usr = User(token=token, jsn=data)
+    usr.set_dt()
 
-#изменить элемент
+    return usr.get_dt()
 
-#удалить из корзиный элемент
+#получить json из Redis
+@app.get("/api/get_data", tags=["Активность пользователей"])
+def get_data(token = Cookie(default=None)):
+    usr = User(token=token)
+    return usr.get_dt()
 
-#просмотр корзины
+#прекратить сессию -> выйти из Redis
+@app.get("/api/outh", tags=["Активность пользователей"])
+def outh_user(token = Cookie(default=None)):
+    usr = User(token=token)
+    usr.outh()
+    return {'status' : 'ready'}
 
-#выгрузка корзины -> опустошение -> сохранить в БД
+
 
 #генерация документации
+@app.get("/api/generate/{name}", tags=["Генерация документации"]) #проверка сессии
+def generate(name, token = Cookie(default=None)):
+    usr = User(token=token)
+    if usr.ceck():
+        # получить название и сохранить в БД
+        #получить json для генерации из Redis
+        jsn = usr.create_TKP(name)
 
-@app.post("/api/generate") #проверка сессии
-def generate(data = Body(), token = Cookie(default=None)):
+        #сохранить json
+        #f = open(f"./data/TKP.json", 'w')
+        #json.dump(data, f)
+        #f.close()
+
+        #генерация файла
+        res = make_XL(jsn)
+
+        #выдать файл
+        if res == True:
+            return FileResponse(f'./data/TKPexample.xlsx', filename=f'ТКП ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
+        else:
+            return res
+
+
+
+@app.post("/api/makeOL", tags=["Генерация документации"])
+def mk_OL(data = Body(), token = Cookie(default=None)):
     #запись в БД
+    usr = User(token=token, jsn=data)
+    if usr.create_OL():
 
+        #сохранить json
+        #f = open(f"./data/OL.json", 'w')
+        #json.dump(data, f)
+        #f.close()
 
-    #сохранить json
-    f = open(f"./data/TKP.json", 'w')
-    json.dump(data, f)
-    f.close()
-    
-    #генерация файла
-    res = make_XL(data)
-
-    #выдать файл
-    if res == True:
-        return FileResponse(f'./data/TKPexample.xlsx', filename=f'ТКП ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
-    else:
-        return res
-
-
-
-@app.post("/api/makeOL")
-def mk_OL(data = Body()):
-    #запись в БД
-
-    #удалить предыдущий эксель файл и чтение ID
-    ID = 1
-
-    #сохранить json
-    f = open(f"./data/OL.json", 'w')
-    json.dump(data, f)
-    f.close()
-    
-    #генерация файла
-    res = make_OL(data)
-    #return res
-    #выдать файл
-    if res == True:
-        return FileResponse(f'./data/OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
-    else:
-        return res
+        #генерация файла
+        res = make_OL(data)
+        #return res
+        #выдать файл
+        if res == True:
+            return FileResponse(f'./data/OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
+        else:
+            return res
