@@ -132,7 +132,8 @@ origins = [
     "https://localhost:5173",
     "https://regconf.emk.ru",
     "https://portal.emk.ru",
-    "*"
+    "*",
+    "http://213.87.71.131"
 ]
 
 app.add_middleware(
