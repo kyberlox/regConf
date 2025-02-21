@@ -478,9 +478,12 @@ def login(jsn = Body()):
 
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
-def check_valid(req = Request()):
-    print(req)
-    # если есть токен
+def check_valid(request: Request, session_id: str = Cookie(None)):
+    cookies = request.cookies
+    return {
+        "session_id": session_id,
+        "all_cookies": cookies
+    }
     usr = User(token=req)
     return {usr.token}
     '''
