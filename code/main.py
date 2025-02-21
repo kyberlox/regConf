@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body, Cookie
+from fastapi import FastAPI, Body, Cookie, Request
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -478,8 +478,8 @@ def login(jsn = Body()):
 
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
-def check_valid(data = Body(), token = Cookie(default=None)):
-    print(token)
+def check_valid(data = Body(), token = Cookie(), req = Request()):
+    print(token, req.cookies)
     # если есть токен
     usr = User(token=token)
     return {usr.token}
