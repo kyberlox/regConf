@@ -481,16 +481,7 @@ def login(jsn = Body()):
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
 def check_valid(request: Request, token: str = Cookie(None)):
-    cookies = request.cookies
-    return {
-        "token": token,
-        "all_cookies": cookies,
-        "Body" : request.body,
-    }
-    '''
-    usr = User(token=req)
-    return {usr.token}
-    return {token, data}
+    data = request.body
     if token is not None:
         print(token)
         usr = User(token=token)
@@ -506,7 +497,8 @@ def check_valid(request: Request, token: str = Cookie(None)):
         usr = User(uuid=data['uuid'])
         user_token = usr.authenticate()
         return {"token" : user_token}
-    '''
+    else:
+        return {'cookie' : request.cookie}
 
 #записать json в Redis
 @app.post("/api/set_data", tags=["Активность пользователей"])
