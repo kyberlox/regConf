@@ -481,6 +481,7 @@ def login(jsn = Body()):
 def check_valid(data = Body(), token = Cookie(default=None)):
     # если есть токен
     if token is not None:
+        print(token)
         usr = User(token=token)
         return {"token_valid" : usr.check()}
     #если есть ip
