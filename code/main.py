@@ -495,7 +495,7 @@ def check_valid(data = Body(), token: str = Cookie(None)):
         usr = User(token=token)
         return {"token_valid" : usr.check()}
     #если есть ip
-    elif 'ip' in data.keys():
+    elif 'ip' in data:
         usr = User(ip=data['ip'])
         usr_token = usr.authenticate()
 
@@ -504,7 +504,7 @@ def check_valid(data = Body(), token: str = Cookie(None)):
         response.set_cookie(key="token", value=usr_token)
         return response
     else:
-        return {'err' : 'Token not valid'}
+        return {'err' : 'Check fail'}
 
 #записать json в Redis
 @app.post("/api/set_data", tags=["Активность пользователей"])
