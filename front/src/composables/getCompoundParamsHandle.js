@@ -5,8 +5,7 @@ import { useHelperStore } from '@/store/helper'
 import { useEnvModuleStore } from '@/store/envModule'
 import Api from "@/utils/Api";
 
-
-export const getCompoundHandleParams = () => {
+export const getCompoundParamsHandle = () => {
     const questionsStore = useQuestionsStore();
     const helperStore = useHelperStore();
     const envModuleStore = useEnvModuleStore();
