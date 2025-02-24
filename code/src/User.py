@@ -59,7 +59,7 @@ SessionLocal = sessionmaker(autoflush=True, bind=engine)
 db = SessionLocal()
 
 class UserRedis:
-    def __init__(self, user_id, jsn):
+    def __init__(self, user_id=0, jsn=json.dumps([])):
         self.r = redis.Redis(host='redis', port=6379, password=pswd, db=0)
         self.user_id = user_id
         self.jsn = jsn
