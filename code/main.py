@@ -482,9 +482,9 @@ def login(jsn = Body()):
 
 
 @app.post("/api/test", tags=["Активность пользователей"])
-def check_valid(token: str = Cookie(None)):
+def check_valid(data = Body(), token: str = Cookie(None)):
     print(token)
-    return {"token" : token}
+    return {"token" : token, "data" : data}
 
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
@@ -500,8 +500,8 @@ def check_valid(request: Request, token: str = Cookie(None)):
     #если есть ip
     elif 'ip' in data.keys():
         usr = User(ip=data['ip'])
-        ust_token = usr.authenticate()
-        return {"token" : ust_token}
+        usr_token = usr.authenticate()
+        return {"token" : usr_token}
     # если есть uuid
     elif 'uuid' in data.keys():
         #дать токен
