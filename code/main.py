@@ -132,7 +132,7 @@ origins = [
     "https://localhost:5173",
     "https://regconf.emk.ru",
     "https://portal.emk.ru",
-    "http://10.34.172.121:5173/",
+    "http://10.34.172.121:5173",
     "http://213.87.71.131",
 ]
 
@@ -141,7 +141,8 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE", "PUT", "OPTIONS", "PATH"],
-    allow_headers=["Content-Type", "Accept", "Authorization", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest", "Access-Control-Allow-Credentials"],
+    allow_headers=["*"]
+    #allow_headers=["Content-Type", "Accept", "Authorization", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest", "Access-Control-Allow-Credentials"],
 
 )
 
@@ -483,6 +484,8 @@ def login(jsn = Body()):
 @app.post("/api/check", tags=["Активность пользователей"])
 def check_valid(request: Request, token: str = Cookie(None)):
     data = request.body
+    #return data
+
     if token is not None:
         print(token)
         usr = User(token=token)
