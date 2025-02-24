@@ -480,10 +480,12 @@ def login(jsn = Body()):
 
     return {"token" : tkn}
 
-'''@app.post("/api/test", tags=["Активность пользователей"])
+'''
+@app.post("/api/test", tags=["Активность пользователей"])
 def check_valid(test = Request):
     print(test.headers)
-    return {"Test" : test.headers.get('test')}'''
+    return {"Test" : test.headers.get('test')}
+'''
 
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
@@ -554,7 +556,7 @@ def generate(name, token = Cookie(default=None)):
 
 
 @app.post("/api/makeOL", tags=["Генерация документации"])
-def mk_OL(data : Body, token: str = Cookie(None)):
+def generate_OL(data : Body, token: str = Cookie(None)):
     #запись в БД
     usr = User(token=token, jsn=data)
     if usr.create_OL():
