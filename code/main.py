@@ -480,12 +480,13 @@ def login(jsn = Body()):
 
     return {"token" : tkn}
 
-'''
+
 @app.post("/api/test", tags=["Активность пользователей"])
-def check_valid(data = Body(), token: str = Cookie(None)):
-    print(token)
-    return {"token" : token, "data" : data}
-'''
+def check_valid(data = Body(), authorization: str = Header()):
+    print(authorization)
+    return {"Header" : authorization, "data" : data}
+
+
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
 def check_valid(data = Body(), token: str = Cookie(None)):
@@ -555,9 +556,7 @@ def generate(name, token = Cookie(default=None)):
 
 
 @app.post("/api/makeOL", tags=["Генерация документации"])
-def mk_OL(request: Request, token: str = Cookie(None)):
-    data = Request.body
-    token = Request.cookies['token']
+def mk_OL(data : Body, token: str = Cookie(None)):
     #запись в БД
     usr = User(token=token, jsn=data)
     if usr.create_OL():
@@ -571,7 +570,7 @@ def mk_OL(request: Request, token: str = Cookie(None)):
         res = make_OL(data)
         #return res
         #выдать файл
-        if res == True:
+        if res:
             return FileResponse(f'./data/OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
         else:
             return res

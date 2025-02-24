@@ -252,8 +252,11 @@ class User:
     def outh(self):
         #разлогинить пользователя в redis
         self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
-        self.Redis = UserRedis(user_id=self.uuid)
-        self.Redis.delete_user()
+        try:
+            self.Redis = UserRedis(user_id=self.uuid)
+            self.Redis.delete_user()
+        except:
+            return False
 
 
 
