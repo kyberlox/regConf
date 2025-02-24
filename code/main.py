@@ -491,12 +491,12 @@ def check_valid(request: Request, token: str = Cookie(None)):
         usr = User(token=token)
         return {"token_valid" : usr.check()}
     #если есть ip
-    elif 'ip' in data:
+    elif 'ip' in data.keys():
         usr = User(ip=data['ip'])
         ust_token = usr.authenticate()
         return {"token" : ust_token}
     # если есть uuid
-    elif 'uuid' in data:
+    elif 'uuid' in data.keys():
         #дать токен
         usr = User(uuid=data['uuid'])
         user_token = usr.authenticate()
