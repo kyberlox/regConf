@@ -484,6 +484,7 @@ def login(jsn = Body()):
 @app.post("/api/check", tags=["Активность пользователей"])
 def check_valid(request: Request, token: str = Cookie(None)):
     data = request.json()
+    data = json.load(data)
     print(data)
     #return data
 
