@@ -555,6 +555,7 @@ def generate(name, token = Cookie(default=None)):
 
 
 
+"""
 @app.post("/api/makeOL", tags=["Генерация документации"])
 def generate_OL(data : Body, token: str = Cookie(None)):
     #запись в БД
@@ -574,3 +575,4 @@ def generate_OL(data : Body, token: str = Cookie(None)):
             return FileResponse(f'./data/OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
         else:
             return res
+"""
