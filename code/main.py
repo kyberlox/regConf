@@ -483,9 +483,9 @@ def login(jsn = Body()):
 
 
 @app.post("/api/test", tags=["Активность пользователей"])
-def check_valid(test = Request):
-    print(test.headers)
-    return {"Test" : test.headers.get('test')}
+def check_valid(authorization : dict | None = Header(None)):
+    print(authorization)
+    return {"Test" : authorization['token']}
 
 
 
