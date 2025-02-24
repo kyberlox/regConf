@@ -480,11 +480,15 @@ def login(jsn = Body()):
 
     return {"token" : tkn}
 
+
+@app.post("/api/test", tags=["Активность пользователей"])
+def check_valid(request: Request, token: str = Cookie(None)):
+    return {"token" : token, "cookie" : request.cookie, "request" : request}
+
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
 def check_valid(request: Request, token: str = Cookie(None)):
-    data = request.json()
-    data = json.load(data)
+    data = request.body()
     print(data)
     #return data
 
