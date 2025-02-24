@@ -11,6 +11,9 @@ import Api from "@/utils/Api";
 import Validator from "@/utils/Validator";
 import { usePageStore } from "@/store/page";
 // import climateGroup from "@/assets/staticJsons/climateGroup.json";
+import { findQuestion } from "@/utils/findQuestionInStore";
+import { getCompoundHandleParams } from '@/composables/getCompoundParamsHandle'
+
 
 export default {
     setup() {
@@ -19,82 +22,81 @@ export default {
         const pageStore = usePageStore();
         const envModuleStore = useEnvModuleStore();
 
-        const questions = computed(() => questionsStore.questions);
-
         const errors = computed(() => helperStore.getMessages);
 
         const nodeRefs = computed(() => pageStore.getNodeRefs);
 
-        const noErrors = computed(() => helperStore.isValid)
+        const noErrors = computed(() => helperStore.isValid);
 
-        const paramsToGetCompound = computed(() => {
-            return {
-                environmentType: questions.value.find((e) => e.inputName == 'environmentType'),
-                environment: questions.value.find((e) => e.inputName == 'environment'),
-                envSumm: questions.value.find((e) => e.inputName == 'envAnswersGroup').answers.find((e) => e.inputName == 'envSumm'),
-                isSecondEnv: questions.value.find((e) => e.inputName == 'isSecondEnv'),
-                secondEnv: questions.value.find((e) => e.inputName == 'secondEnv'),
-                bothEnvSumm: questions.value.find((e) => e.inputName == 'envAnswersGroup').answers.find((e) => e.inputName == 'bothEnvSumm'),
-                climate: questions.value.find((e) => e.inputName == 'climate')
-            }
-        })
+        getCompoundHandleParams();
+        // const paramsToGetCompound = computed(() => {
+        //     return {
+        //         environmentType: findQuestion('environmentType'),
+        //         environment: findQuestion('environment'),
+        //         envSumm: findQuestion('envAnswersGroup', 'envSumm'),
+        //         isSecondEnv: findQuestion('isSecondEnv'),
+        //         secondEnv: findQuestion('secondEnv'),
+        //         bothEnvSumm: findQuestion('envAnswersGroup', 'bothEnvSumm'),
+        //         climate: findQuestion('climate'),
+        //     }
+        // })
         const paramsToGetPressure = computed(() => {
             return {
-                pn: questions.value.find((e) => e.inputName == 'Pn'),
-                pp: questions.value.find((e) => e.inputName == 'Pp'),
-                ppDin: questions.value.find((e) => e.inputName == 'Pp_din'),
-                gab: questions.value.find((e) => e.inputName == 'Gab'),
-                n: questions.value.find((e) => e.inputName == 'N'),
-                preKc: questions.value.find((e) => e.inputName == 'Pre_Kc'),
-                climate: questions.value.find((e) => e.inputName == 'climate'),
-
-                T: questions.value.find((e) => e.inputName == 'T'),
-                valveType: questions.value.find((e) => e.inputName == 'valve_type'),
-                forceOpen: questions.value.find((e) => e.inputName == 'force_open'),
+                pn: findQuestion('Pn'),
+                pp: findQuestion('Pp'),
+                ppDin: findQuestion('Pp_din'),
+                gab: findQuestion('Gab'),
+                n: findQuestion('N'),
+                preKc: findQuestion('Pre_Kc'),
+                climate: findQuestion('climate'),
+                T: findQuestion('T'),
+                valveType: findQuestion('valve_type'),
+                forceOpen: findQuestion('force_open'),
             }
         })
 
         const paramsToGetMark = computed(() => {
             return {
-                joiningType: questions.value.find((e) => e.inputName == 'joining_type'),
-                needBellows: questions.value.find((e) => e.inputName == 'need_bellows'),
-                mark: questions.value.find((e) => e.inputName == 'mark'),
+                joiningType: findQuestion('joining_type'),
+                needBellows: findQuestion('need_bellows'),
+                mark: findQuestion('mark'),
             }
         })
 
         const paramsToGetTightness = computed(() => {
             return {
-                contactType: questions.value.find((e) => e.inputName == 'contact_type'),
-                inletFlange: questions.value.find((e) => e.inputName == 'inlet_flange'),
-                outletFlange: questions.value.find((e) => e.inputName == 'outlet_flange'),
-                color: questions.value.find((e) => e.inputName == 'color'),
-                packaging: questions.value.find((e) => e.inputName == 'packaging'),
-                materialBellows: questions.value.find((e) => e.inputName == 'markAnswersGroup').answers.find((e) => e.inputName == 'material_bellows'),
-                materialSpool: questions.value.find((e) => e.inputName == 'markAnswersGroup').answers.find((e) => e.inputName == 'material_spool'),
-                materialSaddle: questions.value.find((e) => e.inputName == 'markAnswersGroup').answers.find((e) => e.inputName == 'material_saddle'),
-                weight: questions.value.find((e) => e.inputName == 'markAnswersGroup').answers.find((e) => e.inputName == 'weight'),
-                paintingArea: questions.value.find((e) => e.inputName == 'markAnswersGroup').answers.find((e) => e.inputName == 'painting_area'),
-                trials: questions.value.find((e) => e.inputName == 'markAnswersGroup').answers.find((e) => e.inputName == 'trials'),
-                assignment: questions.value.find((e) => e.inputName == 'markAnswersGroup').answers.find((e) => e.inputName == 'assignment'),
+                contactType: findQuestion('contact_type'),
+                inletFlange: findQuestion('inlet_flange'),
+                outletFlange: findQuestion('outlet_flange'),
+                color: findQuestion('color'),
+                packaging: findQuestion('packaging'),
 
+                materialBellows: findQuestion('markAnswersGroup', 'material_bellows'),
+                materialSpool: findQuestion('markAnswersGroup', 'material_spool'),
+                materialSaddle: findQuestion('markAnswersGroup', 'material_saddle'),
+                weight: findQuestion('markAnswersGroup', 'weight'),
+                paintingArea: findQuestion('markAnswersGroup', 'painting_area'),
+                trials: findQuestion('markAnswersGroup', 'trials'),
+                assignment: findQuestion('markAnswersGroup', 'assignment'),
             }
         })
 
         const paramsToGenerateDoc = computed(() => {
             return {
-                docs: questions.value.find((e) => e.inputName == 'docs'),
-                pipeMaterial: questions.value.find((e) => e.inputName == 'pipe_material'),
-                additionally: questions.value.find((e) => e.inputName == 'additionally'),
-                quantity: questions.value.find((e) => e.inputName == 'quantity'),
-                olNum: questions.value.find((e) => e.inputName == 'OL_num'),
-                tightness: questions.value.find((e) => e.inputName == 'tightness'),
-                rotaryPlugs: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'rotary_plugs'),
-                needZip: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'need_ZIP'),
-                thermalCover: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'thermal_cover'),
-                acceptance: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'acceptance'),
-                adapters: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'adapters'),
-                needKof: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'needKOF'),
-                abrasiveParticles: questions.value.find((e) => e.inputName == 'additionalAnswersGroup').answers.find((e) => e.inputName == 'abrasive_particles'),
+                docs: findQuestion('docs'),
+                packaging: findQuestion('pipe_material'),
+                pipeMaterial: findQuestion('packaging'),
+                additionally: findQuestion('additionally'),
+                quantity: findQuestion('quantity'),
+                olNum: findQuestion('OL_num'),
+                tightness: findQuestion('tightness'),
+                rotaryPlugs: findQuestion('additionalAnswersGroup', 'rotary_plugs'),
+                needZip: findQuestion('additionalAnswersGroup', 'need_ZIP'),
+                thermalCover: findQuestion('additionalAnswersGroup', 'thermal_cover'),
+                acceptance: findQuestion('additionalAnswersGroup', 'acceptance'),
+                adapters: findQuestion('additionalAnswersGroup', 'adapters'),
+                needKof: findQuestion('additionalAnswersGroup', 'needKOF'),
+                abrasiveParticles: findQuestion('additionalAnswersGroup', 'abrasive_particles'),
             }
         })
 
@@ -116,107 +118,105 @@ export default {
         });
 
         // заполнение селектов при выборе агрегатного состояния
-        watch(paramsToGetCompound.value.environmentType, (newVal) => {
-            questionsStore.reloadEnvTypes(newVal.value);
-        }, { deep: true });
+        // watch(paramsToGetCompound.value.environmentType, (newVal) => {
+        //     questionsStore.reloadEnvTypes(newVal.value);
+        // }, { deep: true });
 
         // Если в другом агрегатном состоянии не активен чекбокс -> скрываю №5
-        const changeVisibility = (newVal) => {
-            paramsToGetCompound.value.envSumm.hidden = newVal.value;
-            paramsToGetCompound.value.secondEnv.hidden = !newVal.value;
-            paramsToGetCompound.value.bothEnvSumm.hidden = !newVal.value;
-        }
-        watch(paramsToGetCompound.value.isSecondEnv, (newVal) => {
-            changeVisibility(newVal);
-        })
+        // const changeVisibility = (newVal) => {
+        //     paramsToGetCompound.value.envSumm.hidden = newVal.value;
+        //     paramsToGetCompound.value.secondEnv.hidden = !newVal.value;
+        //     paramsToGetCompound.value.bothEnvSumm.hidden = !newVal.value;
+        // }
+        // watch(paramsToGetCompound.value.isSecondEnv, (newVal) => {
+        //     changeVisibility(newVal);
+        // })
 
         // проверка суммы всех состояний
-        const checkEnvSum = () => {
-            const isSecondEnv = paramsToGetCompound.value.isSecondEnv.value;
+        // const checkEnvSum = () => {
+        //     const isSecondEnv = paramsToGetCompound.value.isSecondEnv.value;
 
-            const summary = ref([]);
-            isSecondEnv ?
-                summary.value = [...paramsToGetCompound.value.environment.value, ...paramsToGetCompound.value.secondEnv.value] : summary.value = [...paramsToGetCompound.value.environment.value];
+        //     const summary = ref([]);
+        //     isSecondEnv ?
+        //         summary.value = [...paramsToGetCompound.value.environment.value, ...paramsToGetCompound.value.secondEnv.value] : summary.value = [...paramsToGetCompound.value.environment.value];
 
-            let sum = 0;
-            summary.value.map((i) => {
-                if (i && i.value) {
-                    sum += Number(i.value);
-                    questionsStore.setQuestionValue('bothEnvSumm', sum, 'inputGroup', false, 'envAnswersGroup')
-                    if (!isSecondEnv) {
-                        questionsStore.setQuestionValue('envSumm', sum, 'inputGroup', false, 'envAnswersGroup')
-                    }
-                }
-            })
+        //     let sum = 0;
+        //     summary.value.map((i) => {
+        //         if (i && i.value) {
+        //             sum += Number(i.value);
+        //             questionsStore.setQuestionValue('bothEnvSumm', sum, 'inputGroup', false, 'envAnswersGroup')
+        //             if (!isSecondEnv) {
+        //                 questionsStore.setQuestionValue('envSumm', sum, 'inputGroup', false, 'envAnswersGroup')
+        //             }
+        //         }
+        //     })
 
-            const targetInput = isSecondEnv ? 'bothEnvSumm' : 'envSumm';
-            const hiddenInput = isSecondEnv ? 'envSumm' : 'bothEnvSumm';
-            const targetQuestion = isSecondEnv ? paramsToGetCompound.value.secondEnv : paramsToGetCompound.value.environment;
+        //     const targetInput = isSecondEnv ? 'bothEnvSumm' : 'envSumm';
+        //     const hiddenInput = isSecondEnv ? 'envSumm' : 'bothEnvSumm';
+        //     const targetQuestion = isSecondEnv ? paramsToGetCompound.value.secondEnv : paramsToGetCompound.value.environment;
 
-            helperStore.deleteErrorMessage(hiddenInput);
+        //     helperStore.deleteErrorMessage(hiddenInput);
 
-            if (targetQuestion.value.length > 0) {
-                if (sum !== 100) {
-                    helperStore.setErrorMessage(targetInput);
-                    return false;
-                }
-                else {
-                    helperStore.deleteErrorMessage(targetInput);
-                    return true;
-                }
-            }
-        }
+        //     if (targetQuestion.value.length > 0) {
+        //         if (sum !== 100) {
+        //             helperStore.setErrorMessage(targetInput);
+        //             return false;
+        //         }
+        //         else {
+        //             helperStore.deleteErrorMessage(targetInput);
+        //             return true;
+        //         }
+        //     }
+        // }
 
         // Проверка суммы по агрегатным состояниям
-        watch(
-            () => [
-                paramsToGetCompound.value.environment.value.length,
-                paramsToGetCompound.value.secondEnv.value.length
-            ],
-            ([envLength, secondEnvLength]) => {
-                if ((envLength || secondEnvLength)
-                ) {
-                    checkEnvSum();
-                }
-            }
-        );
+        // watch(
+        //     () => [
+        //         paramsToGetCompound.value.environment.value.length,
+        //         paramsToGetCompound.value.secondEnv.value.length
+        //     ],
+        //     ([envLength, secondEnvLength]) => {
+        //         if ((envLength || secondEnvLength)
+        //         ) {
+        //             checkEnvSum();
+        //         }
+        //     }
+        // );
 
-        // запрос (#2, get_compound) на параметры для конкр сред (Вязкость, материал, молекулярная масса, вязкость)
-        watch(paramsToGetCompound, (newVal) => {
-            if ((newVal.environment.value || newVal.secondEnv.value) && newVal.climate.value && noErrors.value) {
-                const envParamsToGet = ['molecular_weight', 'density', 'material', 'viscosity'];
-                let dataToSend = [];
+        // // запрос (#2, get_compound) на параметры для конкр сред (Вязкость, материал, молекулярная масса, вязкость)
+        // watch(paramsToGetCompound, (newVal) => {
+        //     if ((newVal.environment.value || newVal.secondEnv.value) && newVal.climate.value && noErrors.value) {
+        //         const envParamsToGet = ['molecular_weight', 'density', 'material', 'viscosity'];
+        //         let dataToSend = [];
 
-                if (paramsToGetCompound.value.isSecondEnv.value) {
-                    dataToSend = paramsToGetCompound.value.environment.value;
-                    dataToSend = [...paramsToGetCompound.value.secondEnv.value, ...dataToSend];
-                } else {
-                    dataToSend = paramsToGetCompound.value.environment.value;
-                }
+        //         if (paramsToGetCompound.value.isSecondEnv.value) {
+        //             dataToSend = paramsToGetCompound.value.environment.value;
+        //             dataToSend = [...paramsToGetCompound.value.secondEnv.value, ...dataToSend];
+        //         } else {
+        //             dataToSend = paramsToGetCompound.value.environment.value;
+        //         }
 
-                const formattedData = dataToSend.map(obj => ({
-                    'id': Number(obj.id),
-                    'r': Number(obj.value) / 100,
-                }));
-                formattedData.push({ "climate": paramsToGetCompound.value.climate.value })
+        //         const formattedData = dataToSend.map(obj => ({
+        //             'id': Number(obj.id),
+        //             'r': Number(obj.value) / 100,
+        //         }));
+        //         formattedData.push({ "climate": paramsToGetCompound.value.climate.value })
 
-                Api.post(API_URL + '/get_compound',
-                    formattedData
-                ).then(data => {
-                    helperStore.deleteErrorMessage('', 'serverError');
-                    envModuleStore.setAfterGetCompoundValue(data);
-                    envParamsToGet.map((key) => {
-                        if (key == 'climate') {
-                            questionsStore.setQuestionValue(key, data[key])
-                        } else {
-                            questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'envAnswersGroup');
-                        }
-                    })
-                })
-            };
-        }, { deep: true });
-
-
+        //         Api.post(API_URL + '/get_compound',
+        //             formattedData
+        //         ).then(data => {
+        //             helperStore.deleteErrorMessage('', 'serverError');
+        //             envModuleStore.setAfterGetCompoundValue(data);
+        //             envParamsToGet.map((key) => {
+        //                 if (key == 'climate') {
+        //                     questionsStore.setQuestionValue(key, data[key])
+        //                 } else {
+        //                     questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'envAnswersGroup');
+        //                 }
+        //             })
+        //         })
+        //     };
+        // }, { deep: true });
 
         // запрос (#3, get_pressure) на "Pno", "Ppo", "P1", "P2","Kw", "Gideal", "pre_DN","DN"
         watch(paramsToGetPressure, (newVal) => {
@@ -404,7 +404,6 @@ export default {
                 envModuleStore.pushToAfterGetCompoundValue(formattedData);
             }
         }, { deep: true })
-
     }
 }
 </script>

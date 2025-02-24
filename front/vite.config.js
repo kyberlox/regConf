@@ -12,7 +12,7 @@ export default defineConfig({
   ],
   server: {
     host: "0.0.0.0",
-    port: 5173
+    port: 5173,
   },
   resolve: {
     alias: {
@@ -21,6 +21,5 @@ export default defineConfig({
   },
   define: {
     'API_URL': JSON.stringify('http://regconf.emk.ru/api')
-
   }
 })

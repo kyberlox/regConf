@@ -1,15 +1,23 @@
+import { computed } from 'vue';
+import { useUserStore } from '@/store/user';
 export default class Api {
     static async get(url) {
         const response = await fetch(url);
         return await response.json();
     }
 
-    static async post(url, body, download = false) {
+    static async post(url, body, download = false, needAutorize = false) {
+        const authorization = computed(() => useUserStore().getToken ? { "token": useUserStore().getToken } : { "ip": useUserStore().getIp });
+
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Access-Control-Allow-Credentials': 'true',
+                ...(needAutorize ? { 'Authorization': JSON.stringify(authorization.value) } : {})
             },
+            credentials: 'include',
             body: JSON.stringify(body)
         });
 
