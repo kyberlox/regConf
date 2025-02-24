@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Body
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, Body, Cookie, Request, Header
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.Raschet import Raschet, mixture, mark_params, get_tightness, make_XL, make_OL
+from src.User import User
 
 from openpyxl import load_workbook
 
@@ -18,6 +19,8 @@ import os
 from dotenv import load_dotenv
 
 import redis
+
+#from typing import Optional
 
 
 
@@ -127,23 +130,27 @@ origins = [
     "http://regconf.emk.ru",
     "https://localhost:8000",
     "https://localhost:5173",
-    "https://regconf.emk.ru"
+    "https://regconf.emk.ru",
+    "https://portal.emk.ru",
+    "http://10.34.172.121:5173",
+    "http://213.87.71.131",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=['*'],
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE", "PUT", "OPTIONS", "PATH"],
-    allow_headers=["Content-Type", "Accept", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest"],
+    allow_headers=["*"]
+    #allow_headers=["Content-Type", "Accept", "Authorization", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest", "Access-Control-Allow-Credentials"],
+
 )
 
 #app.mount("/", StaticFiles(directory="../front/dist", html=True), name="static")
 
 #миграция и таблицы эксель
-@app.get("/api/migration")
+@app.get("/api/migration", tags=["Подбор"])
 def migration():
-    print(os.getenv('user'))
 
     #прочитать из таблицы
     wb = load_workbook("./files/table.xlsx")
@@ -376,7 +383,7 @@ def migration():
     return {"environmentTable" : result, "valveParametrsTable" : par_result, "Table2" : t2_result, "Table10" : t10_result, "PackingParams" : pak_res}
 
 #подбор сред
-@app.get("/api/get_table")
+@app.get("/api/get_table", tags=["Подбор"])
 async def get_table():
     #вывод словаря
     environments = []
@@ -402,7 +409,7 @@ async def get_table():
     return environments
 
 #подбор смесей
-@app.post("/api/get_compound")
+@app.post("/api/get_compound", tags=["Подбор"])
 async def get_compound(data=Body()):
     environments = []
     lines = db.query(Table).all()
@@ -438,7 +445,7 @@ async def get_compound(data=Body()):
     return mixture(environments, climate)
 
 #получение осатльных параметров
-@app.post("/api/get_pressure")
+@app.post("/api/get_pressure", tags=["Подбор"])
 def get_pressure(data = Body()):
     for key in data.keys():
         if ((data[key] == "") or (data[key] == None)):
@@ -448,72 +455,126 @@ def get_pressure(data = Body()):
             return Raschet(data)
 
 #подбор оборудования
-@app.post("/api/get_mark_params")
+@app.post("/api/get_mark_params", tags=["Подбор"])
 async def get_mark_params(data = Body()):
     return mark_params(data)
 
-@app.post("/api/get_tightness")
+@app.post("/api/get_tightness", tags=["Подбор"])
 async def web_get_tightness(data = Body()):
     return get_tightness(data)
 
 
 
 #авторизазия => генерация токена, начало сессии
+@app.post("/api/auth", tags=["Активность пользователей"])
+def login(jsn = Body()):
+    print(jsn)
+    uuid = jsn["uuid"]
+    fio = f"{jsn['fio'][1]} {jsn['fio'][0]} {jsn['fio'][2]}"
+    dep = ""
+    for dp in jsn["department"]:
+        dep += dp
+    #запрос на БД
+    usr = User(uuid=uuid, fio=fio, department=dep)
+    tkn = usr.authenticate()
 
-#добавить в корзину элемент
+    return {"token" : tkn}
 
-#выгрузить из корзины элемент
 
-#изменить элемент
 
-#удалить из корзиный элемент
+@app.post("/api/test", tags=["Активность пользователей"])
+def check_valid(authorization = Header(None)):
+    print(authorization)
+    return {"Test" : authorization}
 
-#просмотр корзины
 
-#выгрузка корзины -> опустошение -> сохранить в БД
+
+#проверка авторизациии
+@app.post("/api/check", tags=["Активность пользователей"])
+def check_valid(data = Body(), token: str = Cookie(None)):
+    #return data
+
+    if token is not None:
+        usr = User(token=token)
+        return {"token_valid" : usr.check()}
+    #если есть ip
+    elif 'ip' in data:
+        usr = User(ip=data['ip'])
+        usr_token = usr.authenticate()
+
+        content = {"token_valid" : usr.check()}
+        response = JSONResponse(content=content)
+        response.set_cookie(key="token", value=usr_token)
+        return response
+    else:
+        return {'err' : 'Check fail'}
+
+#записать json в Redis
+@app.post("/api/set_data", tags=["Активность пользователей"])
+def get_data(data = Body, token = Cookie(default=None)):
+    usr = User(token=token, jsn=data)
+    usr.set_dt()
+
+    return usr.get_dt()
+
+#получить json из Redis
+@app.get("/api/get_data", tags=["Активность пользователей"])
+def get_data(token = Cookie(default=None)):
+    usr = User(token=token)
+    return usr.get_dt()
+
+#прекратить сессию -> выйти из Redis
+@app.get("/api/outh", tags=["Активность пользователей"])
+def outh_user(token = Cookie(default=None)):
+    usr = User(token=token)
+    usr.outh()
+    return {'status' : 'ready'}
+
+
 
 #генерация документации
+@app.get("/api/generate/{name}", tags=["Генерация документации"]) #проверка сессии
+def generate(name, token = Cookie(default=None)):
+    usr = User(token=token)
+    if usr.ceck():
+        # получить название и сохранить в БД
+        #получить json для генерации из Redis
+        jsn = usr.create_TKP(name)
 
-@app.post("/api/generate") #проверка сессии
-def generate(data = Body()):
+        #сохранить json
+        #f = open(f"./data/TKP.json", 'w')
+        #json.dump(data, f)
+        #f.close()
+
+        #генерация файла
+        res = make_XL(jsn)
+
+        #выдать файл
+        if res == True:
+            return FileResponse(f'./data/TKPexample.xlsx', filename=f'ТКП ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
+        else:
+            return res
+
+
+
+"""
+@app.post("/api/makeOL", tags=["Генерация документации"])
+def generate_OL(data : Body, token: str = Cookie(None)):
     #запись в БД
+    usr = User(token=token, jsn=data)
+    if usr.create_OL():
 
-    #удалить предыдущий эксель файл и чтение ID
-    ID = 1
+        #сохранить json
+        #f = open(f"./data/OL.json", 'w')
+        #json.dump(data, f)
+        #f.close()
 
-    #сохранить json
-    f = open(f"./data/TKP.json", 'w')
-    json.dump(data, f)
-    f.close()
-    
-    #генерация файла
-    res = make_XL(data)
-
-    #выдать файл
-    if res == True:
-        return FileResponse(f'./data/TKPexample.xlsx', filename=f'ТКП ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
-    else:
-        return res
-
-
-
-@app.post("/api/makeOL")
-def mk_OL(data = Body()):
-    #запись в БД
-
-    #удалить предыдущий эксель файл и чтение ID
-    ID = 1
-
-    #сохранить json
-    f = open(f"./data/OL.json", 'w')
-    json.dump(data, f)
-    f.close()
-    
-    #генерация файла
-    res = make_OL(data)
-    #return res
-    #выдать файл
-    if res == True:
-        return FileResponse(f'./data/OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
-    else:
-        return res
+        #генерация файла
+        res = make_OL(data)
+        #return res
+        #выдать файл
+        if res:
+            return FileResponse(f'./data/OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
+        else:
+            return res
+"""

@@ -1,8 +1,12 @@
-from django.db.models import ForeignKey
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
-from sqlalchemy import create_engine, MetaData, Column, Integer, Text, Float, JSON
+from sqlalchemy import create_engine, MetaData, Column, Integer, Text, Float, JSON, Date, Time, Boolean
 from sqlalchemy.dialects.postgresql import JSONB
+
+from jwt import encode, decode
+
+#import rsa
+#(key_write, key_read) = rsa.newkeys(512)
 
 import redis
 
@@ -10,6 +14,8 @@ import json
 
 import os
 from dotenv import load_dotenv
+
+import datetime
 
 load_dotenv()
 
@@ -32,16 +38,29 @@ class UserData(Base):
 class Cofigurations(Base):
     __tablename__ = 'configuration_table'
     id = Column(Integer, primary_key=True)
-    author_id = Column(Integer, ForeignKey('user_table.id'))
+    author_id = Column(Text, nullable=True)
+    name = Column(Text, nullable=True)
     jsn = Column(JSONB, nullable=True)
+    date = Column(Date, nullable=True)
+    time = Column(Time, nullable=True)
+
+class Attempts(Base):
+    __tablename__ = 'attempts_table'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, nullable=True)
+    jsn = Column(JSONB, nullable=True)
+    date = Column(Date, nullable=True)
+    time = Column(Time, nullable=True)
+
+
 
 Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autoflush=True, bind=engine)
 db = SessionLocal()
 
 class UserRedis:
-    def __init__(self, user_id, jsn):
-        self.r = redis.Redis(host='redis', port=6379, username=user, password=pswd, db=0)
+    def __init__(self, user_id=0, jsn=json.dumps([])):
+        self.r = redis.Redis(host='redis', port=6379, password=pswd, db=0)
         self.user_id = user_id
         self.jsn = jsn
 
@@ -60,46 +79,233 @@ class UserRedis:
 
 
 class User:
-    def __init__(self, token, ip, Id, fio, uuid, department, jsn):
+    def __init__(self, token=encode({"uuid" : ""}, "emk", "HS512"), ip="", Id=0, fio="", uuid="", department="", jsn=dict()):
         self.token = token
         self.ip = ip
         self.Id = Id
         self.fio = fio
         self.uuid = uuid
         self.department = department
-        self.current_json = jsn
-        self.Redis = UserRedis(self.user_id, self.jsn, self.ip)
-
-
-
-    def add_user_db(self):
-        pass
-
-    def get_user_db(self):
-        pass
-
-    def add_file_db(self):
-        pass
-
-    def get_user_file(self):
-        pass
-
-
+        self.current_json = json.dumps(jsn)
+        self.Redis = UserRedis(self.uuid, self.current_json)
 
     def authenticate(self):
-        #если токена нет
-        #запрос в БД
-        #если в БД есть пользователь -> дать токен и запустить сессию в редисе
-        #если в БД нет пользователя
-        #и данные валидные -> добавить его в БД, дать токен и запустить сессию в редисе
-        #и данные не валидные -> получить ip и не запускать сессию в редисе
-        #если токен есть ->валидируем запрос
+        #либо есть токен
+        uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        usr_uuid = db.query(UserData).filter_by(uuid=uuid).first()
+        usr_ip = db.query(UserData).filter_by(ip=uuid).first()
+
+        # или есть такой пользователь
+        if uuid != "":
+            #или он == uuid
+            if usr_uuid is not None:
+                r = UserRedis(usr_uuid.uuid, self.current_json)
+                r.set_user()
+
+                return self.token
+
+            #или он == ip
+            elif usr_ip is not None:
+                return self.token
+
+            #или он подделка
+            else:
+                return False
+
+        #либо есть uuid, fio, department
+        elif self.uuid != "" and self.fio != "" and self.department != "":
+            db_usr = db.query(UserData).filter_by(uuid=self.uuid).first()
+
+            #или он уже есть
+            if usr_uuid is not None:
+                self.uuid = usr_uuid.uuid
+                r = UserRedis(self.uuid, self.current_json)
+                r.set_user()
+
+                self.token = encode({"uuid" : self.uuid}, "emk", "HS512")
+
+                return self.token
+
+            #или регистрируем
+            else:
+                usr = UserData(fio=self.fio, uuid=self.uuid, department=self.department)
+                db.add(usr)
+                db.commit()
+
+                self.Id = usr.id
+
+                r = UserRedis(self.uuid, self.current_json)
+                r.set_user()
+
+                self.token = encode({"uuid" : self.uuid}, "emk", "HS512")
+                return self.token
+
+        #либо есть ip
+        elif self.ip != "":
+            usr = db.query(UserData).filter_by(ip=self.ip).first()
+            #или такой ip уже был
+            if usr is not None:
+                encode({"uuid": self.ip}, "emk", "HS512")
+                return self.token
+
+            #или регистрируем
+            else:
+                usr = UserData(ip=self.ip)
+                db.add(usr)
+                db.commit()
+
+                encode({"uuid": self.ip}, "emk", "HS512")
+
+                return self.token
+        else:
+            return False
+
+    '''
+    def auth(self):
+        #проеврка токена
+        tkn_valid=False
+        #декодируем токен в uuid
+        #uuid = rsa.decrypt(self.token, key_read).decode('utf8')
+        try:
+            uuid = decode(token, key='emk', algorithms=["HS512"])
+            tkn_valid = True
+
+            #ищем пользователя с таким uuid
+            usr = db.query(UserData).filter_by(uuid=uuid).first()
+            #если пользователь есть
+
+            # если токена нет
+            if uuid == "":
+
+                #если запрос валидный
+                if self.uuid != "" and self.fio != "" and self.department != "":
+
+                    #запрос в БД
+                    usr = db.query(UserData).filter_by(uuid=self.uuid).first()
+
+                    #если в БД есть пользователь -> запустить сессию в редисе и дать токен
+                    if usr != None and usr != []:
+                        r = UserRedis(self.uuid, self.current_json)
+                        r.set_user()
+
+                        self.Id = usr.id
+
+                        self.token = rsa.encrypt(self.uuid.encode('utf8'), key_write)
+                        return self.token
+
+                    #если в БД нет пользователя
+                    else:
+                        #добавить его в БД, запустить сессию в редисе и дать токен
+                        usr = UserData(fio=self.fio, uuid=self.uuid, department=self.department)
+                        db.add(usr)
+                        db.commit()
+
+                        self.Id = usr.id
+
+                        r = UserRedis(self.uuid, self.current_json)
+                        r.set_user()
+
+                        self.token = rsa.encrypt(self.uuid.encode('utf8'), key_write)
+                        return self.token
+
+                #получить ip и не запускать сессию в редисе
+                else:
+                    usr = UserData(ip=self.ip)
+                    db.add(usr)
+                    db.commit()
+
+                    self.Id = usr.id
+
+                    self.token = rsa.encrypt(self.uuid.encode('utf8'), key_write)
+
+            #если токен есть ->валидируем запрос
+            elif tkn_valid:
+                return self.token
+            # если токен не валидный
+        except:
+            return False
+    '''
+
+    def check(self):
+        Redis = UserRedis()
+        self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        if Redis.r.get(self.uuid) is not None:
+            return True
+        else:
+            return False
+
+
+
+    def set_dt(self):
+        #загрузить json
+        self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        self.Redis = UserRedis(user_id=self.uuid, jsn=self.current_json)
+        self.Redis.update_user()
+
+    def get_dt(self):
+        #выгрузить json
+        self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        self.Redis = UserRedis(user_id=self.uuid)
+
+        return self.Redis.get_user()
+
+    def outh(self):
+        #разлогинить пользователя в redis
+        self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        try:
+            self.Redis = UserRedis(user_id=self.uuid)
+            self.Redis.delete_user()
+        except:
+            return False
+
+
+
+    def create_TKP(self, name):
+        self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+
+        #взять json из Redis
+        self.current_json = UserRedis().r.get(self.uuid)
+
+        #сохранить в БД
+        cnf = Cofigurations(author_id=self.Id, name=name, jsn=self.current_json, date=str(datetime.date.today()), time=str(datetime.time.now()))
+        db.add(cnf)
+        db.commit()
+
+        #очистить redis
+        r = UserRedis(self.uuid, self.current_json)
+        r.set_user()
+
+        return self.current_json
+
+    def history(self):
+        #история запросов пользователя
         pass
 
-    def create_TKP(self):
-        #сохранить в БД
+    def uploadConfiguration(self, id):
+        #загрузка ТКП из БД в redis
         pass
+
+
 
     def create_OL(self):
+        #найти по токену uuid или ip
+        pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        #найти в БД
+        usr_uuid = db.query(UserData).filter_by(uuid=pre_id).first()
+        usr_ip = db.query(UserData).filter_by(ip=pre_id).first()
+
+        if usr_uuid is not None:
+            self.Id = usr_uuid.id
+        elif usr_ip is not None:
+            self.Id = usr_ip.id
+        else:
+            return {'err' : 'пользователь не найден'}
+
         #сохранить в БД
-        pass
+        current_time = datetime.datetime.now().time()
+        clock_time = current_time.strftime("%H:%M:%S")
+        OL = Attempts(user_id=self.Id, jsn=self.current_json, date=str(datetime.date.today()), time=clock_time)
+        db.add(OL)
+        db.commit()
+
+        return True
