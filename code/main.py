@@ -482,7 +482,7 @@ def login(jsn = Body()):
 
 
 @app.post("/api/test", tags=["Активность пользователей"])
-def check_valid(data = Body(), authorization: str | None = Header(None)):
+def check_valid(data = Body(), authorization = Header(None)):
     print(authorization)
     return {"Header" : authorization, "data" : data}
 
