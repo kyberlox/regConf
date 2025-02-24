@@ -483,7 +483,7 @@ def login(jsn = Body()):
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
 def check_valid(request: Request, token: str = Cookie(None)):
-    data = request.body
+    data = dict(request.body)
     #return data
 
     if token is not None:
