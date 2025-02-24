@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Body, Cookie, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.Raschet import Raschet, mixture, mark_params, get_tightness, make_XL, make_OL
@@ -480,32 +480,31 @@ def login(jsn = Body()):
 
     return {"token" : tkn}
 
-
+'''
 @app.post("/api/test", tags=["Активность пользователей"])
 def check_valid(data = Body(), token: str = Cookie(None)):
     print(token)
     return {"token" : token, "data" : data}
-
+'''
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
 def check_valid(data = Body(), token: str = Cookie(None)):
     #return data
 
     if token is not None:
-        print(token)
         usr = User(token=token)
         return {"token_valid" : usr.check()}
     #если есть ip
     elif 'ip' in data.keys():
         usr = User(ip=data['ip'])
         usr_token = usr.authenticate()
-        return {"token" : usr_token}
-    # если есть uuid
-    elif 'uuid' in data.keys():
-        #дать токен
-        usr = User(uuid=data['uuid'])
-        user_token = usr.authenticate()
-        return {"token" : user_token}
+
+        content = {"token_valid" : usr.check()}
+        response = JSONResponse(content=content)
+        response.set_cookie(key="token", value=usr_token)
+        return response
+    else:
+        return {'err' : 'Token not valid'}
 
 #записать json в Redis
 @app.post("/api/set_data", tags=["Активность пользователей"])
