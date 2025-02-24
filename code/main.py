@@ -132,8 +132,8 @@ origins = [
     "https://localhost:5173",
     "https://regconf.emk.ru",
     "https://portal.emk.ru",
-    "*",
-    "http://213.87.71.131"
+    "http://10.34.172.121:5173/",
+    "http://213.87.71.131",
 ]
 
 app.add_middleware(
@@ -141,7 +141,8 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE", "PUT", "OPTIONS", "PATH"],
-    allow_headers=["Content-Type", "Accept", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest"],
+    allow_headers=["Content-Type", "Accept", "Authorization", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest", "Access-Control-Allow-Credentials"],
+
 )
 
 #app.mount("/", StaticFiles(directory="../front/dist", html=True), name="static")
