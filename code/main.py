@@ -483,13 +483,13 @@ def login(jsn = Body()):
 
 
 @app.post("/api/test", tags=["Активность пользователей"])
-def check_valid(user_agent: str = Header()):
+def test_valid(user_agent: str = Header()):
     return {"User-Agent": user_agent}
 
 
 
-@app.get("/")
-def root(secret_code: str | None = Header(default=None)):
+@app.get("/api/test1")
+def test_valid1(secret_code: str | None = Header(default=None)):
     return {"Secret-Code": secret_code}
 
 
