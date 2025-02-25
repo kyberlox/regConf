@@ -483,7 +483,7 @@ def login(jsn = Body()):
 
 
 @app.post("/api/test", tags=["Активность пользователей"])
-def test_valid(Authorization: str = Header()):
+def test_valid(Authorization = Header(None)):
     return {"Authorization": Authorization}
 
 
