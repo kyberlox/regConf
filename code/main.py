@@ -515,13 +515,13 @@ def get_data(data = Body, token = Header(None)):
 
 #получить json из Redis
 @app.get("/api/get_data", tags=["Активность пользователей"])
-def get_data(token = Cookie(default=None)):
+def get_data(token = Header(default=None)):
     usr = User(token=token)
     return usr.get_dt()
 
 #прекратить сессию -> выйти из Redis
 @app.get("/api/outh", tags=["Активность пользователей"])
-def outh_user(token = Cookie(default=None)):
+def outh_user(token = Header(default=None)):
     usr = User(token=token)
     usr.outh()
     return {'status' : 'ready'}
@@ -530,7 +530,7 @@ def outh_user(token = Cookie(default=None)):
 
 #генерация документации
 @app.get("/api/generate/{name}", tags=["Генерация документации"]) #проверка сессии
-def generate(name, token = Cookie(default=None)):
+def generate(name, token = Header(default=None)):
     usr = User(token=token)
     if usr.ceck():
         # получить название и сохранить в БД
@@ -551,11 +551,8 @@ def generate(name, token = Cookie(default=None)):
         else:
             return res
 
-
-
-"""
 @app.post("/api/makeOL", tags=["Генерация документации"])
-def generate_OL(data : Body, token: str = Cookie(None)):
+def generate_OL(data : Body, token: str = Header(None)):
     #запись в БД
     usr = User(token=token, jsn=data)
     if usr.create_OL():
@@ -573,4 +570,3 @@ def generate_OL(data : Body, token: str = Cookie(None)):
             return FileResponse(f'./data/OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
         else:
             return res
-"""

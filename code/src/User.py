@@ -280,16 +280,6 @@ class User:
 
         return self.current_json
 
-    def history(self):
-        #история запросов пользователя
-        pass
-
-    def uploadConfiguration(self, id):
-        #загрузка ТКП из БД в redis
-        pass
-
-
-
     def create_OL(self):
         #найти по токену uuid или ip
         pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
@@ -312,3 +302,22 @@ class User:
         db.commit()
 
         return True
+
+    def history(self):
+        #история запросов пользователя
+        # найти по токену uuid или ip
+        pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        # найти в БД
+        usr_uuid = db.query(UserData).filter_by(uuid=pre_id).first()
+
+        if usr_uuid is not None:
+            self.Id = usr_uuid.id
+            
+            return ID
+        else:
+            return {'err': 'пользователь не найден'}
+
+
+    def uploadConfiguration(self, ID):
+        #загрузка ТКП из БД в redis
+        pass
