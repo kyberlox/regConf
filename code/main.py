@@ -484,7 +484,11 @@ def login(jsn = Body()):
 
 @app.post("/api/test", tags=["Активность пользователей"])
 def test_valid(token: str = Header(None)):
-    return {"token": token}
+    if token[:3] == "ip:":
+        ip = token[3:]
+        return {"ip" : ip}
+    else:
+        return {"token": token}
 
 
 
