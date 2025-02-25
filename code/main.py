@@ -507,7 +507,7 @@ def check_valid(token: str = Header(None)):
 
 #записать json в Redis
 @app.post("/api/set_data", tags=["Активность пользователей"])
-def get_data(data = Body, token = Header(None)):
+def get_data(data = Body(), token = Header(None)):
     usr = User(token=token, jsn=data)
     usr.set_dt()
 
