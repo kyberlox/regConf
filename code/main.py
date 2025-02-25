@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body, Cookie, Request, Header
+from fastapi import FastAPI, Body, Cookie, Header
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -483,9 +483,14 @@ def login(jsn = Body()):
 
 
 @app.post("/api/test", tags=["Активность пользователей"])
-def check_valid(authorization = Header(None)):
-    print(authorization)
-    return {"Test" : authorization}
+def check_valid(user_agent: str = Header()):
+    return {"User-Agent": user_agent}
+
+
+
+@app.get("/")
+def root(secret_code: str | None = Header(default=None)):
+    return {"Secret-Code": secret_code}
 
 
 
