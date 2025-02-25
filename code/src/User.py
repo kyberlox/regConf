@@ -268,11 +268,15 @@ class User:
     def create_TKP(self, name):
         self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
 
+        #определить id исходя из uuid
+        usr = db.query(UserData).filter_by(ip=self.uuid).first()
+        self.Id = UserData()
+
         #взять json из Redis
         self.current_json = UserRedis().r.get(self.uuid)
 
         #сохранить в БД
-        cnf = Cofigurations(author_id=self.Id, name=name, jsn=self.current_json, date=str(datetime.date.today()), time=str(datetime.time.now()))
+        cnf = Cofigurations(author_id=self.Id, name=name, jsn=self.current_json, date=str(datetime.date.today()), time=str(datetime.now().strftime("%H:%M:%S")))
         db.add(cnf)
         db.commit()
 
