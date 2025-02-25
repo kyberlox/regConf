@@ -494,7 +494,11 @@ def check_valid(token: str = Header(None)):
 
     else:
         usr = User(token=token)
-        return {"token_valid" : usr.check()}
+        result = usr.check()
+        if result is None:
+            return {"error" : "invalid token"}
+        else:
+            return {"token_valid" : result}
 
 #записать json в Redis
 @app.post("/api/set_data", tags=["Активность пользователей"])
