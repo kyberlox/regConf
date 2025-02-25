@@ -553,7 +553,7 @@ def generate(name, token = Header(default=None)):
 
 
 @app.post("/api/makeOL", tags=["Генерация документации"])
-def generate_OL(data : Body, token: str = Header(None)):
+def generate_OL(data = Body(), token: str = Header(None)):
     #запись в БД
     usr = User(token=token, jsn=data)
     if usr.create_OL():
