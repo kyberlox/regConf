@@ -269,7 +269,7 @@ class User:
         self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
 
         #определить id исходя из uuid
-        usr = db.query(UserData).filter_by(ip=self.uuid).first()
+        usr = db.query(UserData).filter_by(uuid=self.uuid).first()
         self.Id = usr.id
 
         #взять json из Redis
