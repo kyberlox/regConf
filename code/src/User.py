@@ -59,21 +59,21 @@ SessionLocal = sessionmaker(autoflush=True, bind=engine)
 db = SessionLocal()
 
 class UserRedis:
-    def __init__(self, user_id=0, jsn=json.dump([])):
+    def __init__(self, user_id=0, jsn=json.dumps([])):
         self.r = redis.Redis(host='redis', port=6379, password=pswd, db=0)
         self.user_id = user_id
         self.jsn = jsn
 
     def set_user(self):
-        self.r.set(self.user_id, json.dump([]))
+        self.r.set(self.user_id, json.dumps([]))
 
     def get_user(self):
         jsn = self.r.get(self.user_id)
-        self.jsn = json.load(jsn)
+        self.jsn = json.loads(jsn)
         return self.jsn
 
     def update_user(self):
-        self.r.setex(self.user_id, 3*3600, json.dump(self.jsn))
+        self.r.setex(self.user_id, 3600, json.dumps(self.jsn))
 
     def delete_user(self):
         self.r.delete(self.user_id)
