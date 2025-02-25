@@ -273,7 +273,7 @@ class User:
         self.Id = usr.id
 
         #взять json из Redis
-        self.current_json = UserRedis(user_id=self.uuid).get_dt()
+        self.current_json = UserRedis(user_id=self.uuid).get_user()
         print(self.current_json)
 
         #сохранить в БД
