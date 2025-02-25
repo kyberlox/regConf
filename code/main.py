@@ -482,8 +482,7 @@ def login(jsn = Body()):
 
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
-def check_valid(data = Body(), token: str = Header(None)):
-    #return data
+def check_valid(token: str = Header(None)):
 
     if token[:3] == "ip:":
         ip = token[3:]
