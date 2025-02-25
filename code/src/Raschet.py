@@ -684,9 +684,9 @@ def get_tightness(dt):
     return dt
 
 def make_XL(dt):
-    files = os.listdir("./")
+    files = os.listdir("./src/")
     print(files)
-    WB = load_workbook("ТКП.xlsx")
+    WB = load_workbook("./src/ТКП.xlsx")
     sheet = WB['Лист1']
 
     data_keys = {
