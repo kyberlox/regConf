@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body, Cookie, Header
+from fastapi import FastAPI, Body, Cookie, Header, Response
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -480,41 +480,26 @@ def login(jsn = Body()):
 
     return {"token" : tkn}
 
-
-
-@app.post("/api/test", tags=["Активность пользователей"])
-def test_valid(token: str = Header(None)):
-    if token[:3] == "ip:":
-        ip = token[3:]
-        return {"ip" : ip}
-    else:
-        return {"token": token}
-
-
-
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
-def check_valid(data = Body(), token: str = Cookie(None)):
+def check_valid(data = Body(), token: str = Header(None)):
     #return data
 
-    if token is not None:
-        usr = User(token=token)
-        return {"token_valid" : usr.check()}
-    #если есть ip
-    elif 'ip' in data:
-        usr = User(ip=data['ip'])
+    if token[:3] == "ip:":
+        ip = token[3:]
+        usr = User(ip=ip)
         usr_token = usr.authenticate()
 
-        content = {"token_valid" : usr.check()}
-        response = JSONResponse(content=content)
-        response.set_cookie(key="token", value=usr_token)
-        return response
+        content = {"token_valid": usr.check()}
+        return Response(content=content, headers={"token": usr_token})
+
     else:
-        return {'err' : 'Check fail'}
+        usr = User(token=token)
+        return {"token_valid" : usr.check()}
 
 #записать json в Redis
 @app.post("/api/set_data", tags=["Активность пользователей"])
-def get_data(data = Body, token = Cookie(default=None)):
+def get_data(data = Body, token = Header(None)):
     usr = User(token=token, jsn=data)
     usr.set_dt()
 
