@@ -532,7 +532,7 @@ def outh_user(token = Header(default=None)):
 @app.get("/api/generate/{name}", tags=["Генерация документации"]) #проверка сессии
 def generate(name, token = Header(default=None)):
     usr = User(token=token)
-    if usr.ceck():
+    if usr.check():
         # получить название и сохранить в БД
         #получить json для генерации из Redis
         jsn = usr.create_TKP(name)
