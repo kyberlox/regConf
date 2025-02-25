@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body, Cookie, Request, Header
+from fastapi import FastAPI, Body, Cookie, Header, Response
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -480,38 +480,34 @@ def login(jsn = Body()):
 
     return {"token" : tkn}
 
-
-
-@app.post("/api/test", tags=["Активность пользователей"])
-def check_valid(authorization = Header(None)):
-    print(authorization)
-    return {"Test" : authorization}
-
-
-
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
-def check_valid(data = Body(), token: str = Cookie(None)):
-    #return data
+def check_valid(token: str = Header(None)):
 
-    if token is not None:
-        usr = User(token=token)
-        return {"token_valid" : usr.check()}
-    #если есть ip
-    elif 'ip' in data:
-        usr = User(ip=data['ip'])
+    if token[:3] == "ip:":
+        ip = token[3:]
+        usr = User(ip=ip)
         usr_token = usr.authenticate()
 
-        content = {"token_valid" : usr.check()}
-        response = JSONResponse(content=content)
-        response.set_cookie(key="token", value=usr_token)
-        return response
+        result = usr.check()
+        if result is None:
+            return {"error" : "invalid token"}
+        else:
+            content = {"token_valid": usr.check()}
+            return JSONResponse(content=content, headers={"token": usr_token})
+
     else:
-        return {'err' : 'Check fail'}
+        usr = User(token=token)
+
+        result = usr.check()
+        if result is None:
+            return {"error" : "invalid token"}
+        else:
+            return {"token_valid" : result}
 
 #записать json в Redis
 @app.post("/api/set_data", tags=["Активность пользователей"])
-def get_data(data = Body, token = Cookie(default=None)):
+def get_data(data = Body(), token = Header(None)):
     usr = User(token=token, jsn=data)
     usr.set_dt()
 
@@ -519,13 +515,13 @@ def get_data(data = Body, token = Cookie(default=None)):
 
 #получить json из Redis
 @app.get("/api/get_data", tags=["Активность пользователей"])
-def get_data(token = Cookie(default=None)):
+def get_data(token = Header(default=None)):
     usr = User(token=token)
     return usr.get_dt()
 
 #прекратить сессию -> выйти из Redis
 @app.get("/api/outh", tags=["Активность пользователей"])
-def outh_user(token = Cookie(default=None)):
+def outh_user(token = Header(default=None)):
     usr = User(token=token)
     usr.outh()
     return {'status' : 'ready'}
@@ -534,9 +530,9 @@ def outh_user(token = Cookie(default=None)):
 
 #генерация документации
 @app.get("/api/generate/{name}", tags=["Генерация документации"]) #проверка сессии
-def generate(name, token = Cookie(default=None)):
+def generate(name, token = Header(default=None)):
     usr = User(token=token)
-    if usr.ceck():
+    if usr.check():
         # получить название и сохранить в БД
         #получить json для генерации из Redis
         jsn = usr.create_TKP(name)
@@ -551,15 +547,13 @@ def generate(name, token = Cookie(default=None)):
 
         #выдать файл
         if res == True:
-            return FileResponse(f'./data/TKPexample.xlsx', filename=f'ТКП ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
+            return FileResponse(f'./data/TKPexample.xlsx', filename=f'{name} ТКП ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
         else:
             return res
 
 
-
-"""
 @app.post("/api/makeOL", tags=["Генерация документации"])
-def generate_OL(data : Body, token: str = Cookie(None)):
+def generate_OL(data = Body(), token: str = Header(None)):
     #запись в БД
     usr = User(token=token, jsn=data)
     if usr.create_OL():
@@ -577,4 +571,3 @@ def generate_OL(data : Body, token: str = Cookie(None)):
             return FileResponse(f'./data/OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
         else:
             return res
-"""

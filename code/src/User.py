@@ -68,10 +68,12 @@ class UserRedis:
         self.r.set(self.user_id, json.dumps([]))
 
     def get_user(self):
-        return self.r.get(self.user_id)
+        jsn = self.r.get(self.user_id)
+        self.jsn = json.loads(jsn)
+        return self.jsn
 
     def update_user(self):
-        self.r.set(self.user_id, json.dumps(self.jsn))
+        self.r.setex(self.user_id, 3600, json.dumps(self.jsn))
 
     def delete_user(self):
         self.r.delete(self.user_id)
@@ -86,7 +88,7 @@ class User:
         self.fio = fio
         self.uuid = uuid
         self.department = department
-        self.current_json = json.dumps(jsn)
+        self.current_json = jsn
         self.Redis = UserRedis(self.uuid, self.current_json)
 
     def authenticate(self):
@@ -228,11 +230,14 @@ class User:
 
     def check(self):
         Redis = UserRedis()
-        self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
-        if Redis.r.get(self.uuid) is not None:
-            return True
-        else:
-            return False
+        try:
+            self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+            if Redis.r.get(self.uuid) is not None:
+                return True
+            else:
+                return False
+        except:
+            return None
 
 
 
@@ -263,11 +268,16 @@ class User:
     def create_TKP(self, name):
         self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
 
+        #определить id исходя из uuid
+        usr = db.query(UserData).filter_by(uuid=self.uuid).first()
+        self.Id = usr.id
+
         #взять json из Redis
-        self.current_json = UserRedis().r.get(self.uuid)
+        self.current_json = UserRedis(user_id=self.uuid).get_user()
+        print(self.current_json)
 
         #сохранить в БД
-        cnf = Cofigurations(author_id=self.Id, name=name, jsn=self.current_json, date=str(datetime.date.today()), time=str(datetime.time.now()))
+        cnf = Cofigurations(author_id=self.Id, name=name, jsn=self.current_json, date=str(datetime.date.today()), time=datetime.datetime.now().strftime("%H:%M:%S"))
         db.add(cnf)
         db.commit()
 
@@ -276,16 +286,6 @@ class User:
         r.set_user()
 
         return self.current_json
-
-    def history(self):
-        #история запросов пользователя
-        pass
-
-    def uploadConfiguration(self, id):
-        #загрузка ТКП из БД в redis
-        pass
-
-
 
     def create_OL(self):
         #найти по токену uuid или ip
@@ -309,3 +309,22 @@ class User:
         db.commit()
 
         return True
+
+    def history(self):
+        #история запросов пользователя
+        # найти по токену uuid или ip
+        pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        # найти в БД
+        usr_uuid = db.query(UserData).filter_by(uuid=pre_id).first()
+
+        if usr_uuid is not None:
+            self.Id = usr_uuid.id
+
+            return ID
+        else:
+            return {'err': 'пользователь не найден'}
+
+
+    def uploadConfiguration(self, ID):
+        #загрузка ТКП из БД в redis
+        pass
