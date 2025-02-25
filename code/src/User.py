@@ -71,7 +71,7 @@ class UserRedis:
         return self.r.get(self.user_id)
 
     def update_user(self):
-        self.r.set(self.user_id, json.dumps(self.jsn))
+        self.r.setex(self.user_id, 3600, json.dumps(self.jsn))
 
     def delete_user(self):
         self.r.delete(self.user_id)
