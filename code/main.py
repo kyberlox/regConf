@@ -552,7 +552,7 @@ def generate(name, token = Header(default=None)):
             return res
 
 
-'''@app.post("/api/makeOL", tags=["Генерация документации"])
+@app.post("/api/makeOL", tags=["Генерация документации"])
 def generate_OL(data : Body, token: str = Header(None)):
     #запись в БД
     usr = User(token=token, jsn=data)
@@ -571,4 +571,3 @@ def generate_OL(data : Body, token: str = Header(None)):
             return FileResponse(f'./data/OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
         else:
             return res
-'''

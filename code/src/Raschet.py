@@ -684,8 +684,8 @@ def get_tightness(dt):
     return dt
 
 def make_XL(dt):
-    files = os.listdir("./src/")
-    print(files)
+    #files = os.listdir("./src/")
+    #print(files)
     WB = load_workbook("./src/ТКП.xlsx")
     sheet = WB['Лист1']
 
@@ -843,7 +843,7 @@ def make_XL(dt):
     return True
 
 def make_OL(data):
-    wb = load_workbook("ОЛ.xlsx")
+    wb = load_workbook("./src/ОЛ.xlsx")
     sheet = wb['Table 1']
 
     #Трассировка данных
