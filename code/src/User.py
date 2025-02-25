@@ -68,7 +68,7 @@ class UserRedis:
         self.r.set(self.user_id, json.dumps([]))
 
     def get_user(self):
-        return self.r.get(self.user_id)
+        return json.loads(self.r.get(self.user_id))
 
     def update_user(self):
         self.r.setex(self.user_id, 3600, json.dumps(self.jsn))
