@@ -276,7 +276,7 @@ class User:
         self.current_json = UserRedis().r.get(self.uuid)
 
         #сохранить в БД
-        cnf = Cofigurations(author_id=self.Id, name=name, jsn=self.current_json, date=datetime.date.today(), time=datetime.datetime.now().strftime("%H:%M:%S"))
+        cnf = Cofigurations(author_id=int(self.Id), name=name, jsn=self.current_json, date=str(datetime.date.today()), time=datetime.datetime.now().strftime("%H:%M:%S"))
         db.add(cnf)
         db.commit()
 
