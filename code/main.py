@@ -494,11 +494,11 @@ def check_valid(token: str = Header(None)):
             return {"error" : "invalid token"}
         else:
             content = {"token_valid": usr.check()}
-            return Response(content=content, headers={"token": usr_token})
+            return JSONResponse(content=content, headers={"token": usr_token})
 
     else:
         usr = User(token=token)
-        
+
         result = usr.check()
         if result is None:
             return {"error" : "invalid token"}
