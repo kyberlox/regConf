@@ -312,7 +312,7 @@ class User:
 
         if usr_uuid is not None:
             self.Id = usr_uuid.id
-            
+
             return ID
         else:
             return {'err': 'пользователь не найден'}
