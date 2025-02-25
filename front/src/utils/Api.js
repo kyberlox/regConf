@@ -6,8 +6,8 @@ export default class Api {
         return await response.json();
     }
 
-    static async post(url, body, download = false, needAutorize = false) {
-        const authorization = computed(() => useUserStore().getToken ? { "token": useUserStore().getToken } : { "ip": useUserStore().getIp });
+    static async post(url, body, download = false, needAutorize = false, name) {
+        const authorization = computed(() => useUserStore().getToken ? useUserStore().getToken : `ip: ${useUserStore().getIp}`);
 
         const response = await fetch(url, {
             method: 'POST',
@@ -15,11 +15,16 @@ export default class Api {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
                 'Access-Control-Allow-Credentials': 'true',
-                ...(needAutorize ? { 'Authorization': JSON.stringify(authorization.value) } : {})
+                ...(needAutorize ? { 'token': authorization.value } : {}),
+                ...(download ? { 'name': name } : {})
             },
             credentials: 'include',
             body: JSON.stringify(body)
         });
+
+        if (response.headers.get('token')) {
+            useUserStore().setToken(response.headers.get('token'));
+        }
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
