@@ -488,12 +488,6 @@ def test_valid(user_agent: str = Header()):
 
 
 
-@app.get("/api/test1")
-def test_valid1(secret_code: str | None = Header(default=None)):
-    return {"Secret-Code": secret_code}
-
-
-
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
 def check_valid(data = Body(), token: str = Cookie(None)):
