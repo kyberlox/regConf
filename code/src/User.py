@@ -273,10 +273,11 @@ class User:
         self.Id = usr.id
 
         #взять json из Redis
-        self.current_json = UserRedis().r.get(self.uuid)
+        self.current_json = UserRedis(user_id=self.uuid).get_dt()
+        print(self.current_json)
 
         #сохранить в БД
-        cnf = Cofigurations(author_id=self.Id, name=name, jsn=json.dumps(self.current_json), date=str(datetime.date.today()), time=datetime.datetime.now().strftime("%H:%M:%S"))
+        cnf = Cofigurations(author_id=self.Id, name=name, jsn=self.current_json, date=str(datetime.date.today()), time=datetime.datetime.now().strftime("%H:%M:%S"))
         db.add(cnf)
         db.commit()
 
