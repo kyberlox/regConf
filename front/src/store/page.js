@@ -3,9 +3,9 @@ import { defineStore } from 'pinia';
 export const usePageStore = defineStore('page', {
     state: () => {
         return {
-            currentPage: '',
-            nodeRefs: {},
             debugMode: false,
+            currentRoute: '',
+            nodeRefs: {},
         }
     },
 
@@ -24,6 +24,10 @@ export const usePageStore = defineStore('page', {
                 behavior: 'smooth',
                 block: 'center'
             });
+        },
+        setCurrentRoute(route) {
+            this.currentRoute = route;
+            console.log(this.currentRoute);
         },
         setDebugMode(mode) {
             this.debugMode = mode;

@@ -35,12 +35,12 @@ export const useHelperStore = defineStore('helper', {
                 {
                     id: 4,
                     inputName: 'Pp',
-                    text: 'Значение должно быть меньше 16Мпа и состовлять не более 70% от давления настройки'
+                    text: 'Значение должно быть меньше 16Мпа и составлять не более 70% от давления настройки'
                 },
                 {
                     id: 5,
                     inputName: 'Pp_din',
-                    text: 'Значение должно быть меньше 16Мпа и состовлять не более 70% от давления настройки'
+                    text: 'Значение должно быть меньше 16Мпа и составлять не более 70% от давления настройки'
                 },
                 {
                     id: 6,
@@ -168,7 +168,13 @@ export const useHelperStore = defineStore('helper', {
                     type: 'emptyValueError',
                     text: 'Укажите количество',
                 },
-            ]
+            ],
+            autorizeErrors: [{
+                id: 1,
+                type: 'autorizeError',
+                inputName: 'tkpError',
+                text: 'Авторизуйтесь для получения доступа к генерации ткп и истории запросов, без авторизации доступна только генерация опросного листа'
+            }]
         };
     },
 
@@ -203,6 +209,14 @@ export const useHelperStore = defineStore('helper', {
                     text: `${name}}`,
                 },)
             }
+            else if (type == 'autorizeError') {
+                this.deleteErrorMessage('', 'autorizeError');
+                const newError = this.autorizeErrors.find(item => item.inputName === name);
+                const existingMessage = this.messages.find(item => item.inputName === name);
+                if (!existingMessage && newError) {
+                    this.messages.push(newError);
+                }
+            }
         },
         deleteErrorMessage(name, group = false) {
             if (!group) {
@@ -229,6 +243,6 @@ export const useHelperStore = defineStore('helper', {
 
     getters: {
         getMessages: (state) => state.messages,
-        isValid: (state) => state.messages.filter(item => item.type !== 'serverError').length == 1,
+        isValid: (state) => state.messages.filter(item => item.type !== 'serverError' && item.type !== 'autorizeError').length == 1,
     },
 });

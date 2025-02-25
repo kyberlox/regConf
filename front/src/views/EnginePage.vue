@@ -24,10 +24,13 @@
     <div class="download-button__wrapper">
         <div class="download-button"
              :class="{ 'download-button--disabled': jsonError }"
-             @click="download('TKP')">Скачать ТКП</div>
+             @click="downloadHandle()">Документация</div>
         <div class="download-button"
              :class="{ 'download-button--disabled': jsonError }"
-             @click="download('OL')">Скачать ОЛ</div>
+             @click="">Создать общее ТКП</div>
+        <!-- <div class="download-button"
+             :class="{ 'download-button--disabled': jsonError }"
+             @click="download('OL')">Скачать ОЛ</div> -->
     </div>
     <FormHandler />
 </template>
@@ -38,6 +41,7 @@ import { usePageStore } from "@/store/page";
 import { useQuestionsStore } from "@/store/questions";
 import { useEnvModuleStore } from "@/store/envModule";
 import { useHelperStore } from "@/store/helper";
+import { useUserStore } from "@/store/user";
 import Validator from "@/utils/Validator";
 
 import ArrowLeft from "@/assets/icons/ArrowLeft.vue";
@@ -59,8 +63,10 @@ export default {
     setup() {
         const questionsStore = useQuestionsStore();
         const pageStore = usePageStore();
+        const userStore = useUserStore();
         const showHelper = ref(true);
         const mainQuestions = computed(() => questionsStore.questions);
+        const isAutorize = computed(() => userStore.getAutorizeStatus);
         const envModuleStore = useEnvModuleStore();
         const helperStore = useHelperStore();
         const jsonError = ref(false);
@@ -79,26 +85,23 @@ export default {
             }
         }, { deep: true })
 
-        const download = (type) => {
+        const downloadHandle = () => {
             if (!jsonError.value) {
                 const dataToSend = computed(() => envModuleStore.getAfterGetCompoundValue);
-                switch (type) {
-                    case 'TKP':
-                        Api.post(
-                            API_URL + '/generate',
-                            [dataToSend.value],
-                            true
-                        )
-                        break;
-                    case 'OL':
-                        Api.post(
-                            API_URL + '/makeOL',
-                            dataToSend.value,
-                            true
-                        )
-                        break;
+                if (isAutorize.value) {
+                    Api.post(
+                        API_URL + '/generate',
+                        [dataToSend.value],
+                        true
+                    )
                 }
-            } else {
+                Api.post(
+                    API_URL + '/makeOL',
+                    dataToSend.value,
+                    true
+                )
+            }
+            else {
                 helperStore.setErrorMessage(jsonError.value, 'emptyValueError');
             }
         }
@@ -107,7 +110,7 @@ export default {
             showHelper,
             mainQuestions,
             goToQuestion,
-            download,
+            downloadHandle,
             checkForDownload,
             jsonError
         };
