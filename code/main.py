@@ -483,6 +483,7 @@ def login(jsn = Body()):
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
 def check_valid(token: str = Header(None)):
+    print(token)
 
     if token[:3] == "ip:":
         ip = token[3:]
@@ -542,26 +543,21 @@ def upload_tkp(tkp_id = Header(None), token = Header(None)):
 
 #генерация документации
 @app.post("/api/generate/", tags=["Генерация документации"]) #проверка сессии
-def generate(name = Header(default=None) , token = Header(default=None)):
+def generate(data = Body(), name = Header(default=None) , token = Header(default=None)):
     usr = User(token=token)
     if usr.check():
         # получить название и сохранить в БД
         #получить json для генерации из Redis
         jsn = usr.create_TKP(name)
 
-        #сохранить json
-        #f = open(f"./data/TKP.json", 'w')
-        #json.dump(data, f)
-        #f.close()
+    #генерация файла
+    res = make_XL(jsn)
 
-        #генерация файла
-        res = make_XL(jsn)
-
-        #выдать файл
-        if res == True:
-            return FileResponse(f'./data/TKPexample.xlsx', filename=f'{name} ТКП ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
-        else:
-            return res
+    #выдать файл
+    if res == True:
+        return FileResponse(f'./data/TKPexample.xlsx', filename=f'{name} ТКП ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
+    else:
+        return res
 
 
 @app.post("/api/makeOL", tags=["Генерация документации"])

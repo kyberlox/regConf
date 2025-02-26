@@ -229,10 +229,11 @@ class User:
     '''
 
     def check(self):
-        Redis = UserRedis()
+
         try:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
-            if Redis.r.get(self.uuid) is not None:
+            Redis = UserRedis(uuid=self.uuid)
+            if Redis.get_user() is not None:
                 return True
             else:
                 return False
