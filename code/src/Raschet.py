@@ -108,6 +108,7 @@ def searchT10(T, Pn):
 def searchParams(DNS, Pn, PN, valve_type):
     #print(DNS, PN, valve_type)
     PN = PN * 10
+    Pn = Pn * 10
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Params).filter(Params.DNS >= DNS, Params.PN == PN, valve_type == valve_type).all()
 
