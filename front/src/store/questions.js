@@ -34,12 +34,14 @@ export const useQuestionsStore = defineStore('questions', {
             else {
                 targetQuestion.value = questionValue;
             }
-
             if (type !== 'inputGroup' && type !== 'CheckBoxType') {
                 this.resetQuestionGroup(targetQuestion.group);
             }
         },
-
+        setConvertedValue(questionName, questionValue) {
+            const targetQuestion = this.findQuestion(questionName);
+            targetQuestion.convertedValue = questionValue;
+        },
         setAnswers(questionName, questionValue, deep = true) {
             if (deep) {
                 const targetQuestion = this.findQuestion(questionName).inner;
@@ -118,5 +120,9 @@ export const useQuestionsStore = defineStore('questions', {
                 }
             })
         }
+    },
+    getters: {
+        getQuestions: (state) => state.questions,
+        getMark: (state) => state.questions.find(item => item.inputName == 'mark').value,
     }
 });

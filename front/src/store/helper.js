@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
+import { watch } from 'vue';
 
 const DEFAULT_MESSAGE = {
     id: 0,
-    text: 'Здесь будут содержаться подсказки и ошибки, возникающие при подборе',
+    text: 'Здесь будут содержаться подсказки и ошибки, возникающие при подборе. Расчет происходит по модели идеального сопла для идеального газа',
 };
 
 export const useHelperStore = defineStore('helper', {
@@ -30,17 +31,17 @@ export const useHelperStore = defineStore('helper', {
                 {
                     id: 3,
                     inputName: 'Pn',
-                    text: 'Давление настройки должно быть больше 0.05Мпа и меньше 16Мпа'
+                    text: 'Давление настройки должно быть меньше 16Мпа'
                 },
                 {
                     id: 4,
                     inputName: 'Pp',
-                    text: 'Значение должно быть меньше 16Мпа и состовлять не более 70% от давления настройки'
+                    text: 'Значение должно быть меньше 16Мпа и составлять не более 70% от давления настройки'
                 },
                 {
                     id: 5,
                     inputName: 'Pp_din',
-                    text: 'Значение должно быть меньше 16Мпа и состовлять не более 70% от давления настройки'
+                    text: 'Значение должно быть меньше 16Мпа и составлять не более 70% от давления настройки'
                 },
                 {
                     id: 6,
@@ -168,7 +169,13 @@ export const useHelperStore = defineStore('helper', {
                     type: 'emptyValueError',
                     text: 'Укажите количество',
                 },
-            ]
+            ],
+            autorizeErrors: [{
+                id: 1,
+                type: 'autorizeError',
+                inputName: 'tkpError',
+                text: 'Авторизуйтесь для получения доступа к генерации ткп и истории запросов, без авторизации доступна только генерация опросного листа'
+            }]
         };
     },
 
@@ -203,6 +210,14 @@ export const useHelperStore = defineStore('helper', {
                     text: `${name}}`,
                 },)
             }
+            else if (type == 'autorizeError') {
+                this.deleteErrorMessage('', 'autorizeError');
+                const newError = this.autorizeErrors.find(item => item.inputName === name);
+                const existingMessage = this.messages.find(item => item.inputName === name);
+                if (!existingMessage && newError) {
+                    this.messages.push(newError);
+                }
+            }
         },
         deleteErrorMessage(name, group = false) {
             if (!group) {
@@ -225,10 +240,17 @@ export const useHelperStore = defineStore('helper', {
                 });
             }
         },
+        watchErrors(nodeRefs) {
+            watch(
+                () => [...this.messages],
+                (newErrors) => { this.handleErrorHighlight(newErrors, nodeRefs) },
+                { deep: true }
+            );
+        }
     },
 
     getters: {
         getMessages: (state) => state.messages,
-        isValid: (state) => state.messages.filter(item => item.type !== 'serverError').length == 1,
+        isValid: (state) => state.messages.filter(item => item.type !== 'serverError' && item.type !== 'autorizeError').length == 1,
     },
 });

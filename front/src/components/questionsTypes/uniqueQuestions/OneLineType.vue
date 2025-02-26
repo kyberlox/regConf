@@ -18,6 +18,8 @@
                           :inputText="question.value"
                           @input="saveValue($event.target.value, groupIndex, 'select')" />
             </div>
+            <DisabledType v-if="question.convertedValue && question.modifiers.includes('convertToKg') || question.modifiers.includes('convertToMpa')"
+                          :question="question.convertedValue" />
             <button v-if="(!question.modifiers || !question.modifiers.includes('noAddButton')) && groupIndex !== 0"
                     class="card-footer__button"
                     @click="removeLine(groupIndex)">-</button>
@@ -33,15 +35,16 @@
 <script>
 import SelectType from "@/components/questionsTypes/SelectType.vue";
 import TextType from "@/components/questionsTypes/TextType.vue";
-import { changeToMpa } from "@/utils/changeToMpa";
-import { changeToKgInHour } from "@/utils/changeToKgInHour";
+
 import { useQuestionsStore } from "@/store/questions";
-import { ref, watch } from "vue";
+import { ref } from "vue";
+import DisabledType from "@/components/questionsTypes/DisabledType.vue";
 
 export default {
     components: {
         SelectType,
         TextType,
+        DisabledType
     },
     props: {
         question: {
@@ -51,22 +54,9 @@ export default {
     },
     emits: ["saveNewValue"],
     setup(props, { emit }) {
-        const conversions = {
-            convertToMpa: changeToMpa,
-            convertToKg: changeToKgInHour,
-        };
-        const convert = ref(false);
-
-        const modifier = props.question.modifiers?.find((mod) => conversions[mod]);
-        if (modifier) {
-            convert.value = conversions[modifier];
-        }
-
         const questionStore = useQuestionsStore();
         const optionsCounter = ref(1);
         const optionsLimit = ref(false);
-        const answer = ref({ id: null, value: null });
-        // const currentInput = ref();
         const answers = ref([]);
 
         const saveValue = (value, groupIndex, type) => {
@@ -85,7 +75,6 @@ export default {
         }
 
         const cloneQuestion = () => {
-            answer.value = { id: null, value: null };
             questionStore.cloneQuestion(props.question.id);
             optionsCounter.value++;
 
@@ -97,16 +86,6 @@ export default {
         const removeLine = (groupIndex) => {
             questionStore.removeLine(props.question.inputName, groupIndex);
         };
-
-        // watch(answer.value, (newVal) => {
-        //     console.log(answer.value);
-
-        //     if (newVal.id == '') {
-        //         answer.value.id = '';
-        //         answer.value.value = null;
-        //     }
-        //     emit("saveNewValue", props.question.inputName, answer.value, "oneLine", lineIndex.value);
-        // })
 
         return {
             saveValue,

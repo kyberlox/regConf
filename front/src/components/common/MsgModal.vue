@@ -36,15 +36,24 @@ export default {
     },
     emits: ['closeModal'],
     setup(props, { emit }) {
-        const supportBodyHtml = `                    <p>По вопросам технической поддержки обращайтесь по электронной почте:<br />
-                        <b>it.dpm@emk.ru</b>
-                    </p>
+        const supportBodyHtml = `<div class="support-info">
+    <p class="support-email">
+        По вопросам технической поддержки обращайтесь по электронной почте:
+        <a href="mailto:it.dpm@emk.ru" class="email">it.dpm@emk.ru</a>
+    </p>
 
-                    <p>Либо по внутренним номерам телефонов: <br /> Газинский Игорь Владимирович -<b>5182</b>
-                        /
-                        Тимофеев
-                        Александр Анатольевич - <b>5182</b>
-                    </p>`;
+    <div class="support-phone">
+    <span class="support-phone-text">
+        Либо по внутренним номерам:
+    </span>
+        <span class="support__contact-person">
+            Газинский Игорь Владимирович - <strong>5182</strong>
+        </span>
+        <span class="support__contact-person">
+            Тимофеев Александр Анатольевич - <strong>5185</strong>
+        </span>
+</div>
+</div>`;
 
         const downloadBodyHtml = `<p>Вы можете скачать текущий файл,<br /> либо добавить его в группу для общего ткп:
                     </p>`;

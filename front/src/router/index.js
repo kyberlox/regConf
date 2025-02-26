@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/HomePage.vue'
 import { useQuestionsStore } from '@/store/questions'
+import { useUserStore } from '@/store/user'
+import { routeHandle } from './routeHandle'
+import { usePageStore } from '@/store/page'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,17 +14,24 @@ const router = createRouter({
       component: Home,
     },
     {
+      path: '/:token(.*)',
+      name: 'homeWithToken',
+      component: Home,
+    },
+    {
       path: '/engine',
       name: 'enginePage',
       component: () => import('../views/EnginePage.vue')
+    },
+    {
+      path: '/history',
+      name: 'history',
+      component: () => import('../views/HistoryPage.vue')
     },
 
   ]
 })
 
-router.beforeEach((to, from, next) => {
-  useQuestionsStore().resetQuestionGroup('all');
-  next()
-})
+routeHandle(router, useUserStore, useQuestionsStore, usePageStore);
 
 export default router

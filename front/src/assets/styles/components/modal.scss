@@ -54,3 +54,29 @@
         }
     }
 }
+
+.support-info {
+    padding: 20px;
+    line-height: 1.6;
+}
+
+.email {
+    display: block;
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.support__contact-person {
+    display: inline-block;
+    margin: 3px 0;
+}
+
+.support-phone {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.support-phone-text {
+    display: inline-block;
+}

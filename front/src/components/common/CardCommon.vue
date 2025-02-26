@@ -24,6 +24,8 @@ import TextType from "@/components/questionsTypes/TextType.vue";
 import CheckboxType from "@/components/questionsTypes/CheckboxType.vue";
 import OneLineType from "../questionsTypes/uniqueQuestions/OneLineType.vue";
 import InputGroup from "../questionsTypes/InputGroup.vue";
+import { changeToMpa } from "@/utils/changeToMpa";
+import { changeToKgInHour } from "@/utils/changeToKgInHour";
 
 import { useQuestionsStore } from "@/store/questions";
 import TextAreaType from "../questionsTypes/TextAreaType.vue";
@@ -49,6 +51,18 @@ export default {
     setup(props, { emit }) {
         const pageStore = usePageStore();
         const questionInGroup = ref({});
+        const convertedValue = ref({ value: '' });
+
+        const conversions = {
+            convertToMpa: changeToMpa,
+            convertToKg: changeToKgInHour,
+        };
+        const convert = ref(null);
+
+        const modifier = props.question.modifiers?.find((mod) => conversions[mod]);
+        if (modifier) {
+            convert.value = conversions[modifier];
+        }
 
         onMounted(() => {
             if (questionInGroup.value) {
@@ -58,6 +72,11 @@ export default {
 
         const questionsStore = useQuestionsStore();
         const saveNewValue = (name, value, oneLine = false, subquestionId = null) => {
+            if (name == 'Pn' || name == 'Pp' || name == 'Pp_din' || name == 'Gab') {
+                convertedValue.value = { id: value.id, value: convert.value(value.id, value.value) };
+                questionsStore.setConvertedValue(name, convertedValue.value);
+            }
+
             questionsStore.setQuestionValue(name, value, oneLine, subquestionId);
             emit('checkDownloadJson');
         }
@@ -65,7 +84,7 @@ export default {
         return {
             saveNewValue,
             debugMode: computed(() => pageStore.debugMode),
-            questionInGroup
+            questionInGroup,
         }
     }
 }
