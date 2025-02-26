@@ -120,7 +120,7 @@ def searchParams(DNS, Pn, PN, valve_type):
     #minP1 = request[0].P1
     minPN = request[0].PN
     for example in request:
-        Pn1, Pn2 = str(request.Pnd).split("...")
+        Pn1, Pn2 = str(request[0].Pnd).split("...")
         if (example.DNS <= minDNS)  and (example.PN == minPN) and (float(Pn1) <= Pn <= float(Pn2)):
             minDNS = example.DNS
             #minP1 = example.P1
