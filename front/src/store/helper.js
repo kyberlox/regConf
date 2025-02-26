@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
+import { watch } from 'vue';
 
 const DEFAULT_MESSAGE = {
     id: 0,
-    text: 'Здесь будут содержаться подсказки и ошибки, возникающие при подборе',
+    text: 'Здесь будут содержаться подсказки и ошибки, возникающие при подборе. Рассчет происходит по модели идеального сопла для идеального газа',
 };
 
 export const useHelperStore = defineStore('helper', {
@@ -30,7 +31,7 @@ export const useHelperStore = defineStore('helper', {
                 {
                     id: 3,
                     inputName: 'Pn',
-                    text: 'Давление настройки должно быть больше 0.05Мпа и меньше 16Мпа'
+                    text: 'Давление настройки должно быть меньше 16Мпа'
                 },
                 {
                     id: 4,
@@ -239,6 +240,13 @@ export const useHelperStore = defineStore('helper', {
                 });
             }
         },
+        watchErrors(nodeRefs) {
+            watch(
+                () => [...this.messages],
+                (newErrors) => { this.handleErrorHighlight(newErrors, nodeRefs) },
+                { deep: true }
+            );
+        }
     },
 
     getters: {

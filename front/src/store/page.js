@@ -27,7 +27,6 @@ export const usePageStore = defineStore('page', {
         },
         setCurrentRoute(route) {
             this.currentRoute = route;
-            console.log(this.currentRoute);
         },
         setDebugMode(mode) {
             this.debugMode = mode;

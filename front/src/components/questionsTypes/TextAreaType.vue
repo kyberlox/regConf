@@ -10,12 +10,17 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 export default {
     props: ["question"],
     emits: ["saveNewValue"],
     setup(props, { emit }) {
         const defaultValue = ref();
+        onMounted(() => {
+            if (props.question.value) {
+                defaultValue.value = props.question.value;
+            }
+        })
         const saveNewValue = (name, value) => {
             defaultValue.value = value;
             emit("saveNewValue", name, value);

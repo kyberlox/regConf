@@ -27,30 +27,20 @@
              @click="downloadHandle()">Документация</div>
         <div class="download-button"
              :class="{ 'download-button--disabled': jsonError }"
-             @click="">Создать общее ТКП</div>
-        <!-- <div class="download-button"
-             :class="{ 'download-button--disabled': jsonError }"
-             @click="download('OL')">Скачать ОЛ</div> -->
+             @click="''">Создать общее ТКП</div>
     </div>
-    <FormHandler />
 </template>
 
 <script>
 import { ref, computed } from "vue";
-import { usePageStore } from "@/store/page";
-import { useQuestionsStore } from "@/store/questions";
-import { useEnvModuleStore } from "@/store/envModule";
-import { useHelperStore } from "@/store/helper";
-import { useUserStore } from "@/store/user";
-import Validator from "@/utils/Validator";
-
 import ArrowLeft from "@/assets/icons/ArrowLeft.vue";
 import EngineMark from "../components/common/EngineMark.vue";
 import CardCommon from "@/components/common/CardCommon.vue";
 import SideHelper from "@/components/common/SideHelper.vue";
-import FormHandler from "@/components/FormHandler.vue";
-import Api from "@/utils/Api";
-import { watch } from "vue";
+
+import { formParamsHandle } from "@/composables/formParamsHandle";
+import { useStores } from "@/composables/useStores";
+import { useDownload } from "@/composables/useDownload";
 
 export default {
     components: {
@@ -58,61 +48,25 @@ export default {
         SideHelper,
         ArrowLeft,
         CardCommon,
-        FormHandler
     },
     setup() {
-        const questionsStore = useQuestionsStore();
-        const pageStore = usePageStore();
-        const userStore = useUserStore();
+        const stores = useStores();
         const showHelper = ref(true);
-        const mainQuestions = computed(() => questionsStore.questions);
-        const isAutorize = computed(() => userStore.getAutorizeStatus);
-        const envModuleStore = useEnvModuleStore();
-        const helperStore = useHelperStore();
-        const jsonError = ref(false);
-
+        const mainQuestions = computed(() => stores.questionsStore.questions);
+        const { jsonError, downloadHandle, checkForDownload } = useDownload(stores);
         const goToQuestion = (name) => {
-            pageStore.goToQuestion(name)
+            stores.pageStore.goToQuestion(name)
         }
 
-        const checkForDownload = () => {
-            jsonError.value = Validator.validDownloadJson(mainQuestions.value, helperStore);
-        }
-
-        watch(() => jsonError, (oldVal, newVal) => {
-            if (newVal && oldVal !== false) {
-                helperStore.deleteErrorMessage(null, 'emptyValueError');
-            }
-        }, { deep: true })
-
-        const downloadHandle = () => {
-            if (!jsonError.value) {
-                const dataToSend = computed(() => envModuleStore.getAfterGetCompoundValue);
-                if (isAutorize.value) {
-                    Api.post(
-                        API_URL + '/generate',
-                        [dataToSend.value],
-                        true
-                    )
-                }
-                Api.post(
-                    API_URL + '/makeOL',
-                    dataToSend.value,
-                    true
-                )
-            }
-            else {
-                helperStore.setErrorMessage(jsonError.value, 'emptyValueError');
-            }
-        }
+        formParamsHandle(stores);
 
         return {
             showHelper,
             mainQuestions,
+            jsonError,
             goToQuestion,
             downloadHandle,
             checkForDownload,
-            jsonError
         };
     }
 };

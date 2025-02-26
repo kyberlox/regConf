@@ -1,4 +1,5 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import Api from './Api'
 
 export default function useTabTracker() {
     const openTabsCount = ref(0)
@@ -19,13 +20,16 @@ export default function useTabTracker() {
         localStorage.setItem(tabKey, 'open')
         updateOpenTabs()
         window.addEventListener('storage', handleStorage)
-        window.addEventListener('beforeunload', () => {
-            localStorage.removeItem(tabKey)
-        })
     })
 
-    onBeforeUnmount(() => {
+    const logOut = () => {
+        navigator.sendBeacon(API_URL + '/outh', null)
         localStorage.removeItem(tabKey)
+        Api.get(API_URL + '/oauth')
+    }
+
+    onBeforeUnmount(() => {
+        logOut()
         window.removeEventListener('storage', handleStorage)
     })
 

@@ -218,6 +218,7 @@
       "convertToMpa"
     ],
     "value": [],
+    "convertedValue": [],
     "inner": [
       [
         {
@@ -274,6 +275,7 @@
       "convertToMpa"
     ],
     "value": [],
+    "convertedValue": [],
     "inner": [
       [
         {
@@ -330,6 +332,7 @@
       "convertToMpa"
     ],
     "value": [],
+    "convertedValue": [],
     "inner": [
       [
         {
@@ -386,6 +389,7 @@
       "convertToKg"
     ],
     "value": [],
+    "convertedValue": [],
     "inner": [
       [
         {
@@ -836,7 +840,7 @@
     "name": "Сопроводительная документация:",
     "type": "TextAreaType",
     "inputName": "docs",
-    "value": null
+    "value": "Руководство по эксплуатации и паспорт изделия"
   },
   {
     "id": 25,

@@ -61,6 +61,11 @@
             gap: 15px;
             align-items: center;
 
+            @include sm {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
             &:not(:first-child) {
                 margin-top: 10px;
             }
@@ -171,8 +176,11 @@
     }
 
     &__content {
-        padding: 16px;
+        padding: 8px;
         color: #212529;
+        min-width: 194px;
+        min-height: 2em;
+        line-height: 1;
     }
 }
 
