@@ -5,7 +5,7 @@ from starlette.responses import RedirectResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import HTTPException
 
-from code.src.Raschet import Raschet, mixture, mark_params, get_tightness, make_XL, make_OL
+from src.Raschet import Raschet, mixture, mark_params, get_tightness, make_XL, make_OL
 
 import openpyxl
 from openpyxl import load_workbook
