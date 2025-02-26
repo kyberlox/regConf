@@ -315,16 +315,47 @@ class User:
         # найти по токену uuid или ip
         pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         # найти в БД
-        usr_uuid = db.query(UserData).filter_by(uuid=pre_id).first()
+        usr = db.query(UserData).filter_by(uuid=pre_id).first()
 
-        if usr_uuid is not None:
-            self.Id = usr_uuid.id
+        if usr is not None:
+            self.Id = usr.id
+            configs = db.query(Cofigurations).filter_by(author_id=self.Id).all()
+            if usr is not None and usr != []:
+                answer = []
+                for conf in configs:
+                    ans = {
+                        'id' : conf.id,
+                        'name' : conf.name,
+                        'date' : conf.date,
+                        'time' : conf.time,
+                    }
+                    answer.append(ans)
 
-            return ID
+                return answer
+            else:
+                return False
         else:
-            return {'err': 'пользователь не найден'}
+            return False
 
 
     def uploadConfiguration(self, ID):
         #загрузка ТКП из БД в redis
-        pass
+
+        # найти по токену uuid или ip
+        pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        # найти в БД пользователя по uuid
+        usr = db.query(UserData).filter_by(uuid=pre_id).first()
+        #найти файл по ID
+        fl = db.query(Cofigurations).filter_by(id=ID).first()
+
+        if usr is not None and fl is not None:
+            self.uuid = pre_id
+            self.current_json = fl.jsn
+
+            #заполнить сессию Redis
+            self.Redis = UserRedis(user_id=self.uuid, jsn=self.current_json)
+            self.Redis.update_user()
+            #вывести jsn для перосмотра
+            return self.current_json
+        else:
+            return False

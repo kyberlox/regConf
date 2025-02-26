@@ -526,11 +526,23 @@ def outh_user(token = Header(default=None)):
     usr.outh()
     return {'status' : 'ready'}
 
+@app.post("/api/history", tags=["Активность пользователей"])
+def get_history(token = Header(None)):
+    usr = User(token=token)
+    if usr.check():
+        return usr.history()
+
+@app.post("/api/upload_tkp", tags=["Активность пользователей"])
+def upload_tkp(tkp_id = Header(None), token = Header(None)):
+    usr = User(token=token)
+    if usr.check():
+        return usr.uploadConfiguration(tkp_id)
+
 
 
 #генерация документации
-@app.get("/api/generate/{name}", tags=["Генерация документации"]) #проверка сессии
-def generate(name, token = Header(default=None)):
+@app.post("/api/generate/", tags=["Генерация документации"]) #проверка сессии
+def generate(name = Header(default=None) , token = Header(default=None)):
     usr = User(token=token)
     if usr.check():
         # получить название и сохранить в БД
