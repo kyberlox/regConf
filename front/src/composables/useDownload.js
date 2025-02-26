@@ -34,8 +34,8 @@ export const useDownload = (stores) => {
         }
 
         // MAIN
-        Api.post(API_URL + '/makeOL', dataToSend.value, true, false, "Опросный лист" + docName.replaceAll('.', '-'));
-        Api.post(API_URL + '/generate', [dataToSend.value], true, false, "ТКП" + docName.replaceAll('.', '-'));
+        Api.post(API_URL + '/makeOL', dataToSend.value, true, false, "Опросный лист " + docName.replaceAll('.', '-'));
+        Api.post(API_URL + '/generate', [dataToSend.value], true, false, "ТКП " + docName.replaceAll('.', '-'));
     }
 
     return {
