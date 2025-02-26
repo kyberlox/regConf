@@ -233,10 +233,10 @@ class User:
 
         try:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
-            print("uuid:", self.uuid)
+            print(self.uuid)
             self.Redis = UserRedis(uuid=self.uuid)
-            print("Redis:", self.Redis.get_user())
-            if self.Redis.get_user() is not None:
+            print("Redis:", self.Redis.r.exists(self.uuid))
+            if  self.Redis.r.exists(self.uuid) is not None:
                 return True
             else:
                 return False
