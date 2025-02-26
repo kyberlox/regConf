@@ -20,7 +20,7 @@ class Params(Base):
     __tablename__ = 'parametrs_table'
     id = Column(Integer, primary_key=True)
     DNS = Column(Float, nullable=True)
-    P1 = Column(Float, nullable=True)
+    Pnd = Column(Text, nullable=True)
     DN = Column(Float, nullable=True)
     PN = Column(Float, nullable=True)
     spring_material = Column(Text, nullable=True)
@@ -105,8 +105,8 @@ def searchT10(T, Pn):
     
     return ans
 
-def searchParams(DNS, curP1, PN, valve_type):
-    #print(DNS, curP1, PN, valve_type)
+def searchParams(DNS, Pn, PN, valve_type):
+    #print(DNS, PN, valve_type)
     PN = PN * 10
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Params).filter(Params.DNS >= DNS, Params.PN == PN, valve_type == valve_type).all()
@@ -120,14 +120,15 @@ def searchParams(DNS, curP1, PN, valve_type):
     #minP1 = request[0].P1
     minPN = request[0].PN
     for example in request:
-        if (example.DNS <= minDNS)  and (example.PN == minPN):
+        Pn1, Pn2 = str(request.Pnd).split("...")
+        if (example.DNS <= minDNS)  and (example.PN == minPN) and (float(Pn1) <= Pn <= float(Pn2)):
             minDNS = example.DNS
             #minP1 = example.P1
             minPN = example.PN
             ans = {
                 "ID" : example.id,  
                 "DNS" : example.DNS, 
-                "P1" : example.P1, 
+                "Pnd" : example.Pnd,
                 "DN" : example.DN, 
                 "PN" : example.PN, 
                 "spring_material" : example.spring_material,
@@ -485,6 +486,7 @@ def Raschet(dt):
 
     new_dt["spring_material"] = example["spring_material"]
     new_dt["spring_number"] = example["spring_number"]
+    new_dt["Pnd"] = example["Pnd"]
     
     #подбор сильфона !!!!!!!!!!!!!!!!!!!!! сильфон только на пружине
     if (dt["valve_type"] == 'В') and  ( ( (example["spring_material"] == '51ХФА') and (T > 120) ) or ( (example["spring_material"] == '50ХФА') and (T > 250) ) ):
@@ -682,7 +684,7 @@ def get_tightness(dt):
     return dt
 
 def make_XL(dt, ID):
-    WB = load_workbook("ТКП.xlsx")
+    WB = load_workbook("./src/ТКП.xlsx")
     sheet = WB['Лист1']
 
     data_keys = {
@@ -711,6 +713,7 @@ def make_XL(dt, ID):
         "AD" : "color",
         "AE" : "tightness",
         "AF" : "spring_number",
+        "AG" : "Pnd",
         "AK" : "Pp",
         "AO" : "needKOF",
         "AP" : "need_ZIP",
@@ -736,7 +739,7 @@ def make_XL(dt, ID):
             
         
 
-        if position["valve_type"] == 'Н' and not position['need_bellows']:
+        if position["valve_type"] == 'Н' or (position["valve_type"] == 'В' and position["open_close_type"] == "открытого типа") or (position["valve_type"] == 'В' and position["need_bellows"]):
             #Давление настройки без противодавления
             sheet[f"AL{i}"].value = position["Pn"]
 
@@ -747,22 +750,22 @@ def make_XL(dt, ID):
             sheet[f"AN{i}"].value = position["Ppo"]
 
             #Давление настройки с противодавлением
-            sheet[f"AH{i}"].value = position["Pn"] - position["Pp"]
+            sheet[f"AH{i}"].value = position["Pn"]
 
             #Давление начала открытия с противодавлением 
-            sheet[f"AI{i}"].value = position["Ppo"] - position["Pp"]
+            sheet[f"AI{i}"].value = position["Ppo"]
 
             #Давление полного открытия с противодавлением
-            sheet[f"AJ{i}"].value = position["Ppo"] - position["Pp"]
+            sheet[f"AJ{i}"].value = position["Ppo"]
         else:
             #Давление настройки без противодавления
-            sheet[f"AL{i}"].value = position["Pn"]
+            sheet[f"AL{i}"].value = position["Pn"] - position["Pp"]
 
             #Давление начала открытия без противодавления
-            sheet[f"AM{i}"].value = position["Ppo"]
+            sheet[f"AM{i}"].value = position["Ppo"] - position["Pp"]
 
             #Давление полного открытия без противодавления
-            sheet[f"AN{i}"].value = position["Ppo"]
+            sheet[f"AN{i}"].value = position["Ppo"] - position["Pp"]
 
             #Давление настройки с противодавлением
             sheet[f"AH{i}"].value = position["Pn"]
@@ -799,6 +802,7 @@ def make_XL(dt, ID):
         alp = position["environment"] == "Газ"
         sheet[f"S{i}"].value = 0.8 if alp else 0.6
 
+        '''
         #Диапазон настройки, кгс/см²
         if int(position["PN"]) == 16:
             sheet[f"AG{i}"].value = "0,5...16"
@@ -812,8 +816,7 @@ def make_XL(dt, ID):
             sheet[f"AG{i}"].value = "40...100"
         elif position["PN"] == 160:
             sheet[f"AG{i}"].value = "40...160"
-
-        
+        '''        
 
         #Гарантийный срок службы, мес.
         sheet[f"AY{i}"].value = 12
@@ -839,7 +842,7 @@ def make_XL(dt, ID):
     return True
 
 def make_OL(data):
-    wb = load_workbook("ОЛ.xlsx")
+    wb = load_workbook("./src/ОЛ.xlsx")
     sheet = wb['Table 1']
 
     #Трассировка данных
