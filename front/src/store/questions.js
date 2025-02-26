@@ -6,6 +6,7 @@ export const useQuestionsStore = defineStore('questions', {
     state: () => ({
         questions: questionsBank,
         resetGroups: {
+            'all': ['getTable', 'compound', 'pressure', 'mark', 'tightness'],
             'getTable': ['compound', 'pressure', 'mark', 'tightness'],
             'compound': ['pressure', 'mark', 'tightness'],
             'pressure': ['mark', 'tightness'],

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/HomePage.vue'
+import { useQuestionsStore } from '@/store/questions'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,6 +17,11 @@ const router = createRouter({
     },
 
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  useQuestionsStore().resetQuestionGroup('all');
+  next()
 })
 
 export default router

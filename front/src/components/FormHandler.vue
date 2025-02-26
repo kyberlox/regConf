@@ -167,9 +167,23 @@ export default {
             }
         }
 
+        // Проверка суммы по агрегатным состояниям
+        watch(
+            () => [
+                paramsToGetCompound.value.environment.value.length,
+                paramsToGetCompound.value.secondEnv.value.length
+            ],
+            ([envLength, secondEnvLength]) => {
+                if ((envLength || secondEnvLength)
+                ) {
+                    checkEnvSum();
+                }
+            }
+        );
+
         // запрос (#2, get_compound) на параметры для конкр сред (Вязкость, материал, молекулярная масса, вязкость)
         watch(paramsToGetCompound, (newVal) => {
-            if (checkEnvSum() && newVal.climate.value && noErrors.value) {
+            if ((newVal.environment.value || newVal.secondEnv.value) && newVal.climate.value && noErrors.value) {
                 const envParamsToGet = ['molecular_weight', 'density', 'material', 'viscosity'];
                 let dataToSend = [];
 
@@ -183,8 +197,9 @@ export default {
                 const formattedData = dataToSend.map(obj => ({
                     'id': Number(obj.id),
                     'r': Number(obj.value) / 100,
-                    "climate": paramsToGetCompound.value.climate.value
                 }));
+                formattedData.push({ "climate": paramsToGetCompound.value.climate.value })
+
                 Api.post(API_URL + '/get_compound',
                     formattedData
                 ).then(data => {
@@ -199,7 +214,7 @@ export default {
                     })
                 })
             };
-        }, { deep: true })
+        }, { deep: true });
 
 
 
@@ -231,8 +246,6 @@ export default {
 
             // Проверка расхода жидкости и газа
             if (newVal.gab.value.length && newVal.gab.value[0].value == 0) {
-                console.log(newVal.gab.value);
-
                 helperStore.setErrorMessage('Gab');
             } else {
                 helperStore.deleteErrorMessage('Gab');

@@ -8,7 +8,6 @@
              :ref="el => questionInGroup[question.inputName] = el">
             <component :is="question.type"
                        :question="question"
-                       v-bind="question.type === 'TextType' ? { inputText: question.value } : {}"
                        @saveNewValue="saveNewValue" />
             <div v-if="debugMode">
                 <span> {{ question.value }}</span>
