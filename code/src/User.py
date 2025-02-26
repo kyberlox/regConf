@@ -69,6 +69,7 @@ class UserRedis:
 
     def get_user(self):
         jsn = self.r.get(self.user_id)
+        print(jsn)
         self.jsn = json.loads(jsn)
         return self.jsn
 
@@ -233,8 +234,8 @@ class User:
         try:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
             print("uuid:", self.uuid)
-            self.Redis = UserRedis(uuid=self.uuid, jsn=self.current_json)
-            print("", self.Redis.get_user())
+            self.Redis = UserRedis(uuid=self.uuid)
+            print("Redis:", self.Redis.get_user())
             if self.Redis.get_user() is not None:
                 return True
             else:
