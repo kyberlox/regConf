@@ -9,6 +9,6 @@ export const changeToMpa = (unit, x) => {
         case 'бар':
             return x = x * 0.1;
         case 'кгс/см2':
-            return x = x / 0.0980665;
+            return x = x * 0.0980665;
     }
 };

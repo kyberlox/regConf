@@ -25,8 +25,8 @@ export const useDownload = (stores) => {
         const dataToSend = computed(() => stores.envModuleStore.getAfterGetCompoundValue);
 
         if (isAutorize.value) {
-            Api.post(API_URL + '/set_date', [dataToSend.value], true, 'TESTNAME');
-            Api.post(API_URL + '/generate', [dataToSend.value], true, 'TESTNAME');
+            Api.post(API_URL + '/set_data', [dataToSend.value], false, 'TESTNAME');
+            Api.get(API_URL + '/generate/TESTNAME');
             Api.post(API_URL + '/makeOL', dataToSend.value, true);
         }
     }

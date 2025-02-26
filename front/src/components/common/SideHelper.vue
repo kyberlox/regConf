@@ -25,6 +25,7 @@
             <div v-if="navActive == 'tkp'"
                  class="helper__content helper__content--tkp">
                 <TransitionGroup name="slide-down">
+                    <div class="">Последние активности</div>
                     <div class="helper__message helper__message--tkp"
                          v-for="(doc, index) in latestTkps"
                          :key="'message' + index"
@@ -72,6 +73,8 @@ export default {
         const latestTkps = ref([
             { id: 1, name: 'ТКП-2023-001', inner: ['Позиция 1', 'Позиция 2', 'Позиция 3'], hidden: true },
             { id: 2, name: 'ТКП-2023-002', inner: ['Позиция 1', 'Позиция 2', 'Позиция 3'], hidden: true },
+            { id: 3, name: 'ТКП-2023-003', inner: ['Позиция 1', 'Позиция 2', 'Позиция 3'], hidden: true },
+            { id: 3, name: 'ТКП-2023-003', inner: ['Позиция 1', 'Позиция 2', 'Позиция 3'], hidden: true },
             { id: 3, name: 'ТКП-2023-003', inner: ['Позиция 1', 'Позиция 2', 'Позиция 3'], hidden: true },
         ]);
         return {

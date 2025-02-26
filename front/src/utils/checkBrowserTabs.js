@@ -24,14 +24,11 @@ export default function useTabTracker() {
 
     const logOut = () => {
         navigator.sendBeacon(API_URL + '/outh', null)
-        console.log('ds');
-
         localStorage.removeItem(tabKey)
         Api.get(API_URL + '/oauth')
     }
 
     onBeforeUnmount(() => {
-        console.log('ds');
         logOut()
         window.removeEventListener('storage', handleStorage)
     })

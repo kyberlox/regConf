@@ -35,6 +35,7 @@ export default {
             showModal.value = false;
         }
 
+        МАСТЕР
         onMounted(() => {
             Api.get('https://api.ipify.org?format=json').then((res) => {
                 userStore.setIp(res.ip)

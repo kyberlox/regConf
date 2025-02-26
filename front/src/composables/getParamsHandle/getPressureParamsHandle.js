@@ -30,9 +30,9 @@ export const getPressureParamsHandle = (stores) => {
         Validator.validTemperature(newVal.T.value, helperStore);
 
         // Проверка давления
-        let settingPressure = { unit: newVal.pn.value[0]?.id, value: newVal.pn.value[0]?.value };
-        let staticPressure = { unit: newVal.pp.value[0]?.id, value: newVal.pp.value[0]?.value };
-        let dynamicPressure = { unit: newVal.ppDin.value[0]?.id, value: newVal.ppDin.value[0]?.value };
+        let settingPressure = { unit: newVal.pn.convertedValue?.id, value: newVal.pn.convertedValue?.value };
+        let staticPressure = { unit: newVal.pp.convertedValue?.id, value: newVal.pp.convertedValue?.value };
+        let dynamicPressure = { unit: newVal.ppDin.convertedValue?.id, value: newVal.ppDin.convertedValue?.value };
 
         if (settingPressure) {
             Validator.validPressure(settingPressure, 'Pn', null, helperStore, changeToMpa);
@@ -62,10 +62,10 @@ export const getPressureParamsHandle = (stores) => {
             const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', "DN_s", 'DN', "PN", "need_bellows", "PN2", "DN2"];
 
             const formattedData = {
-                "Pn": Number(newVal.pn.value[0].value),
-                "Pp": Number(newVal.pp.value[0].value),
-                "Pp_din": Number(newVal.ppDin.value[0].value),
-                "Gab": Number(newVal.gab.value[0].value),
+                "Pn": Number(newVal.pn.convertedValue.value),
+                "Pp": Number(newVal.pp.convertedValue.value),
+                "Pp_din": Number(newVal.ppDin.convertedValue.value),
+                "Gab": Number(newVal.gab.convertedValue.value),
                 "N": Number(newVal.n.value),
                 "pre_Kc": newVal.preKc.value,
                 "T": Number(newVal.T.value),
