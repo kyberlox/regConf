@@ -222,7 +222,7 @@ def migration():
             curr = {
                 "ID" : request.id,  
                 "DNS" : request.DNS, 
-                "P1" : request.P1, 
+                "Pnd" : request.Pnd, 
                 "DN" : request.DN, 
                 "PN" : request.PN, 
                 "spring_material" : request.spring_material,
