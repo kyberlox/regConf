@@ -232,7 +232,9 @@ class User:
 
         try:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+            print(self.uuid)
             Redis = UserRedis(uuid=self.uuid, jsn=self.current_json)
+            print(Redis.get_user())
             if Redis.get_user() is not None:
                 return True
             else:
