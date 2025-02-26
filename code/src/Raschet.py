@@ -122,7 +122,7 @@ def searchParams(DNS, Pn, PN, valve_type):
     minPN = request[0].PN
     for example in request:
         Pn1, Pn2 = str(request[0].Pnd).split("...")
-        print(f"example.DNS <= minDNS {example.DNS <= minDNS} example.PN == minPN {example.PN == minPN} float(Pn1) <= Pn <= float(Pn2) {float(Pn1)} {Pn} {float(Pn2)} {float(Pn1) <= Pn <= float(Pn2)}")
+        #print(f"example.DNS <= minDNS {example.DNS <= minDNS} example.PN == minPN {example.PN == minPN} float(Pn1) <= Pn <= float(Pn2) {float(Pn1)} {Pn} {float(Pn2)} {float(Pn1) <= Pn <= float(Pn2)}")
         if (example.DNS <= minDNS)  and (example.PN == minPN) and (float(Pn1) <= Pn <= float(Pn2)):
             minDNS = example.DNS
             #minP1 = example.P1
@@ -510,13 +510,13 @@ def Raschet(dt):
     for en in env_names:
         #убрать из смеси неагрессивные среды
         if en in cool_env:
-            print(en)
+            #print(en)
             cool+=1
 
     if cool == len(env_names):
         evil_env = True
     
-    print(evil_env)
+    #print(evil_env)
 
     open_close_type = "закрытого типа"
     if evil_env:
@@ -789,7 +789,7 @@ def make_XL(dt, ID):
         sheet[f"D{i}"].value = "Общепромышленное"
 
         #Номер документа
-        print(i)
+        #print(i)
         sheet[f"E{i}"].value = "ТУ 3742-003-38877941-2012Б" if position["valve_type"] == 'В' else "ТУ 3742-013-38877941-2016"
 
         type_name = "Пружинный" if position["valve_type"] == 'В' else "Пилотный"
