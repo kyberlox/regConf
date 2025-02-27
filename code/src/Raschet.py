@@ -717,7 +717,7 @@ def make_XL(dt):
     WB = load_workbook("./src/ТКП.xlsx")
     sheet = WB['Лист1']
 
-    if dt["need_bellows"] == False:
+    if dt["need_bellows"] is False:
         dt["material_bellows"] = ""
 
     if dt["valve_type"] == 'Н':
