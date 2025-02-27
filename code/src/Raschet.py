@@ -743,7 +743,7 @@ def make_XL(dt, ID):
         for s in st:
             nm = s.split(":")[0]
             pr = float(s.split(":")[1])
-            res += f"{nm}:{pr * 100} "
+            res += f"{nm}:{pr * 100}% "
         sheet[f"H{i}"] = res
             
         
