@@ -273,22 +273,24 @@ class User:
 
         #определить id исходя из uuid
         usr = db.query(UserData).filter_by(uuid=self.uuid).first()
-        self.Id = usr.id
+        if usr is not None:
+            print(usr.id)
+            self.Id = usr.id
 
-        #взять json из Redis
-        self.current_json = UserRedis(user_id=self.uuid).get_user()
-        print(self.current_json)
+            #взять json из Redis
+            self.current_json = UserRedis(user_id=self.uuid).get_user()
+            #print(self.current_json)
 
-        #сохранить в БД
-        cnf = Cofigurations(author_id=self.Id, name=name, jsn=self.current_json, date=str(datetime.date.today()), time=datetime.datetime.now().strftime("%H:%M:%S"))
-        db.add(cnf)
-        db.commit()
+            #сохранить в БД
+            cnf = Cofigurations(author_id=self.Id, name=name, jsn=self.current_json, date=str(datetime.date.today()), time=datetime.datetime.now().strftime("%H:%M:%S"))
+            db.add(cnf)
+            db.commit()
 
-        #очистить redis
-        r = UserRedis(self.uuid, self.current_json)
-        r.set_user()
+            #очистить redis
+            r = UserRedis(self.uuid, self.current_json)
+            r.set_user()
 
-        return self.current_json
+            return self.current_json
 
     def create_OL(self):
         #найти по токену uuid или ip
