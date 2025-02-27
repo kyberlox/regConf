@@ -121,6 +121,7 @@ def searchParams(DNS, Pn, PN, valve_type):
     #minP1 = request[0].P1
     minPN = request[0].PN
     for example in request:
+        print(example.id)
         try:
             Pn1 = str(example.Pnd).split("...")[0]
             Pn2 = str(example.Pnd).split("...")[1]
@@ -590,7 +591,7 @@ def mark_params(dt):
 
     
 
-    material_bellows = "08Х18Р10Т" if dt["need_bellows"] else ""
+    material_bellows = "08Х18Н10Т" if dt["need_bellows"] else ""
 
     if dt["material"] == "25Л" and T <= 200:
         material_spool = "20Х13"
