@@ -254,7 +254,7 @@ def mixture(envs : list, climate : str):
         pre_u = 0
         for env in envs:
             r = env["r"]
-            result["name"] += f"{env['name']}:{r} "
+            result["name"] += f"{env['name']}:{r*100}% "
 
             # pre_viscosity += log10(env["viscosity"]) * r
 
@@ -778,15 +778,7 @@ def make_XL(dt):
         position["Pp"] = float(position["Pp"]) * 10.197162
         position["Pp_din"] = float(position["Pp"]) * 10.197162
 
-        print(position["name"])
-        st = position["name"].split()
-        res = ""
-        for s in st:
-            print(s)
-            nm = s.split(":")[0]
-            pr = float(s.split(":")[1])
-            res += f"{nm}:{pr * 100}% "
-        sheet[f"H{i}"].value = res
+
 
         if position["valve_type"] == 'Н' or (
                 position["valve_type"] == 'В' and position["open_close_type"] == "открытого типа") or (
@@ -940,14 +932,6 @@ def make_OL(data):
     }
 
     '''Форматирование данных'''
-
-    st = data["name"].split()
-    res = ""
-    for s in st:
-        nm = s.split(":")[0]
-        pr = float(s.split(":")[1])
-        res += f"{nm}:{pr * 100}% "
-    data["name"] = res
 
     valve_type = "Пружинный" if data["valve_type"] == 'В' else "Пилотный"
     data["valve_type"] = valve_type
