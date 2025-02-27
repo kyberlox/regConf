@@ -724,6 +724,7 @@ def make_XL(dt):
         "C": "mark",
         "F": "quantity",
         "G": "pipe_material",
+        "H": "name",
         "I": "T",
         "L": "climate",
         "N": "need_bellows",
