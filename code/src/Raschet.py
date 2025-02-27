@@ -737,10 +737,11 @@ def make_XL(dt, ID):
         for param in kys:
             if param not in position:
                 return {"err" : f"Key \'{param}\' does not exists"}
+
+        
             
         st = position["name"].split()
         res = ""
-        
         for s in st:
             nm = s.split(":")[0]
             pr = float(s.split(":")[1])
