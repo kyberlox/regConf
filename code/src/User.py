@@ -326,8 +326,7 @@ class User:
             print(usr.id)
             print(str(usr.id))
             print(int(usr.id))
-            self.Id = usr.id
-            configs = db.query(Cofigurations).filter_by(author_id=f"self.Id").all()
+            configs = db.query(Cofigurations).filter_by(author_id=usr.id).all()
             if usr is not None and usr != []:
                 answer = []
                 for conf in configs:
