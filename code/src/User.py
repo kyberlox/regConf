@@ -117,7 +117,7 @@ class User:
 
         #либо есть uuid, fio, department
         elif self.uuid != "" and self.fio != "" and self.department != "":
-            db_usr = db.query(UserData).filter_by(uuid=self.uuid).first()
+            usr_uuid = db.query(UserData).filter_by(uuid=self.uuid).first()
 
             #или он уже есть
             if usr_uuid is not None:
