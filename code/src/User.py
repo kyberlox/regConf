@@ -38,7 +38,7 @@ class UserData(Base):
 class Cofigurations(Base):
     __tablename__ = 'configuration_table'
     id = Column(Integer, primary_key=True)
-    author_id = Column(Text, nullable=True)
+    author_id = Column(Integer, nullable=True)
     name = Column(Text, nullable=True)
     jsn = Column(JSONB, nullable=True)
     date = Column(Date, nullable=True)
@@ -322,7 +322,7 @@ class User:
 
         if usr is not None:
             self.Id = usr.id
-            configs = db.query(Cofigurations).filter_by(author_id=self.Id).all()
+            configs = db.query(Cofigurations).filter_by(author_id=f"self.Id").all()
             if usr is not None and usr != []:
                 answer = []
                 for conf in configs:
