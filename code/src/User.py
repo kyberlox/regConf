@@ -235,7 +235,7 @@ class User:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
             print("uuid", self.uuid)
             self.Redis = UserRedis().r
-            if  self.Redis.exists(self.uuid) == 1 :
+            if  self.Redis.exists(self.uuid) == 1:
                 return True
             else:
                 return False
