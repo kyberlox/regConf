@@ -115,7 +115,7 @@ def searchT10(T, Pn):
     return ans
 
 def searchParams(DNS, Pn, PN, valve_type):
-    #print(DNS, PN, valve_type)
+    print(DNS, PN, valve_type)
     PN = PN * 10
     Pn = Pn * 10
     #найти все подходящие строки их DNS и P1 - больше искомых
@@ -129,23 +129,33 @@ def searchParams(DNS, Pn, PN, valve_type):
     minDNS = request[0].DNS
     #minP1 = request[0].P1
     minPN = request[0].PN
+    print("###")
     for example in request:
-        Pn1, Pn2 = str(request[0].Pnd).split("...")
-        #print(f"example.DNS <= minDNS {example.DNS <= minDNS} example.PN == minPN {example.PN == minPN} float(Pn1) <= Pn <= float(Pn2) {float(Pn1)} {Pn} {float(Pn2)} {float(Pn1) <= Pn <= float(Pn2)}")
-        if (example.DNS <= minDNS)  and (example.PN == minPN) and (float(Pn1) <= Pn <= float(Pn2)):
-            minDNS = example.DNS
-            #minP1 = example.P1
-            minPN = example.PN
-            ans = {
-                "ID" : example.id,  
-                "DNS" : example.DNS, 
-                "Pnd" : example.Pnd,
-                "DN" : example.DN, 
-                "PN" : example.PN, 
-                "spring_material" : example.spring_material,
-                "spring_number" : example.spring_number,
-                "valve_type" : valve_type
-            }
+        print(example.id)
+        print(example.Pnd)
+        try:
+            Pn1 = str(example.Pnd).split("...")[0]
+            Pn2 = str(example.Pnd).split("...")[1]
+            print(Pn1, Pn2)
+
+            #print(f"example.DNS <= minDNS {example.DNS <= minDNS} example.PN == minPN {example.PN == minPN} float(Pn1) <= Pn <= float(Pn2) {float(Pn1)} {Pn} {float(Pn2)} {float(Pn1) <= Pn <= float(Pn2)}")
+            if (example.DNS <= minDNS)  and (example.PN == minPN) and (float(Pn1) <= Pn <= float(Pn2)):
+                minDNS = example.DNS
+                #minP1 = example.P1
+                minPN = example.PN
+                ans = {
+                    "ID" : example.id,
+                    "DNS" : example.DNS,
+                    "Pnd" : example.Pnd,
+                    "DN" : example.DN,
+                    "PN" : example.PN,
+                    "spring_material" : example.spring_material,
+                    "spring_number" : example.spring_number,
+                    "valve_type" : valve_type
+                }
+        except:
+            print("###")
+
     #print(ans)
 
     return ans
@@ -694,58 +704,69 @@ def get_tightness(dt):
     dt["tightness"] = tightness 
     return dt
 
-def make_XL(dt):
+
+def make_XL(dt, ID):
     WB = load_workbook("./src/ТКП.xlsx")
     sheet = WB['Лист1']
 
+    if dt["need_bellows"] == False:
+        dt["material_bellows"] = ""
+
+    if dt["valve_type"] == 'Н':
+        dt["spring_material"] = ""
+
+    dt["Pn"] = float(dt["Pn"]) * 10.197162
+    dt["Pp"] = float(dt["Pp"]) * 10.197162
+    dt["Pp_din"] = float(dt["Pp"]) * 10.197162
+
     data_keys = {
-        "B" : "OL_num",
-        "C" : "mark",
-        "F" : "quantity",
-        "G" : "pipe_material",
-        "I" : "T",
-        "L" : "climate",
-        "N" : "need_bellows",
-        "O" : "DN",
-        "P" : "PN",
-        "Q" : "DN2",
-        "R" : "PN2",
-        "T" : "Gab",
-        "U" : "material",
-        "V" : "material_bellows",
-        "W" : "material_spool",
-        "X" : "material_saddle",
-        "Y" : "spring_material",
-        "Z" : "joining_type",
-        "AA" : "contact_type",
-        "AB" : "weight",
-        "AC" : "painting_area",
-        "AD" : "color",
-        "AE" : "tightness",
-        "AF" : "spring_number",
-        "AG" : "Pnd",
-        "AK" : "Pp",
-        "AO" : "needKOF",
-        "AP" : "need_ZIP",
-        "AQ" : "adapters",
-        "AR" : "thermal_cover",
-        "AS" : "docs",
-        "AT" : "pre_Kc",
-        "AU" : "rotary_plugs",
-        "AV" : "packaging",
-        "AW" : "acceptance",
-        "AX" : "trials",
-        "AZ" : "assignment",
-        "BA" : "additionally"
+        "B": "OL_num",
+        "C": "mark",
+        "F": "quantity",
+        "G": "pipe_material",
+        "I": "T",
+        "L": "climate",
+        "N": "need_bellows",
+        "O": "DN",
+        "P": "PN",
+        "Q": "DN2",
+        "R": "PN2",
+        "T": "Gab",
+        "U": "material",
+        "V": "material_bellows",
+        "W": "material_spool",
+        "X": "material_saddle",
+        "Y": "spring_material",
+        "Z": "joining_type",
+        "AA": "contact_type",
+        "AB": "weight",
+        "AC": "painting_area",
+        "AD": "color",
+        "AE": "tightness",
+        "AF": "spring_number",
+        "AG": "Pnd",
+        "AK": "Pp",
+        "AO": "needKOF",
+        "AP": "need_ZIP",
+        "AQ": "adapters",
+        "AR": "thermal_cover",
+        "AS": "docs",
+        "AT": "pre_Kc",
+        "AU": "rotary_plugs",
+        "AV": "packaging",
+        "AW": "acceptance",
+        "AX": "trials",
+        "AZ": "assignment",
+        "BA": "additionally"
     }
-       
+
     for i, position in enumerate(dt, start=3):
-        #проверка 
+        # проверка
         kys = list(data_keys.values())
         kys += ["valve_type", "open_close_type", "environment"]
         for param in kys:
             if param not in position:
-                return {"err" : f"Key \'{param}\' does not exists"}
+                return {"err": f"Key \'{param}\' does not exists"}
 
         st = position["name"].split()
         res = ""
@@ -755,66 +776,68 @@ def make_XL(dt):
             res += f"{nm}:{pr * 100}% "
         sheet[f"H{i}"].value = res
 
-        if position["valve_type"] == 'Н' or (position["valve_type"] == 'В' and position["open_close_type"] == "открытого типа") or (position["valve_type"] == 'В' and position["need_bellows"]):
-            #Давление настройки без противодавления
+        if position["valve_type"] == 'Н' or (
+                position["valve_type"] == 'В' and position["open_close_type"] == "открытого типа") or (
+                position["valve_type"] == 'В' and position["need_bellows"]):
+            # Давление настройки без противодавления
             sheet[f"AL{i}"].value = position["Pn"]
 
-            #Давление начала открытия без противодавления
+            # Давление начала открытия без противодавления
             sheet[f"AM{i}"].value = position["Ppo"]
 
-            #Давление полного открытия без противодавления
+            # Давление полного открытия без противодавления
             sheet[f"AN{i}"].value = position["Ppo"]
 
-            #Давление настройки с противодавлением
+            # Давление настройки с противодавлением
             sheet[f"AH{i}"].value = position["Pn"]
 
-            #Давление начала открытия с противодавлением 
+            # Давление начала открытия с противодавлением
             sheet[f"AI{i}"].value = position["Ppo"]
 
-            #Давление полного открытия с противодавлением
+            # Давление полного открытия с противодавлением
             sheet[f"AJ{i}"].value = position["Ppo"]
         else:
-            #Давление настройки без противодавления
+            # Давление настройки без противодавления
             sheet[f"AL{i}"].value = position["Pn"] - position["Pp"]
 
-            #Давление начала открытия без противодавления
+            # Давление начала открытия без противодавления
             sheet[f"AM{i}"].value = position["Ppo"] - position["Pp"]
 
-            #Давление полного открытия без противодавления
+            # Давление полного открытия без противодавления
             sheet[f"AN{i}"].value = position["Ppo"] - position["Pp"]
 
-            #Давление настройки с противодавлением
+            # Давление настройки с противодавлением
             sheet[f"AH{i}"].value = position["Pn"]
 
-            #Давление начала открытия с противодавлениемпротиводавлением
+            # Давление начала открытия с противодавлениемпротиводавлением
             sheet[f"AI{i}"].value = position["Ppo"]
 
-            #Давление полного открытия с противодавлением
+            # Давление полного открытия с противодавлением
             sheet[f"AJ{i}"].value = position["Ppo"]
 
-                
-        #номерация 
-        sheet[f"A{i}"].value = int(sheet[f"A3"].value) + i-3
+        # номерация
+        sheet[f"A{i}"].value = int(sheet[f"A3"].value) + i - 3
 
-        #изготовитель
+        # изготовитель
         sheet[f"BB{i}"].value = sheet[f"BB3"].value
 
-        #Назначение
+        # Назначение
         sheet[f"D{i}"].value = "Общепромышленное"
 
-        #Номер документа
-        #print(i)
-        sheet[f"E{i}"].value = "ТУ 3742-003-38877941-2012Б" if position["valve_type"] == 'В' else "ТУ 3742-013-38877941-2016"
+        # Номер документа
+        # print(i)
+        sheet[f"E{i}"].value = "ТУ 3742-003-38877941-2012Б" if position[
+                                                                   "valve_type"] == 'В' else "ТУ 3742-013-38877941-2016"
 
         type_name = "Пружинный" if position["valve_type"] == 'В' else "Пилотный"
         do = "прямого действия, " if position["valve_type"] == 'В' else ""
-        #Тип клапана
+        # Тип клапана
         sheet[f"K{i}"].value = f"{type_name} предохранительный, сбросной, угловой, {do}{position['open_close_type']}"
 
-        #Узел подрыва недоступен для заказа
+        # Узел подрыва недоступен для заказа
         sheet[f"M{i}"].value = "Нет"
 
-        #Коэффициент расхода, α
+        # Коэффициент расхода, α
         alp = position["environment"] == "Газ"
         sheet[f"S{i}"].value = 0.8 if alp else 0.6
 
@@ -832,15 +855,15 @@ def make_XL(dt):
             sheet[f"AG{i}"].value = "40...100"
         elif position["PN"] == 160:
             sheet[f"AG{i}"].value = "40...160"
-        '''        
+        '''
 
-        #Гарантийный срок службы, мес.
+        # Гарантийный срок службы, мес.
         sheet[f"AY{i}"].value = 12
 
         # T окр среды
         sheet[f"J{i}"].value = f"{position['T_min']} ... {position['T_max']}"
-        
-        #заполнение по словарю
+
+        # заполнение по словарю
         for key in data_keys.keys():
             if type(position[data_keys[key]]) == type(True):
                 if position[data_keys[key]] == True:
@@ -851,69 +874,78 @@ def make_XL(dt):
                 sheet[f"{key}{i}"].value = "Нет"
             else:
                 sheet[f"{key}{i}"].value = position[data_keys[key]]
-        
-    #Создать экземпляр файла
+
+    # Создать экземпляр файла
     WB.save("./TKPexample.xlsx")
 
     return True
+
 
 def make_OL(data):
     wb = load_workbook("./src/ОЛ.xlsx")
     sheet = wb['Table 1']
 
-    #Трассировка данных
+    # Трассировка данных
     params = {
-        3 : "OL_num",
-        5 : "quantity",
-        6 : "valve_type", #переделать в слова
-        7 : "environment",
-        8 : "name",
-        9 : "T",
-        10 : "abrasive_particles",
-        11 : "density",
-        12 : "molecular_weight", #если есть
-        13 : "adiabatic_index", #если есть
-        14 : "viscosity", #если жидкость
-        15 : "Pn",
-        16 : "Pno",
-        17 : "Ppo",
-        18 : "Pp",
-        19 : "Gab",
-        20 : "pre_Kc",
-        21 : "DN_s",
-        22 : "joining_type",
-        23 : "inlet_flange",
-        24 : "outlet_flange",
-        25 : "need_bellows",
-        26 : "force_open",
-        27 : "DN",
-        28 : "DN2",
-        29 : "PN",
-        30 : "PN2",
-        31 : "climate",
-        32 : "Tokr",
-        33 : "trials",
-        34 : "material",
-        35 : "need_ZIP",
-        36 : "needKOF",
-        37 : "trials",
-        38 : "color",
-        39 : "packaging",
-        40 : "acceptance",
-        41 : "additionally"
+        3: "OL_num",
+        5: "quantity",
+        6: "valve_type",  # переделать в слова
+        7: "environment",
+        8: "name",
+        9: "T",
+        10: "abrasive_particles",
+        11: "density",
+        12: "molecular_weight",  # если есть
+        13: "adiabatic_index",  # если есть
+        14: "viscosity",  # если жидкость
+        15: "Pn",
+        16: "Pno",
+        17: "Ppo",
+        18: "Pp",
+        19: "Gab",
+        20: "pre_Kc",
+        21: "DN_s",
+        22: "joining_type",
+        23: "inlet_flange",
+        24: "outlet_flange",
+        25: "need_bellows",
+        26: "force_open",
+        27: "DN",
+        28: "DN2",
+        29: "PN",
+        30: "PN2",
+        31: "climate",
+        32: "Tokr",
+        33: "trials",
+        34: "material",
+        35: "need_ZIP",
+        36: "needKOF",
+        37: "trials",
+        38: "color",
+        39: "packaging",
+        40: "acceptance",
+        41: "additionally"
     }
 
     '''Форматирование данных'''
 
+    st = data["name"].split()
+    res = ""
+    for s in st:
+        nm = s.split(":")[0]
+        pr = float(s.split(":")[1])
+        res += f"{nm}:{pr * 100}% "
+    data["name"] = res
+
     valve_type = "Пружинный" if data["valve_type"] == 'В' else "Пилотный"
     data["valve_type"] = valve_type
 
-    #с противодавлением и перевести в МПа => /10
+    # с противодавлением и перевести в МПа => /10
     Pn = float(data["Pn"]) * 0.1 - float(data['Pp']) * 0.1
 
     data['Pn'] = Pn
 
-    #Давление начала открытия
+    # Давление начала открытия
     if Pn <= 0.3:
         Pno = Pn + 0.02
         data['Pno'] = Pno
@@ -923,7 +955,6 @@ def make_OL(data):
     elif Pn > 6:
         Pno = 1.05 * Pn
         data['Pno'] = Pno
-    
 
     # Давление полного открытия
     if Pn <= 0.3:
@@ -935,21 +966,19 @@ def make_OL(data):
     elif Pn > 6:
         Ppo = 1.1 * Pn
         data['Ppo'] = Ppo
-    
 
-    #Перевести в МПа => /10
+    # Перевести в МПа => /10
     Pp = data["Pp"] * 0.1
     data['Pp'] = Pp
 
     Tokr = f"{data['T_min']} ... {data['T_max']}"
     data['Tokr'] = Tokr
-    
 
     '''Автозаполнение'''
     for i in params.keys():
-        #Проверка
+        # Проверка
         if params[i] not in data:
-            return {"err" : f"Некорректный ввод параметра \'{params[i]}\' "}
+            return {"err": f"Некорректный ввод параметра \'{params[i]}\' "}
         else:
             if type(data[params[i]]) == type(True):
                 if data[params[i]] == True:
