@@ -279,14 +279,15 @@ def mixture(envs : list, climate : str):
 
     return result
 
+
 def Raschet(dt):
     kys = ["viscosity", "Pn", "Pp", "Pp_din", "Gab", "N", "pre_Kc", "density", "climate", "material", "environment"]
     for param in kys:
         if param not in dt:
-            return {"err" : f"Key \'{param}\' does not exists"}
-        
+            return {"err": f"Key \'{param}\' does not exists"}
+
     P_atm = 0.101320
-    R = 8.31446261815324 #Газовая постоянная ( Па / (моль * K))
+    R = 8.31446261815324  # Газовая постоянная ( Па / (моль * K))
 
     u = dt["viscosity"]
     Pn = dt["Pn"]
@@ -295,15 +296,15 @@ def Raschet(dt):
     Gab = dt["Gab"]
     N = dt["N"]
     pre_Kc = dt["pre_Kc"]
-    
-    p1 = dt["density"] 
+
+    p1 = dt["density"]
 
     climate = dt["climate"]
     model = {
-        "У1" : [-40, 40],
-        "ХЛ1" : [-60, 40],
-        "УХЛ1" : [-60, 40],
-        "М1" : [-40, 40]
+        "У1": [-40, 40],
+        "ХЛ1": [-60, 40],
+        "УХЛ1": [-60, 40],
+        "М1": [-40, 40]
     }
 
     T_min, T_max = model[climate]
@@ -315,9 +316,9 @@ def Raschet(dt):
     else:
         Kc = 1
 
-    #n = #Введите показатель изоэнтропы среды
+    # n = #Введите показатель изоэнтропы среды
 
-    #Давление начала открытия
+    # Давление начала открытия
     if Pn <= 0.3:
         Pno = Pn + 0.02
     elif (Pn > 0.3) and (Pn <= 6):
@@ -325,9 +326,9 @@ def Raschet(dt):
     elif Pn > 6:
         Pno = 1.05 * Pn
     else:
-        return {"err" : f"Невозможно определить давление начала открытия. Давление настройки: {Pn}"}
+        return {"err": f"Невозможно определить давление начала открытия. Давление настройки: {Pn}"}
 
-    #Давление полного открытия
+    # Давление полного открытия
     if Pn <= 0.3:
         Ppo = Pn + 0.05
     elif (Pn > 0.3) and (Pn <= 6):
@@ -335,134 +336,138 @@ def Raschet(dt):
     elif Pn > 6:
         Ppo = 1.1 * Pn
     else:
-        return {"err" : f"Невозможно определить давление полного открытия. Давление настройки: {Pn}"}
+        return {"err": f"Невозможно определить давление полного открытия. Давление настройки: {Pn}"}
 
-    #Максимально допустимое давление аварийного сброса;
+    # Максимально допустимое давление аварийного сброса;
     P_ab_max = 1.1 * Pno
 
-    #Абсолютное давление до клапана,
-    P1 = Ppo + P_atm # < P_ab_max
+    # Абсолютное давление до клапана,
+    P1 = Ppo + P_atm  # < P_ab_max
 
-    #Абсолютное давление за клапаном при его полном открытии
-    P2 = Pp + P_atm # = P_sbr
+    # Абсолютное давление за клапаном при его полном открытии
+    P2 = Pp + P_atm  # = P_sbr
 
-    #Отношение абсолютных давлений;
+    # Отношение абсолютных давлений;
     B = P2 / P1
-       
+
     if dt["environment"] == "Газ":
         if "molar_mass" not in dt:
-            return {"err" : f"Key \'molar_mass\' does not exists"}
-        
+            return {"err": f"Key \'molar_mass\' does not exists"}
+
         M = dt["molar_mass"]
 
-        p1 = P1 * 1000 * M / (R  * (T+273.15))
+        p1 = P1 * 1000 * M / (R * (T + 273.15))
 
         alpha = 0.8
         if (Ppo / Pn) == 1.1:
             if (Pp / Pno) <= 0.3:
                 Kw = 1
             else:
-                Kw = 1.1027 + 0.4007 * (Pp / Pno) - 2.4577 * (Pp / Pno)**2
+                Kw = 1.1027 + 0.4007 * (Pp / Pno) - 2.4577 * (Pp / Pno) ** 2
         elif (Ppo / Pn) == 1.15:
-                if (Pp / Pno) <= 0.37:
-                    Kw = 1
-                else:
-                    Kw = 1.2857 - 0.7603 * (Pp / Pno)
+            if (Pp / Pno) <= 0.37:
+                Kw = 1
+            else:
+                Kw = 1.2857 - 0.7603 * (Pp / Pno)
         elif ((Ppo / Pn) > 1.2) and ((Pp / Pno) >= 0.5):
             Kw = 1
         elif ((Ppo / Pn) > 1.1) and ((Ppo / Pn) <= 1.15):
-            #Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.22) и (Д.23)
-            return {"err" : f"Нет возможности расчитать Kw для соотношения 1.1 < Ppo / Pn <= 1.15, при Ppo={Ppo}, Pn={Pn} и Ppo / Pn = {Ppo / Pn}"}
+            # Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.22) и (Д.23)
+            return {
+                "err": f"Нет возможности расчитать Kw для соотношения 1.1 < Ppo / Pn <= 1.15, при Ppo={Ppo}, Pn={Pn} и Ppo / Pn = {Ppo / Pn}"}
         elif ((Ppo / Pn) > 1.15) and ((Ppo / Pn) <= 1.2):
-            #Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.23) и (Д.24)
-            return {"err" : f"Нет возможности расчитать Kw для соотношения 1.15 < Ppo / Pn <= 1.2, при Ppo={Ppo}, Pn={Pn} и Ppo / Pn = {Ppo / Pn}"}
-            
-        #показатель изоэнтропии
-        #dt["isobaric_capacity"] / dt["isochoric_capacity"] = dt["adiabatic_index"]
-        n = dt["adiabatic_index"] #/ dt["compressibility_factor"]
+            # Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.23) и (Д.24)
+            return {
+                "err": f"Нет возможности расчитать Kw для соотношения 1.15 < Ppo / Pn <= 1.2, при Ppo={Ppo}, Pn={Pn} и Ppo / Pn = {Ppo / Pn}"}
 
-        Bkr = (2/(n+1))**(n/(n-1))
-        #определим режим истечения
-        if B <= Bkr: #
+        # показатель изоэнтропии
+        # dt["isobaric_capacity"] / dt["isochoric_capacity"] = dt["adiabatic_index"]
+        n = dt["adiabatic_index"]  # / dt["compressibility_factor"]
+
+        Bkr = (2 / (n + 1)) ** (n / (n - 1))
+        # определим режим истечения
+        if B <= Bkr:  #
             print('критический режим истечения')
             Kb = 1
             if n == 1:
                 Kp_kr = 0.60653 ** 2
             else:
-                #Kp_kr = n*(Bkr**((n+1)/n)) #на самом деле, тут корень, но его будем извлекать в конце 
-                Kp_kr = sqrt((2*n)/(n+1)) * (2/(n+1))**(1/(n-1)) #или можно так
-        else: #докритический режим
+                # Kp_kr = n*(Bkr**((n+1)/n)) #на самом деле, тут корень, но его будем извлекать в конце
+                Kp_kr = sqrt((2 * n) / (n + 1)) * (2 / (n + 1)) ** (1 / (n - 1))  # или можно так
+        else:  # докритический режим
             print('докритический режим истечения')
-            Kp_kr = 1 
+            Kp_kr = 1
             if n == 1:
-                Kb = B**2 * -2 * exp * log(B)#на самом деле, тут корень, но его будем извлекать в конце
+                Kb = B ** 2 * -2 * exp * log(B)  # на самом деле, тут корень, но его будем извлекать в конце
             else:
-                Kb = (((n + 1) / (n - 1)) * (B**(2/n) - B**((n+1)/n)) * ((n + 1) / 2)) ** 2
+                Kb = (((n + 1) / (n - 1)) * (B ** (2 / n) - B ** ((n + 1) / n)) * ((n + 1) / 2)) ** 2
 
-        #P1 * p1
-        Gideal = Kp_kr * Kb *sqrt(P1 * p1)
+        # P1 * p1
+        Gideal = Kp_kr * Kb * sqrt(P1 * p1)
 
         if Gideal <= 0:
-            return {"err" : f"Одно из значений = 0:\n Ppo : {Ppo}\n Pno : {Kb}\n Pn : {Kb}\n Kp_kr : {Kp_kr}\n Kw : {Kw}\n"}
+            return {
+                "err": f"Одно из значений = 0:\n Ppo : {Ppo}\n Pno : {Kb}\n Pn : {Kb}\n Kp_kr : {Kp_kr}\n Kw : {Kw}\n"}
 
     else:
         alpha = 0.6
-        #p1 = dt["density"]
+        # p1 = dt["density"]
         if (Pp / Pno) <= 1.15:
             Kw = 1
         elif ((Pp / Pno) > 1.15) and ((Pp / Pno) <= 0.25):
-            Kw = 0.875 + 1.8333 * (Pp / Pno) - 6.6667 * (Pp / Pno)**2
+            Kw = 0.875 + 1.8333 * (Pp / Pno) - 6.6667 * (Pp / Pno) ** 2
         elif (Pp / Pno) > 0.25:
             Kw = 1.149 - 0.988 * (Pp / Pno)
 
-        Kp = sqrt(2*(1-B)) #на самом деле, тут корень, но его будем извлекать в конце
+        Kp = sqrt(2 * (1 - B))  # на самом деле, тут корень, но его будем извлекать в конце
         Gideal = Kp * sqrt(P1 * p1)
 
         if Gideal <= 0:
-            return {"err" : f"Одно из значений = 0:\n Ppo : {Ppo}\n Pno : {Pno}\n Pn : {Pn}\n Pp : {Pp}\n Kw : {Kw}\n"}
+            return {"err": f"Одно из значений = 0:\n Ppo : {Ppo}\n Pno : {Pno}\n Pn : {Pn}\n Pp : {Pp}\n Kw : {Kw}\n"}
 
-    #print(Kp_kr, P1, p1)
-    #print(Kp, P1, p1)
-    #print(Gideal)
+    # print(Kp_kr, P1, p1)
+    # print(Kp, P1, p1)
+    # print(Gideal)
 
     DN_s = None
     pre_DN = 0
     Kv = 1
 
     while DN_s != pre_DN:
-        #print(3.6, alpha, Kv, Kw, Kc, Gideal, N)
+        # print(3.6, alpha, Kv, Kw, Kc, Gideal, N)
         pre_F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
         if pre_F == 0:
-            return {"err" : f"Одно из значений = 0:\n Kv : {Kv}\n Kw : {Kw}\n Kc : {Kc}\n Gideal : {Gideal}\n"}
+            return {"err": f"Одно из значений = 0:\n Kv : {Kv}\n Kw : {Kw}\n Kc : {Kc}\n Gideal : {Gideal}\n"}
         pre_DN = sqrt((4 * pre_F) / pi)
-            
-        Re = (Gideal * p1 * pre_DN) / u #Gideal
+
+        Re = (Gideal * p1 * pre_DN) / u  # Gideal
         if (Re >= 1000) and (Re <= 100000):
-            Kv = (0.9935 + (2.8780/Re**0.5) + (342.75/Re**1.5))**(-1)
+            Kv = (0.9935 + (2.8780 / Re ** 0.5) + (342.75 / Re ** 1.5)) ** (-1)
         elif (Re < 1000):
-            Kv = 0.975 * sqrt(1/170/(Re+0.98))
+            Kv = 0.975 * sqrt(1 / 170 / (Re + 0.98))
         else:
             Kv = 1
-            
+
         F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
         DN_s = sqrt((4 * F) / pi)
 
-    #перевести из МПа в кгс/см2
+    # перевести из МПа в кгс/см2
     new_dt = {
-        "T_min" : T_min,     #Минимальная рабочая температура
-        "T_max" : T_max,     #Максивальная рабочая температура
-        "Pno" : Pno * 10,   #Давление начала открытия с противодавлением
-        "Ppo" : Ppo * 10,   #Давление полного открытия с противодавлением
-        "P1" : P1 * 10,     #Давление на входе
-        "P2" : P2 * 10,     #Давление на выходе
-        "Kw" : Kw,           #Коэффициент, учитывающий эффект неполного открытия разгруженных ПК из-за противодавления
-        "Gideal" : Gideal,   #Массовая скорость
-        "pre_DN" : pre_DN,   #DN предворительный
-        "DN_s" : DN_s        #Диаметр седла клапана
+        "T_min": T_min,  # Минимальная рабочая температура
+        "T_max": T_max,  # Максивальная рабочая температура
+        "Pno": Pno * 10,  # Давление начала открытия с противодавлением
+        "Ppo": Ppo * 10,  # Давление полного открытия с противодавлением
+        "P1": P1 * 10,  # Давление на входе
+        "P2": P2 * 10,  # Давление на выходе
+        "Kw": Kw,  # Коэффициент, учитывающий эффект неполного открытия разгруженных ПК из-за противодавления
+        "Gideal": Gideal,  # Массовая скорость
+        "pre_DN": pre_DN,  # DN предворительный
+        "DN_s": DN_s  # Диаметр седла клапана
     }
 
-    #Номинальное давление
-    new_dt["PN"] = f"Невозмажно подобрать при сочитании параметров: \nТемпература рабочей среды = {T} \n Давление настройки = {Pn}"
+    # Номинальное давление
+    new_dt[
+        "PN"] = f"Невозмажно подобрать при сочитании параметров: \nТемпература рабочей среды = {T} \n Давление настройки = {Pn}"
     if dt["material"] == "20ГЛ" or dt["material"] == "25Л":
         ex = searchT2(T, Pn)
     else:
@@ -471,78 +476,81 @@ def Raschet(dt):
     if ex:
         PN = ex["PN"]
     else:
-        return {"err" : f"Нет возможности подобрать PN для T={T} и Pn={Pn}"}
-    #print("PN по T и Pn:", PN)
+        return {"err": f"Нет возможности подобрать PN для T={T} и Pn={Pn}"}
+    # print("PN по T и Pn:", PN)
 
-    #Деаметр ПК
-    new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
+    # Деаметр ПК
+    new_dt[
+        "DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
     example = searchParams(DN_s, Pn, PN, dt["valve_type"])
 
     if example:
-        new_dt["DN"] = example["DN"] #Номинальный диаметр
-        new_dt["PN"] = example["PN"] #Номиннальное давление
-        #print("PN по DN:", example["PN"])
+        new_dt["DN"] = example["DN"]  # Номинальный диаметр
+        new_dt["PN"] = example["PN"]  # Номиннальное давление
+        # print("PN по DN:", example["PN"])
     else:
-        return {"err" : f"Нет возможности подобрать DN для DN_s={DN_s}, Pn={Pn}, PN={PN} и тип клапана - \'{dt['valve_type']}\' "}
+        return {
+            "err": f"Нет возможности подобрать DN для DN_s={DN_s}, Pn={Pn}, PN={PN} и тип клапана - \'{dt['valve_type']}\' "}
 
     DN2 = {
-        25.0 : 40.0,
-        50.0 : 80.0,
-        80.0 : 100.0,
-        100.0 : 150.0,
-        150.0 : 200.0,
-        200.0 : 300.0
+        25.0: 40.0,
+        50.0: 80.0,
+        80.0: 100.0,
+        100.0: 150.0,
+        150.0: 200.0,
+        200.0: 300.0
     }
     new_dt["DN2"] = DN2[new_dt["DN"]]
 
     PN2 = {
-        16.0 : 6,
-        40.0 : 16.0,
-        63.0 : 40.0,
-        100.0 : 40.0,
-        160.0 : 40.0,
-        250.0 : 40.0
+        16.0: 6,
+        40.0: 16.0,
+        63.0: 40.0,
+        100.0: 40.0,
+        160.0: 40.0,
+        250.0: 40.0
     }
     new_dt["PN2"] = PN2[new_dt["PN"]]
 
     new_dt["spring_material"] = example["spring_material"]
     new_dt["spring_number"] = example["spring_number"]
     new_dt["Pnd"] = example["Pnd"]
-    
-    #подбор сильфона !!!!!!!!!!!!!!!!!!!!! сильфон только на пружине
-    if (dt["valve_type"] == 'В') and  ( ( (example["spring_material"] == '51ХФА') and (T > 120) ) or ( (example["spring_material"] == '50ХФА') and (T > 250) ) ):
+
+    # подбор сильфона !!!!!!!!!!!!!!!!!!!!! сильфон только на пружине
+    if (dt["valve_type"] == 'В') and (((example["spring_material"] == '51ХФА') and (T > 120)) or (
+            (example["spring_material"] == '50ХФА') and (T > 250))):
         new_dt["need_bellows"] = True
     else:
         new_dt["need_bellows"] = [True, False]
-    
-    #окр закр тип
+
+    # окр закр тип
     env_name = dt["name"]
     env_names = []
     for ev in env_name.split():
         env_names.append(ev[:ev.find(":")])
 
-    #вода агрессиваня?
+    # вода агрессиваня?
     cool_env = ["Вода", "Водяной пар", "Воздух", "Азот", "Вода"]
-    
+
     evil_env = False
     cool = 0
     for en in env_names:
-        #убрать из смеси неагрессивные среды
+        # убрать из смеси неагрессивные среды
         if en in cool_env:
-            #print(en)
-            cool+=1
+            # print(en)
+            cool += 1
 
     if cool == len(env_names):
         evil_env = True
-    
-    #print(evil_env)
+
+    # print(evil_env)
 
     open_close_type = "закрытого типа"
     if evil_env:
         open_close_type = "открытого типа"
         dt["need_bellows"] = False
-    
-    dt["open_close_type"] = open_close_type #открытый или закрытый тип
+
+    dt["open_close_type"] = open_close_type  # открытый или закрытый тип
 
     all_dt = dt | new_dt
     return all_dt
