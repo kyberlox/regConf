@@ -497,6 +497,6 @@ def mk_OL(data = Body()):
     #return res
     #выдать файл
     if res == True:
-        return FileResponse(f'./OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
+        return FileResponse('./OLexample.xlsx', filename='ОЛ ПК.xlsx', media_type='application/xlsx')
     else:
         return res
