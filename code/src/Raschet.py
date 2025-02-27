@@ -106,12 +106,12 @@ def searchT10(T, Pn):
     return ans
 
 def searchParams(DNS, Pn, PN, valve_type):
-    #print(DNS, PN, valve_type)
+    print(DNS, PN, valve_type)
     PN = PN * 10
     Pn = Pn * 10
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Params).filter(Params.DNS >= DNS, Params.PN == PN, valve_type == valve_type).all()
-
+    print(request)
     if request == None or request == []:
         return False
     ans = False
@@ -458,7 +458,7 @@ def Raschet(dt):
     #Деаметр ПК
     new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
     example = searchParams(DN_s, Pn, PN, dt["valve_type"])
-
+    print(example)
     if example:
         new_dt["DN"] = example["DN"] #Номинальный диаметр
         new_dt["PN"] = example["PN"] #Номиннальное давление
@@ -738,8 +738,8 @@ def make_XL(dt, ID):
             if param not in position:
                 return {"err" : f"Key \'{param}\' does not exists"}
 
-        
-            
+
+
         st = position["name"].split()
         res = ""
         for s in st:
