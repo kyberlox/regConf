@@ -557,7 +557,7 @@ def generate(data = Body(), name = Header(default=None) , token = Header(default
 
     #выдать файл
     if res == True:
-        return FileResponse("./data/TKPexample.xlsx", filename=f"{name} ТКП ПК.xlsx", media_type="application/xlsx", headers = {"Content-Disposition" : "attachment"})
+        return FileResponse("./TKPexample.xlsx", filename=f"{name} ТКП ПК.xlsx", media_type="application/xlsx", headers = {"Content-Disposition" : "attachment"})
     else:
         return res
 
@@ -578,6 +578,6 @@ def generate_OL(data = Body(), token: str = Header(None)):
         #return res
         #выдать файл
         if res:
-            return FileResponse(f'./data/OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
+            return FileResponse(f'./OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
         else:
             return res

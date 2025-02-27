@@ -853,7 +853,7 @@ def make_XL(dt):
                 sheet[f"{key}{i}"].value = position[data_keys[key]]
         
     #Создать экземпляр файла
-    WB.save("./data/TKPexample.xlsx")
+    WB.save("./TKPexample.xlsx")
 
     return True
 
@@ -962,6 +962,6 @@ def make_OL(data):
                 sheet[f"C{i}"] = data[params[i]]
 
     # Создать экземпляр файла
-    wb.save("./data/OLexample.xlsx")
+    wb.save("./OLexample.xlsx")
 
     return True
