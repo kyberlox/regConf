@@ -323,6 +323,9 @@ class User:
         usr = db.query(UserData).filter_by(uuid=pre_id).first()
 
         if usr is not None:
+            print(usr.id)
+            print(str(usr.id))
+            print(int(usr.id))
             self.Id = usr.id
             configs = db.query(Cofigurations).filter_by(author_id=f"self.Id").all()
             if usr is not None and usr != []:
