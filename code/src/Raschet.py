@@ -744,7 +744,7 @@ def make_XL(dt, ID):
             nm = s.split(":")[0]
             pr = float(s.split(":")[1])
             res += f"{nm}:{pr * 100}% "
-        sheet[f"H{i}"] = res
+        sheet[f"H{i}"].value = res
             
         
 
@@ -846,7 +846,7 @@ def make_XL(dt, ID):
                 sheet[f"{key}{i}"].value = position[data_keys[key]]
         
     #Создать экземпляр файла
-    WB.save("./data/TKPexample.xlsx")
+    WB.save("./TKPexample.xlsx")
 
     return True
 
@@ -955,6 +955,6 @@ def make_OL(data):
                 sheet[f"C{i}"] = data[params[i]]
 
     # Создать экземпляр файла
-    wb.save("./data/OLexample.xlsx")
+    wb.save("./OLexample.xlsx")
 
     return True
