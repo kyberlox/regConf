@@ -778,6 +778,7 @@ def make_XL(dt):
         position["Pp"] = float(position["Pp"]) * 10.197162
         position["Pp_din"] = float(position["Pp"]) * 10.197162
 
+        print(position["name"])
         st = position["name"].split()
         res = ""
         for s in st:
