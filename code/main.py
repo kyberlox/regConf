@@ -549,6 +549,8 @@ def generate(data = Body(), name = Header(default=None) , token = Header(default
         # получить название и сохранить в БД
         #получить json для генерации из Redis
         jsn = usr.create_TKP(name)
+    else:
+        jsn = data
 
     #генерация файла
     res = make_XL(jsn)

@@ -703,7 +703,6 @@ def make_XL(dt):
         "C" : "mark",
         "F" : "quantity",
         "G" : "pipe_material",
-        "H" : "name",
         "I" : "T",
         "L" : "climate",
         "N" : "need_bellows",
@@ -747,8 +746,14 @@ def make_XL(dt):
         for param in kys:
             if param not in position:
                 return {"err" : f"Key \'{param}\' does not exists"}
-            
-        
+
+        st = position["name"].split()
+        res = ""
+        for s in st:
+            nm = s.split(":")[0]
+            pr = float(s.split(":")[1])
+            res += f"{nm}:{pr * 100}% "
+        sheet[f"H{i}"].value = res
 
         if position["valve_type"] == 'Н' or (position["valve_type"] == 'В' and position["open_close_type"] == "открытого типа") or (position["valve_type"] == 'В' and position["need_bellows"]):
             #Давление настройки без противодавления
