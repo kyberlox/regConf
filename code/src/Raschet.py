@@ -740,6 +740,7 @@ def make_XL(dt, ID):
             
         st = position["name"].split()
         res = ""
+        
         for s in st:
             nm = s.split(":")[0]
             pr = float(s.split(":")[1])
