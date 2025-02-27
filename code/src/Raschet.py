@@ -121,26 +121,28 @@ def searchParams(DNS, Pn, PN, valve_type):
     #minP1 = request[0].P1
     minPN = request[0].PN
     for example in request:
+        try:
+            Pn1 = str(example.Pnd).split("...")[0]
+            Pn2 = str(example.Pnd).split("...")[1]
+            print(Pn1, Pn2)
 
-        Pn1 = str(example.Pnd).split("...")[0]
-        Pn2 = str(example.Pnd).split("...")[1]
-        print(Pn1, Pn2)
-
-        #print(f"example.DNS <= minDNS {example.DNS <= minDNS} example.PN == minPN {example.PN == minPN} float(Pn1) <= Pn <= float(Pn2) {float(Pn1)} {Pn} {float(Pn2)} {float(Pn1) <= Pn <= float(Pn2)}")
-        if (example.DNS <= minDNS)  and (example.PN == minPN) and (float(Pn1) <= Pn <= float(Pn2)):
-            minDNS = example.DNS
-            #minP1 = example.P1
-            minPN = example.PN
-            ans = {
-                "ID" : example.id,  
-                "DNS" : example.DNS, 
-                "Pnd" : example.Pnd,
-                "DN" : example.DN, 
-                "PN" : example.PN, 
-                "spring_material" : example.spring_material,
-                "spring_number" : example.spring_number,
-                "valve_type" : valve_type
-            }
+            #print(f"example.DNS <= minDNS {example.DNS <= minDNS} example.PN == minPN {example.PN == minPN} float(Pn1) <= Pn <= float(Pn2) {float(Pn1)} {Pn} {float(Pn2)} {float(Pn1) <= Pn <= float(Pn2)}")
+            if (example.DNS <= minDNS)  and (example.PN == minPN) and (float(Pn1) <= Pn <= float(Pn2)):
+                minDNS = example.DNS
+                #minP1 = example.P1
+                minPN = example.PN
+                ans = {
+                    "ID" : example.id,  
+                    "DNS" : example.DNS, 
+                    "Pnd" : example.Pnd,
+                    "DN" : example.DN, 
+                    "PN" : example.PN, 
+                    "spring_material" : example.spring_material,
+                    "spring_number" : example.spring_number,
+                    "valve_type" : valve_type
+                }
+        except:
+            pass
     #print(ans)
 
     return ans
