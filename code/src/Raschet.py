@@ -716,16 +716,8 @@ def get_tightness(dt):
 def make_XL(dt):
     WB = load_workbook("./src/ТКП.xlsx")
     sheet = WB['Лист1']
-    print(dt["need_bellows"])
-    if dt["need_bellows"] is False:
-        dt["material_bellows"] = ""
 
-    if dt["valve_type"] == 'Н':
-        dt["spring_material"] = ""
 
-    dt["Pn"] = float(dt["Pn"]) * 10.197162
-    dt["Pp"] = float(dt["Pp"]) * 10.197162
-    dt["Pp_din"] = float(dt["Pp"]) * 10.197162
 
     data_keys = {
         "B": "OL_num",
@@ -775,6 +767,17 @@ def make_XL(dt):
         for param in kys:
             if param not in position:
                 return {"err": f"Key \'{param}\' does not exists"}
+
+        print(position["need_bellows"])
+        if position["need_bellows"] is False:
+            position["material_bellows"] = ""
+
+        if position["valve_type"] == 'Н':
+            position["spring_material"] = ""
+
+        position["Pn"] = float(position["Pn"]) * 10.197162
+        position["Pp"] = float(position["Pp"]) * 10.197162
+        position["Pp_din"] = float(position["Pp"]) * 10.197162
 
         st = position["name"].split()
         res = ""
