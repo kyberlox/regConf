@@ -699,6 +699,16 @@ def make_XL(dt, ID):
     WB = load_workbook("./src/ТКП.xlsx")
     sheet = WB['Лист1']
 
+    if dt["need_bellows"] == False:
+        dt["material_bellows"] = ""
+    
+    if dt["valve_type"] == 'Н':
+        dt["spring_material"] = ""
+
+    dt["Pn"] = float(dt["Pn"]) * 10.197162
+    dt["Pp"] = float(dt["Pp"]) * 10.197162
+    dt["Pp_din"] = float(dt["Pp"]) * 10.197162
+
     data_keys = {
         "B" : "OL_num",
         "C" : "mark",
@@ -909,6 +919,14 @@ def make_OL(data):
     }
 
     '''Форматирование данных'''
+
+    st = data["name"].split()
+    res = ""
+    for s in st:
+        nm = s.split(":")[0]
+        pr = float(s.split(":")[1])
+        res += f"{nm}:{pr * 100}% "
+    data["name"] = res
 
     valve_type = "Пружинный" if data["valve_type"] == 'В' else "Пилотный"
     data["valve_type"] = valve_type
