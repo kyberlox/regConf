@@ -768,7 +768,6 @@ def make_XL(dt):
             if param not in position:
                 return {"err": f"Key \'{param}\' does not exists"}
 
-        print(position["need_bellows"])
         if position["need_bellows"] is False:
             position["material_bellows"] = ""
 
@@ -782,6 +781,7 @@ def make_XL(dt):
         st = position["name"].split()
         res = ""
         for s in st:
+            print(s)
             nm = s.split(":")[0]
             pr = float(s.split(":")[1])
             res += f"{nm}:{pr * 100}% "
