@@ -153,6 +153,20 @@ def searchParams(DNS, Pn, PN, valve_type):
                     "spring_number" : example.spring_number,
                     "valve_type" : valve_type
                 }
+            elif (Pn <= float(Pn2)) and (Pn <= 4) and (example.DNS <= minDNS)  and (example.PN == minPN):
+                minDNS = example.DNS
+                # minP1 = example.P1
+                minPN = example.PN
+                ans = {
+                    "ID": example.id,
+                    "DNS": example.DNS,
+                    "Pnd": example.Pnd,
+                    "DN": example.DN,
+                    "PN": example.PN,
+                    "spring_material": example.spring_material,
+                    "spring_number": example.spring_number,
+                    "valve_type": valve_type
+                }
         except:
             print("###")
 
@@ -210,7 +224,7 @@ data_mean = {
     "pre_DN": "DN предворительный",
     "DN_s": "Диаметр седла клапана",
     "Pnd": "Диапазон давлений настройки",
-    "DN": "Номинналлльный иаметр",
+    "DN": "Номинналлльный диаметр",
     "PN": "Номинальное давление",
     "DN2": "Номинналлльный иаметр на выходе",
     "PN2": "Номинальное давление на выходе",
