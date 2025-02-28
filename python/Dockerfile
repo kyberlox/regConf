@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 #COPY ./ /data/app
 
-CMD ["fastapi", "run", "main.py", "--port", "8000", "--forwarded-allow-ips=*"]
+CMD ["fastapi", "run", "main.py", "--port", "8000"]
