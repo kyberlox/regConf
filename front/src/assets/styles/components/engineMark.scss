@@ -1,0 +1,21 @@
+.fixed-mark__wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 15;
+}
+
+.fixed-mark {
+    background-color: #fff;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 1.2rem;
+    word-break: break-word;
+    color: #333;
+    text-align: center;
+}
+
+.fixed-mark__container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

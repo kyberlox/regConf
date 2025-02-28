@@ -1,0 +1,37 @@
+[
+    {
+        "id": 1,
+        "model": "organization",
+        "name": "Организация:",
+        "placeHolder": "Введите организацию",
+        "type": "text"
+    },
+    {
+        "id": 2,
+        "model": "fio",
+        "name": "Контактное лицо:",
+        "placeHolder": "Введите ФИО",
+        "type": "text"
+    },
+    {
+        "id": 3,
+        "model": "number",
+        "name": "Телефон:",
+        "placeHolder": "Введите телефон",
+        "type": "number"
+    },
+    {
+        "id": 4,
+        "model": "email",
+        "name": "Email:",
+        "placeHolder": "Введите почту",
+        "type": "email"
+    },
+    {
+        "id": 5,
+        "name": "Кол-во приводов:",
+        "model": "numbersOfEp",
+        "placeHolder": "Введите кол-во",
+        "type": "number"
+    }
+]

@@ -1,0 +1,109 @@
+@use '@/assets/styles/mixins/resolution-mixins.scss' as *;
+
+.header {
+    &__navbar {
+        border-bottom: 1px solid var(--emk-brand-color);
+        background: white;
+
+        &-brand {
+            flex-grow: 1;
+            text-align: center;
+            margin-right: 0;
+
+            @include sm {
+                font-size: 16px;
+            }
+        }
+
+        &-toggler {
+            margin-left: auto;
+        }
+    }
+
+    &__logo {
+        width: 90px;
+        max-width: 100%;
+        cursor: pointer;
+        transition: all 0.3s;
+
+        &:hover {
+            transform: scale(1.05);
+        }
+
+        @include md {
+            width: 50px;
+        }
+    }
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 300px;
+    height: 100vh;
+    background: white;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+
+    &.sidebar-active {
+        transform: translateX(-300px);
+    }
+
+    &-header {
+        padding: 26px 15px 19px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+    }
+
+    &-content {
+        padding: 1rem;
+    }
+
+    &-nav {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    &-link {
+        display: block;
+        padding: 0.5rem;
+        text-decoration: none;
+        color: #333333b1;
+        transition: all 0.2s;
+
+        &:hover {
+            color: black;
+        }
+    }
+
+    &-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s;
+        z-index: 999;
+
+        &-active {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+}
+
+.router-link-active {
+    color: black;
+}
