@@ -365,3 +365,19 @@ class User:
             return self.current_json
         else:
             return False
+
+    def deleteConfiguration(self, ID):
+        #удаление ТПК из БД
+        pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        # найти в БД пользователя по uuid
+        usr = db.query(UserData).filter_by(uuid=pre_id).first()
+        # найти файл по ID
+        fl = db.query(Cofigurations).filter_by(id=ID).first()
+
+        if usr is not None and fl is not None:
+            #удалить запсь из БД
+            db.delete(fl)
+            db.commit()
+            return True
+        else:
+            return False

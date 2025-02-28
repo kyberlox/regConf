@@ -532,6 +532,12 @@ def get_history(token = Header(None)):
     if usr.check():
         return usr.history()
 
+@app.delete("/api/delete_tkp/{tkp_id}", tags=["Активность пользователей"])
+def delete_tkp_id(tkp_id, token = Header(None)):
+    usr = User(token=token)
+    if usr.check():
+        return usr.deleteConfiguration(tkp_id)
+
 @app.post("/api/upload_tkp", tags=["Активность пользователей"])
 def upload_tkp(tkp_id = Header(None), token = Header(None)):
     usr = User(token=token)
