@@ -70,11 +70,12 @@ def searchT2(T, Pn):
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Table2).filter(Table2.T >= T, Table2.Pn >= Pn).all()
 
-    if request == None:
+    if request == None or len(request) == 0:
         return False
     ans = False
 
-    #найти самы подходящий - MIN по DNS и P1
+    #найти самый подходящий - MIN по DNS и P1
+    print(request[0])
     minT = request[0].T
     minPn = request[0].Pn
     for example in request:
@@ -94,7 +95,7 @@ def searchT10(T, Pn):
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Table10).filter(Table10.T >= T, Table10.Pn >= Pn).all()
 
-    if request == None:
+    if request == None or len(request) == 0:
         return False
     ans = False
 
