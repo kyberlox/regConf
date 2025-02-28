@@ -38,7 +38,6 @@ export default {
 
         onMounted(() => {
             Api.get('https://api.ipify.org?format=json').then((res) => {
-<<<<<<< HEAD
                 stores.userStore.setIp(res.ip)
             }).then(() => {
                 Api.post(API_URL + '/check', "", false, true).then((res) => {
@@ -51,27 +50,15 @@ export default {
                         })
                     }
                 })
-=======
-                userStore.setIp(res.ip)
-            }).then(() => {
-                Api.post(API_URL + '/check', "", false, true)
->>>>>>> f86393a2c63a1ce2b5f0e8a8dd0e395443f7fb33
             });
         })
 
         watch((isAutorize), (newValue) => {
             if (newValue == false) {
-<<<<<<< HEAD
                 stores.helperStore.setErrorMessage('tkpError', 'autorizeError');
             }
             else {
                 stores.helperStore.deleteErrorMessage('tkpError');
-=======
-                helperStore.setErrorMessage('tkpError', 'autorizeError');
-            }
-            else {
-                helperStore.deleteErrorMessage('tkpError');
->>>>>>> f86393a2c63a1ce2b5f0e8a8dd0e395443f7fb33
             }
         }, { immediate: true })
 

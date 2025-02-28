@@ -15,11 +15,7 @@ export const useDownload = (stores) => {
         }
     }, { deep: true })
 
-<<<<<<< HEAD
     const downloadHandle = (docName, type) => {
-=======
-    const downloadHandle = () => {
->>>>>>> f86393a2c63a1ce2b5f0e8a8dd0e395443f7fb33
         if (jsonError.value) {
             stores.helperStore.setErrorMessage(jsonError.value, 'emptyValueError')
             return
@@ -28,7 +24,6 @@ export const useDownload = (stores) => {
         const olData = computed(() => stores.envModuleStore.getAfterGetCompoundValue);
         const tkpData = computed(() => stores.envModuleStore.getTkpData);
 
-<<<<<<< HEAD
         if (type == 'singleDownload') {
             Api.post(API_URL + '/generate', tkpData.value, true, true, "ТКП " + docName.replaceAll('.', '-'))
                 .then(() => {
@@ -55,12 +50,6 @@ export const useDownload = (stores) => {
                                 });
                         })
                 })
-=======
-        if (isAutorize.value) {
-            Api.post(API_URL + '/set_data', [dataToSend.value], false, 'TESTNAME');
-            Api.get(API_URL + '/generate/TESTNAME');
-            Api.post(API_URL + '/makeOL', dataToSend.value, true);
->>>>>>> f86393a2c63a1ce2b5f0e8a8dd0e395443f7fb33
         }
     }
 

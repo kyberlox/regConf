@@ -25,7 +25,6 @@
         <!-- <div v-if="isAuthorize"
              class="download-button"
              :class="{ 'download-button--disabled': jsonError }"
-<<<<<<< HEAD
              @click="downloadHandle(docName, 'download')">Скачать</div> -->
 
         <div v-if="!isAuthorize"
@@ -37,12 +36,6 @@
              class="download-button"
              :class="{ 'download-button--disabled': jsonError }"
              @click="!jsonError ? addNewPos() : ''">Продолжить</div>
-=======
-             @click="downloadHandle()">Документация</div>
-        <div class="download-button"
-             :class="{ 'download-button--disabled': jsonError }"
-             @click="''">Создать общее ТКП</div>
->>>>>>> f86393a2c63a1ce2b5f0e8a8dd0e395443f7fb33
     </div>
     <MsgModal v-if="showModal"
               :type="modalType"
@@ -115,7 +108,6 @@ export default {
             goToQuestion,
             downloadHandle,
             checkForDownload,
-<<<<<<< HEAD
             isAuthorize: computed(() => stores.userStore.getAutorizeStatus),
             docName: computed(() => stores.questionsStore.getMark),
             addNewPos,
@@ -123,8 +115,6 @@ export default {
             showModal,
             closeModal,
             modalHandle
-=======
->>>>>>> f86393a2c63a1ce2b5f0e8a8dd0e395443f7fb33
         };
     }
 };
