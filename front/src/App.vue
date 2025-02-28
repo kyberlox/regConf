@@ -17,7 +17,7 @@ import PageFooter from "./components/layout/PageFooter.vue";
 import { onMounted, ref, watch, computed } from "vue";
 import YandexMetrika from "./components/tools/YandexMetrika.vue";
 import Api from "./utils/Api";
-
+import { updateHistory } from "./composables/updateHistory";
 import { useStores } from "@/composables/useStores";
 
 export default {
@@ -47,12 +47,7 @@ export default {
                                 stores.userStore.setAutorizeStatus(false);
                             } else {
                                 stores.userStore.setAutorizeStatus(true);
-                                Api.post(API_URL + '/history', "", false, true)
-                                    .then((data) => {
-                                        if (data !== false) {
-                                            stores.historyStore.setTkpHistory(data);
-                                        }
-                                    })
+                                updateHistory();
                             }
                         })
                 });
@@ -71,6 +66,7 @@ export default {
             showModal,
             closeModal,
             modalType: 'support',
+
         }
     }
 }

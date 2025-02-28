@@ -28,17 +28,16 @@
                 <TransitionGroup name="slide-down">
                     <div class="helper__message helper__message--tkp"
                          v-for="(doc, index) in latestTkps"
-                         :class="{ 'helper__message--tkp--active': !doc.hidden }"
                          :key="'message' + index"
-                         @click.stop="changeTkpVisibility(index)">
+                         @click.stop="download(doc.id, doc.name)">
                         {{ doc.name }}
-                        <div class="helper__message helper__message--tkp-pos"
+                        <!-- <div class="helper__message helper__message--tkp-pos"
                              :class="{ hidden: doc.hidden }"
                              v-for="(item, index) in doc.inner"
                              :key="'message' + index"
                              @click.stop="console.log(item)">
                             {{ item }}
-                        </div>
+                        </div> -->
                     </div>
                 </TransitionGroup>
             </div>
@@ -56,6 +55,7 @@ import { useUserStore } from "@/store/user";
 import { useHistoryStore } from "@/store/history";
 import { useHelperStore } from "@/store/helper";
 import { computed, ref, watch } from "vue";
+import Api from "@/utils/Api";
 export default {
     components: {
         Cancel,
@@ -76,8 +76,12 @@ export default {
 
         const latestTkps = computed(() => historyStore.getLatestTkps);
 
-        const changeTkpVisibility = (index) => {
-            latestTkps.value[index].hidden = !latestTkps.value[index].hidden;
+        const download = (id, name) => {
+            Api.get(API_URL + '/upload_tkp/' + id, true)
+                .then((data) => {
+                    Api.post(API_URL + '/generate/', data, true, false, name)
+                })
+            // latestTkps.value[index].hidden = !latestTkps.value[index].hidden;
         }
 
         const navTabs = ref([{ title: 'Помощь', nav: 'help' }, { title: 'ТКП', nav: 'tkp' }]);
@@ -94,7 +98,7 @@ export default {
             navActive,
             navTabs,
             goToNav: (name) => navActive.value = name,
-            changeTkpVisibility
+            download
         }
     }
 }

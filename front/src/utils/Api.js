@@ -3,8 +3,12 @@ import { useUserStore } from '@/store/user';
 import { saveAs } from 'file-saver';
 
 export default class Api {
-    static async get(url) {
-        const response = await fetch(url);
+    static async get(url, token = null) {
+        const response = await fetch(url, {
+            method: 'GET', headers: {
+                ...token ? { 'token': useUserStore().getToken } : {}
+            }
+        });
         return await response.json();
     }
 
@@ -38,5 +42,15 @@ export default class Api {
         } else {
             return await response.json();
         }
+    }
+
+    static async delete(url) {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                token: useUserStore().getToken,
+            }
+        });
+        return await response.json();
     }
 }

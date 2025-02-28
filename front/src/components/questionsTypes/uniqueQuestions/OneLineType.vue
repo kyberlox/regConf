@@ -18,7 +18,7 @@
                           :inputText="question.value"
                           @input="saveValue($event.target.value, groupIndex, 'select')" />
             </div>
-            <DisabledType v-if="question.convertedValue && question.modifiers.includes('convertToKg') || question.modifiers.includes('convertToMpa')"
+            <DisabledType v-if="debug && (question.convertedValue && question.modifiers.includes('convertToKg') || question.modifiers.includes('convertToMpa'))"
                           :question="question.convertedValue" />
             <button v-if="(!question.modifiers || !question.modifiers.includes('noAddButton')) && groupIndex !== 0"
                     class="card-footer__button"
@@ -37,7 +37,8 @@ import SelectType from "@/components/questionsTypes/SelectType.vue";
 import TextType from "@/components/questionsTypes/TextType.vue";
 
 import { useQuestionsStore } from "@/store/questions";
-import { ref } from "vue";
+import { usePageStore } from "@/store/page";
+import { ref, computed } from "vue";
 import DisabledType from "@/components/questionsTypes/DisabledType.vue";
 
 export default {
@@ -58,6 +59,7 @@ export default {
         const optionsCounter = ref(1);
         const optionsLimit = ref(false);
         const answers = ref([]);
+        const debug = computed(() => usePageStore().debugMode);
 
         const saveValue = (value, groupIndex, type) => {
             if (!answers.value[groupIndex]) {
@@ -92,6 +94,7 @@ export default {
             cloneQuestion,
             removeLine,
             optionsLimit,
+            debug
         };
     },
 };
