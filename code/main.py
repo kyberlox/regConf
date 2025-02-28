@@ -532,6 +532,8 @@ def get_history(token = Header(None)):
     if usr.check():
         print("y")
         return usr.history()
+    else:
+        return {"error" : "invalid token"}
 
 @app.delete("/api/delete_tkp/{tkp_id}", tags=["Активность пользователей"])
 def delete_tkp_id(tkp_id, token = Header(None)):
