@@ -324,7 +324,6 @@ class User:
         usr = db.query(UserData).filter_by(uuid=pre_id).first()
 
         if usr is not None:
-            print(usr.id)
             configs = db.query(Cofigurations).filter_by(author_id=usr.id).all()
             if usr is not None and usr != []:
                 answer = []
