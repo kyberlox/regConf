@@ -2,8 +2,6 @@ import { computed, watch } from 'vue'
 import { findQuestion } from "@/utils/findQuestionInStore"
 import Api from "@/utils/Api";
 import Validator from '@/utils/Validator';
-import { changeToMpa } from "@/utils/changeToMpa";
-
 
 export const getPressureParamsHandle = (stores) => {
     const questionsStore = stores.questionsStore;
@@ -35,12 +33,12 @@ export const getPressureParamsHandle = (stores) => {
         let dynamicPressure = { unit: newVal.ppDin.convertedValue?.id, value: newVal.ppDin.convertedValue?.value };
 
         if (settingPressure) {
-            Validator.validPressure(settingPressure, 'Pn', null, helperStore, changeToMpa);
+            Validator.validPressure(settingPressure, 'Pn', null, helperStore);
             if (staticPressure) {
-                Validator.validPressure(staticPressure, 'Pp', settingPressure.value, helperStore, changeToMpa);
+                Validator.validPressure(staticPressure, 'Pp', settingPressure.value, helperStore);
             }
             if (dynamicPressure) {
-                Validator.validPressure(dynamicPressure, 'Pp_din', settingPressure.value, helperStore, changeToMpa);
+                Validator.validPressure(dynamicPressure, 'Pp_din', settingPressure.value, helperStore);
             }
         }
 

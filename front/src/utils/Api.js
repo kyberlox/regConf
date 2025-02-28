@@ -6,7 +6,7 @@ export default class Api {
         return await response.json();
     }
 
-    static async post(url, body, download = false, needAutorize = false, name) {
+    static async post(url, body, download = false, needAutorize = false, name = "") {
         const authorization = computed(() => useUserStore().getToken ? useUserStore().getToken : `ip: ${useUserStore().getIp}`);
 
         const response = await fetch(url, {
@@ -15,9 +15,8 @@ export default class Api {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
                 'Access-Control-Allow-Credentials': 'true',
-                // МАСТЕР
-                // ...(needAutorize ? { 'token': authorization.value } : {}),
-                // ...(download ? { 'name': name } : {})
+                ...(needAutorize ? { 'token': authorization.value } : {}),
+                ...(download ? { 'name': encodeURIComponent(name) } : {})
             },
             credentials: 'include',
             body: JSON.stringify(body)

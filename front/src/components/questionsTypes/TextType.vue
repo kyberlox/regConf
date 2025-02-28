@@ -23,6 +23,12 @@ export default {
             }
         }, { deep: true });
 
+        watch(() => props.question.value, (newVal) => {
+            if (newVal == null) {
+                defaultValue.value = null;
+            }
+        }, { deep: true })
+
         const saveNewValue = (name, value) => {
             defaultValue.value = value;
             emit("saveNewValue", name, value);

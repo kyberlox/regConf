@@ -17,17 +17,18 @@
                          v-for="(message, index) in messages"
                          :key="'message' + index"
                          @click="goToQuestion(message.inputName)"
-                         v-html="message.text">
+                         v-html=message.text>
                     </div>
                 </TransitionGroup>
             </div>
 
             <div v-if="navActive == 'tkp'"
                  class="helper__content helper__content--tkp">
+                <div class="">Последние активности</div>
                 <TransitionGroup name="slide-down">
-                    <div class="">Последние активности</div>
                     <div class="helper__message helper__message--tkp"
                          v-for="(doc, index) in latestTkps"
+                         :class="{ 'helper__message--tkp--active': !doc.hidden }"
                          :key="'message' + index"
                          @click.stop="changeTkpVisibility(index)">
                         {{ doc.name }}
@@ -51,14 +52,20 @@
 
 <script>
 import Cancel from "@/assets/icons/Cancel.vue";
+import { useUserStore } from "@/store/user";
+import { useHistoryStore } from "@/store/history";
 import { useHelperStore } from "@/store/helper";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 export default {
     components: {
         Cancel,
     },
     emits: ["closeCalcParams", "goToQuestion"],
     setup(props, { emit }) {
+        const userStore = useUserStore();
+        const historyStore = useHistoryStore();
+        const autorizeStatus = computed(() => userStore.getAutorizeStatus);
+
         const navActive = ref('help');
         const helperStore = useHelperStore();
         const goToQuestion = (name) => {
@@ -67,21 +74,17 @@ export default {
             }
         }
 
-        const navTabs = [
-            { title: 'Помощь', nav: 'help' },
-            // { title: 'ТКП', nav: 'tkp' }
-        ]
+        const latestTkps = computed(() => historyStore.getLatestTkps);
 
         const changeTkpVisibility = (index) => {
             latestTkps.value[index].hidden = !latestTkps.value[index].hidden;
         }
-        const latestTkps = ref([
-            { id: 1, name: 'ТКП-2023-001', inner: ['Позиция 1', 'Позиция 2', 'Позиция 3'], hidden: true },
-            { id: 2, name: 'ТКП-2023-002', inner: ['Позиция 1', 'Позиция 2', 'Позиция 3'], hidden: true },
-            { id: 3, name: 'ТКП-2023-003', inner: ['Позиция 1', 'Позиция 2', 'Позиция 3'], hidden: true },
-            { id: 3, name: 'ТКП-2023-003', inner: ['Позиция 1', 'Позиция 2', 'Позиция 3'], hidden: true },
-            { id: 3, name: 'ТКП-2023-003', inner: ['Позиция 1', 'Позиция 2', 'Позиция 3'], hidden: true },
-        ]);
+
+        const navTabs = ref([{ title: 'Помощь', nav: 'help' }, { title: 'ТКП', nav: 'tkp' }]);
+        watch(autorizeStatus, (newValue) => {
+            newValue ? navTabs.value = [{ title: 'Помощь', nav: 'help' }, { title: 'ТКП', nav: 'tkp' }] : navTabs.value = [{ title: 'Помощь', nav: 'help' }];
+        }, { deep: true, immediate: true })
+
         return {
             closeCalcParams: () => emit("closeCalcParams"),
             goToQuestion,
@@ -89,9 +92,9 @@ export default {
             messages: computed(() => helperStore.getMessages),
             latestTkps,
             navActive,
+            navTabs,
             goToNav: (name) => navActive.value = name,
-            changeTkpVisibility,
-            navTabs
+            changeTkpVisibility
         }
     }
 }

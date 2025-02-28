@@ -17,8 +17,16 @@
                 <div class="modal__footer">
                     <div v-if="type == 'download'"
                          class="modal__button-group">
-                        <div class="modal__button">Скачать</div>
-                        <div class="modal__button">Добавить</div>
+                        <div class="modal__input__wrapper"
+                             :class="{ 'card--error-highlight': noDoc }">
+                            <input class="modal__input"
+                                   v-model="docName"
+                                   placeholder="Введите название файла" />
+                        </div>
+                        <div class="modal__button"
+                             @click="download">Скачать</div>
+                        <div class="modal__button"
+                             @click="addPos">Добавить</div>
                     </div>
                 </div>
             </div>
@@ -34,7 +42,7 @@ export default {
             default: 'support',
         }
     },
-    emits: ['closeModal'],
+    emits: ['closeModal, modalHandle'],
     setup(props, { emit }) {
         const supportBodyHtml = `<div class="support-info">
     <p class="support-email">
@@ -55,8 +63,11 @@ export default {
 </div>
 </div>`;
 
-        const downloadBodyHtml = `<p>Вы можете скачать текущий файл,<br /> либо добавить его в группу для общего ткп:
-                    </p>`;
+        const downloadBodyHtml = `<div class="support-info">
+        <p>Вы можете сразу скачать текущий ТКП, либо добавить в него дополнительние позиции, для этого -
+            <br/>после кнопки "добавить" заполните данные новой позиции, по заполнению всех позиций подряд, введите название файла и нажмите в этой форме "скачать"
+                    </p>
+                </div>`;
 
         const modalActive = ref(true);
         const modalBodyInner = ref(props.type == 'support' ? supportBodyHtml : downloadBodyHtml);
@@ -64,10 +75,25 @@ export default {
         const closeModal = () => {
             emit('closeModal');
         }
+
+        const docName = ref('');
+        const noDoc = ref(false);
+
+        const download = () => {
+            if (!docName.value) {
+                noDoc.value = true;
+            }
+            else {
+                emit('modalHandle', docName.value, 'download')
+            }
+        }
         return {
             closeModal,
             modalActive,
-            modalBodyInner
+            modalBodyInner,
+            download,
+            addPos: () => emit('modalHandle', docName.value, 'add'),
+            docName
         }
     }
 }

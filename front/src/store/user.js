@@ -6,6 +6,7 @@ export const useUserStore = defineStore('user', {
         return {
             token: Cookies.get('token') || '',
             ip: '',
+            autorizationStatus: false,
         }
     },
 
@@ -14,10 +15,6 @@ export const useUserStore = defineStore('user', {
             this.token = token;
             Cookies.set('token', token, {
                 expires: 7,
-                // secure: false,
-                // path: '/',
-                // domain: window.location.hostname,
-                // sameSite: 'lax'
             });
         },
 
@@ -25,16 +22,15 @@ export const useUserStore = defineStore('user', {
             this.ip = ip;
             Cookies.set('ip', ip, {
                 expires: 7,
-                // secure: false,
-                // path: '/',
-                // domain: window.location.hostname,
-                // sameSite: 'lax'
             });
         },
+        setAutorizeStatus(status) {
+            this.autorizationStatus = status;
+        }
     },
 
     getters: {
-        getAutorizeStatus: (state) => Boolean(state.token),
+        getAutorizeStatus: (state) => Boolean(state.autorizationStatus),
         getIp: (state) => state.ip,
         getToken: (state) => state.token
     },

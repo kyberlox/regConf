@@ -8,8 +8,8 @@ export const getDocParamsHandle = (stores) => {
 
     const paramsToGetDoc = computed(() => ({
         docs: findQuestion('docs'),
-        packaging: findQuestion('pipe_material'),
-        pipeMaterial: findQuestion('packaging'),
+        packaging: findQuestion('packaging'),
+        pipeMaterial: findQuestion('pipe_material'),
         additionally: findQuestion('additionally'),
         quantity: findQuestion('quantity'),
         olNum: findQuestion('OL_num'),

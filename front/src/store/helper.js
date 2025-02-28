@@ -174,7 +174,7 @@ export const useHelperStore = defineStore('helper', {
                 id: 1,
                 type: 'autorizeError',
                 inputName: 'tkpError',
-                text: 'Авторизуйтесь для получения доступа к генерации ткп и истории запросов, без авторизации доступна только генерация опросного листа'
+                text: `<a class='helper__message-link' href='https://portal.emk.ru/intranet/tools/regconf.php'>Авторизуйтесь</a> для получения доступа к генерации ткп и истории запросов, без авторизации доступна только генерация опросного листа`
             }]
         };
     },

@@ -31,7 +31,7 @@ export const getCompoundParamsHandle = (stores) => {
 
     watch(() => paramsToGetCompound.value.isSecondEnv, (newVal) => {
         changeVisibility(newVal)
-    })
+    }, { deep: true })
 
 
     const checkEnvSum = () => {
