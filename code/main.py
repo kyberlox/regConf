@@ -89,9 +89,9 @@ class Params(Base):
 class Table2(Base):
     __tablename__ = 'table2'
     id = Column(Integer, primary_key=True)
-    T = Column(Float, nullable=True)
+    Temp = Column(Float, nullable=True)
     Pn = Column(Float, nullable=True)
-    P = Column(Float, nullable=True)
+    PN = Column(Float, nullable=True)
 
 class Table10(Base):
     __tablename__ = 'table10'
@@ -266,7 +266,7 @@ def migration():
         #print(i, T, Pn, P)
 
         example = Table2(T=T, Pn=Pn, P=P)
-        request = db.query(Table2).filter(Table2.T == T, Table2.Pn == Table2.Pn, Table2.P == P).first()
+        request = db.query(Table2).filter(Table2.T == T, Table2.Pn == Pn, Table2.P == P).first()
 
         #если нет - добавить
         if request == None:
