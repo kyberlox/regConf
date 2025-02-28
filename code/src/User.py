@@ -274,13 +274,11 @@ class User:
         #определить id исходя из uuid
         usr = db.query(UserData).filter_by(uuid=self.uuid).first()
         if usr is not None:
-            print("tyt")
             #print(usr.id)
             self.Id = usr.id
 
             #взять json из Redis
             self.current_json = UserRedis(user_id=self.uuid).get_user()
-            print("########\n", self.current_json)
 
             #сохранить в БД
             cnf = Cofigurations(author_id=self.Id, name=name, jsn=self.current_json, date=str(datetime.date.today()), time=datetime.datetime.now().strftime("%H:%M:%S"))
