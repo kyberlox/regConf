@@ -803,7 +803,7 @@ def get_tightness(dt):
 
 
 def make_XL(dt):
-    print(dt)
+
     WB = load_workbook("./src/ТКП.xlsx")
     sheet = WB['Лист1']
 
