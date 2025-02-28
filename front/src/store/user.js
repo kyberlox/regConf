@@ -6,7 +6,7 @@ export const useUserStore = defineStore('user', {
         return {
             token: Cookies.get('token') || '',
             ip: '',
-            autorizationStatus: false,
+            autorizationStatus: null,
         }
     },
 
@@ -30,7 +30,7 @@ export const useUserStore = defineStore('user', {
     },
 
     getters: {
-        getAutorizeStatus: (state) => Boolean(state.autorizationStatus),
+        getAutorizeStatus: (state) => state.autorizationStatus,
         getIp: (state) => state.ip,
         getToken: (state) => state.token
     },

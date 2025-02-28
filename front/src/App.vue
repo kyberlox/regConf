@@ -37,33 +37,35 @@ export default {
         }
 
         onMounted(() => {
-            Api.get('https://api.ipify.org?format=json').then((res) => {
-                stores.userStore.setIp(res.ip)
-            }).then(() => {
-                Api.post(API_URL + '/check', "", false, true).then((res) => {
-                    if (res.token_valid == false || res.error) {
-                        stores.userStore.setAutorizeStatus(false);
-                    } else {
-                        stores.userStore.setAutorizeStatus(true);
-                        Api.post(API_URL + '/history', "", false, true)
-                            .then((data) => {
-                                if (data !== false) {
-                                    stores.historyStore.setTkpHistory(data);
-                                }
-                            })
-                    }
-                })
-            });
+            Api.get('https://api.ipify.org?format=json')
+                .then((res) => {
+                    stores.userStore.setIp(res.ip)
+                }).then(() => {
+                    Api.post(API_URL + '/check', "", false, true)
+                        .then((res) => {
+                            if (res.token_valid == false || res.error) {
+                                stores.userStore.setAutorizeStatus(false);
+                            } else {
+                                stores.userStore.setAutorizeStatus(true);
+                                Api.post(API_URL + '/history', "", false, true)
+                                    .then((data) => {
+                                        if (data !== false) {
+                                            stores.historyStore.setTkpHistory(data);
+                                        }
+                                    })
+                            }
+                        })
+                });
         })
 
         watch((isAutorize), (newValue) => {
-            if (newValue == false) {
+            if (newValue !== null && newValue == false) {
                 stores.helperStore.setErrorMessage('tkpError', 'autorizeError');
             }
             else {
                 stores.helperStore.deleteErrorMessage('tkpError');
             }
-        }, { immediate: true })
+        })
 
         return {
             showModal,

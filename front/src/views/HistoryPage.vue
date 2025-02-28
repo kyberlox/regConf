@@ -14,20 +14,13 @@
                     <div class="history-page__element__footer">
                         <div class="history-page__element__date">{{ item.date }}</div>
                         <div class="history-page__element__btn-group">
-                            <div class="history-page__element-btn">
-                                <DownloadIcon @click.stop="handleClick('download')"
-                                              class="history-page__element-btn-svg history-page__element-btn-svg--download" />
-                                <span class="tooltipo">Скачать</span>
-                            </div>
-                            <div class="history-page__element-btn">
-                                <EditIcon @click.stop="handleClick('edit')"
-                                          class="history-page__element-btn-svg history-page__element-btn-svg--edit" />
-                                <span class="tooltipo">Редактировать</span>
-                            </div>
-                            <div class="history-page__element-btn">
-                                <DeleteIcon @click.stop="handleClick('delete')"
-                                            class="history-page__element-btn-svg history-page__element-btn-svg--delete" />
-                                <span class="tooltipo">Удалить</span>
+                            <div class="history-page__element-btn"
+                                 v-for="button in buttons"
+                                 :key="'btn' + button.name">
+                                <component :is="button.icon"
+                                           @click.stop="handleClick(button.name)"
+                                           :class="`history-page__element-btn-svg history-page__element-btn-svg--${button.name}`" />
+                                <span class="tooltipo">{{ button.title }}</span>
                             </div>
                         </div>
                     </div>
@@ -54,6 +47,23 @@ export default {
         HistoryCalendar
     },
     setup() {
+        const buttons = [
+            {
+                title: 'Скачать',
+                name: 'download',
+                icon: DownloadIcon
+            },
+            // {
+            //     title: 'Редактировать',
+            //     name: 'edit',
+            //     icon: EditIcon
+            // },
+            {
+                title: 'Удалить',
+                name: 'delete',
+                icon: DeleteIcon
+            },
+        ]
         const yearRange = ref([]);
         const selectedDate = ref('все время');
         const historyStore = useHistoryStore();
@@ -96,6 +106,7 @@ export default {
             yearRange,
             selectedDate,
             testjson,
+            buttons,
             selectAllDates: () => dateFromDatePick.value = null,
         }
     }

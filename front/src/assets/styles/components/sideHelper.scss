@@ -9,6 +9,10 @@
         padding-bottom: 25px;
         text-align: center;
 
+        @include md {
+            padding: 0 0 8px 0;
+        }
+
         @include sm {
             text-align: left;
         }
@@ -120,6 +124,12 @@
                 color: var(--emk-brand-color);
             }
 
+            @include md {
+                margin: 0;
+                padding: 0 0 9px 0;
+
+            }
+
             @include sm {
                 margin: 0;
                 padding: 0 0 10px 0;
@@ -150,6 +160,10 @@
             padding-left: 13px;
             // gap: 26px;
             padding-right: 20px;
+
+            @include md {
+                margin: 0;
+            }
 
             @include sm {
                 flex-direction: column;
