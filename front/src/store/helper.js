@@ -207,7 +207,7 @@ export const useHelperStore = defineStore('helper', {
                 this.messages.push({
                     inputName: '',
                     type: 'serverError',
-                    text: `${name}}`,
+                    text: `${name}`,
                 },)
             }
             else if (type == 'autorizeError') {

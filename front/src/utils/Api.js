@@ -32,6 +32,7 @@ export default class Api {
 
         if (download) {
             const blob = await response.blob();
+
             const downloadUrl = window.URL.createObjectURL(
                 new Blob([blob], {
                     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
