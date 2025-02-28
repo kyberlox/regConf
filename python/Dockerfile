@@ -1,7 +1,6 @@
 FROM python:3.9-alpine3.21
 
 WORKDIR /data/app
-
 COPY ./requirements.txt /data/app/requirements.txt
 
 RUN pip install --upgrade pip

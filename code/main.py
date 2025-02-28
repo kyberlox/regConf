@@ -530,10 +530,19 @@ def outh_user(token = Header(default=None)):
 def get_history(token = Header(None)):
     usr = User(token=token)
     if usr.check():
+        print("y")
         return usr.history()
+    else:
+        return {"error" : "invalid token"}
 
-@app.post("/api/upload_tkp", tags=["Активность пользователей"])
-def upload_tkp(tkp_id = Header(None), token = Header(None)):
+@app.delete("/api/delete_tkp/{tkp_id}", tags=["Активность пользователей"])
+def delete_tkp_id(tkp_id, token = Header(None)):
+    usr = User(token=token)
+    if usr.check():
+        return usr.deleteConfiguration(tkp_id)
+
+@app.get("/api/upload_tkp/{tkp_id}", tags=["Активность пользователей"])
+def upload_tkp_id(tkp_id, token = Header(None)):
     usr = User(token=token)
     if usr.check():
         return usr.uploadConfiguration(tkp_id)
@@ -541,7 +550,7 @@ def upload_tkp(tkp_id = Header(None), token = Header(None)):
 
 
 #генерация документации
-@app.post("/api/generate/", tags=["Генерация документации"]) #проверка сессии
+@app.post("/api/generate", tags=["Генерация документации"]) #проверка сессии
 def generate(data = Body(), name = Header(default=None) , token = Header(default=None)):
     usr = User(token=token)
     if usr.check():

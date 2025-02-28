@@ -69,7 +69,7 @@ class UserRedis:
 
     def get_user(self):
         jsn = self.r.get(self.user_id)
-        print(jsn)
+        #print(jsn)
         self.jsn = json.loads(jsn)
         return self.jsn
 
@@ -233,7 +233,7 @@ class User:
 
         try:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
-            print("uuid", self.uuid)
+            #print("uuid", self.uuid)
             self.Redis = UserRedis().r
             if  self.Redis.exists(self.uuid) == 1:
                 return True
@@ -274,12 +274,11 @@ class User:
         #определить id исходя из uuid
         usr = db.query(UserData).filter_by(uuid=self.uuid).first()
         if usr is not None:
-            print(usr.id)
+            #print(usr.id)
             self.Id = usr.id
 
             #взять json из Redis
             self.current_json = UserRedis(user_id=self.uuid).get_user()
-            #print(self.current_json)
 
             #сохранить в БД
             cnf = Cofigurations(author_id=self.Id, name=name, jsn=self.current_json, date=str(datetime.date.today()), time=datetime.datetime.now().strftime("%H:%M:%S"))
@@ -323,9 +322,6 @@ class User:
         usr = db.query(UserData).filter_by(uuid=pre_id).first()
 
         if usr is not None:
-            print(usr.id)
-            print(str(usr.id))
-            print(int(usr.id))
             configs = db.query(Cofigurations).filter_by(author_id=usr.id).all()
             if usr is not None and usr != []:
                 answer = []
@@ -364,5 +360,21 @@ class User:
             self.Redis.update_user()
             #вывести jsn для перосмотра
             return self.current_json
+        else:
+            return False
+
+    def deleteConfiguration(self, ID):
+        #удаление ТПК из БД
+        pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        # найти в БД пользователя по uuid
+        usr = db.query(UserData).filter_by(uuid=pre_id).first()
+        # найти файл по ID
+        fl = db.query(Cofigurations).filter_by(id=ID).first()
+
+        if usr is not None and fl is not None:
+            #удалить запсь из БД
+            db.delete(fl)
+            db.commit()
+            return True
         else:
             return False
