@@ -129,14 +129,14 @@ def searchParams(DNS, Pn, PN, valve_type):
     minDNS = request[0].DNS
     #minP1 = request[0].P1
     minPN = request[0].PN
-    print("###")
+    #print("###")
     for example in request:
-        print(example.id)
-        print(example.Pnd)
+        #print(example.id)
+        #print(example.Pnd)
         try:
             Pn1 = str(example.Pnd).split("...")[0]
             Pn2 = str(example.Pnd).split("...")[1]
-            print(Pn1, Pn2)
+            #print(Pn1, Pn2)
 
             #print(f"example.DNS <= minDNS {example.DNS <= minDNS} example.PN == minPN {example.PN == minPN} float(Pn1) <= Pn <= float(Pn2) {float(Pn1)} {Pn} {float(Pn2)} {float(Pn1) <= Pn <= float(Pn2)}")
             if (example.DNS <= minDNS)  and (example.PN == minPN) and (float(Pn1) <= Pn <= float(Pn2)):
@@ -168,6 +168,9 @@ def searchParams(DNS, Pn, PN, valve_type):
                     "valve_type": valve_type
                 }
         except:
+            print("###")
+            print(example.id)
+            print(example.Pnd)
             print("###")
 
     #print(ans)
