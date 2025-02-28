@@ -67,7 +67,7 @@ db = SessionLocal()
 
 def searchT2(T, Pn):
     test = db.query(Table2).filter().all()
-    for example in request:
+    for example in test:
         print(example.id, example.T, example.Pn, example.P)
     print(T, Pn)
     #найти все подходящие строки их DNS и P1 - больше искомых
