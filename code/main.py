@@ -530,6 +530,7 @@ def outh_user(token = Header(default=None)):
 def get_history(token = Header(None)):
     usr = User(token=token)
     if usr.check():
+        print("y")
         return usr.history()
 
 @app.delete("/api/delete_tkp/{tkp_id}", tags=["Активность пользователей"])
