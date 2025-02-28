@@ -30,8 +30,6 @@ export const getCompoundParamsHandle = (stores) => {
     }
 
     watch(() => paramsToGetCompound.value.isSecondEnv, (newVal) => {
-        console.log(newVal);
-
         changeVisibility(newVal)
     }, { deep: true })
 

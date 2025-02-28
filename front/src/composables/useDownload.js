@@ -4,7 +4,6 @@ import Api from '@/utils/Api'
 import Validator from '@/utils/Validator'
 export const useDownload = (stores) => {
     const jsonError = ref(false)
-    const isAutorize = computed(() => stores.userStore.getAutorizeStatus)
 
     const checkForDownload = () => {
         jsonError.value = Validator.validDownloadJson(stores.questionsStore.questions, stores.helperStore)
@@ -16,7 +15,7 @@ export const useDownload = (stores) => {
         }
     }, { deep: true })
 
-    const downloadHandle = (docName) => {
+    const downloadHandle = (docName, type) => {
         if (jsonError.value) {
             stores.helperStore.setErrorMessage(jsonError.value, 'emptyValueError')
             return
@@ -25,23 +24,31 @@ export const useDownload = (stores) => {
         const olData = computed(() => stores.envModuleStore.getAfterGetCompoundValue);
         const tkpData = computed(() => stores.envModuleStore.getTkpData);
 
-        if (isAutorize.value) {
-            Api.post(API_URL + '/set_data', tkpData.value, false, true, docName.replaceAll('.', '-'))
-                .then(() => {
-                    Api.post(API_URL + '/generate', '', true, true, "ТКП " + docName.replaceAll('.', '-'))
-                        .then(() => {
-                            stores.envModuleStore.nulifyTkpData();
-                        });
-                });
-            Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName.replaceAll('.', '-'));
-        }
-        else {
+        if (type == 'singleDownload') {
             Api.post(API_URL + '/generate', tkpData.value, true, true, "ТКП " + docName.replaceAll('.', '-'))
                 .then(() => {
                     Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName.replaceAll('.', '-'))
                         .then(() => {
                             stores.envModuleStore.nulifyTkpData();
-                        });;
+                        });
+                })
+        }
+        else if (type == 'add') {
+            Api.post(API_URL + '/set_data', tkpData.value, false, true, docName.replaceAll('.', '-'))
+                .then(() => {
+                    Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName.replaceAll('.', '-'));
+                });
+        }
+        else if (type == 'download') {
+            Api.post(API_URL + '/set_data', tkpData.value, false, true, docName.replaceAll('.', '-'))
+                .then(() => {
+                    Api.post(API_URL + '/generate', '', true, true, "ТКП " + docName.replaceAll('.', '-'))
+                        .then(() => {
+                            Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName.replaceAll('.', '-'))
+                                .then(() => {
+                                    stores.envModuleStore.nulifyTkpData();
+                                });
+                        })
                 })
         }
     }

@@ -80,15 +80,6 @@ export default {
             latestTkps.value[index].hidden = !latestTkps.value[index].hidden;
         }
 
-
-        // const latestTkps = ref([
-        //     { id: 1, name: 'ТКП-2023-001', inner: ['Позиция 1', 'Позиция 2', 'Позиция 3'], hidden: true },
-        //     { id: 2, name: 'ТКП-2023-002', inner: ['Позиция 1', 'Позиция 2', 'Позиция 3'], hidden: true },
-        //     { id: 3, name: 'ТКП-2023-003', inner: ['Позиция 1', 'Позиция 2', 'Позиция 3'], hidden: true },
-        //     { id: 3, name: 'ТКП-2023-003', inner: ['Позиция 1', 'Позиция 2', 'Позиция 3'], hidden: true },
-        //     { id: 3, name: 'ТКП-2023-003', inner: ['Позиция 1', 'Позиция 2', 'Позиция 3'], hidden: true },
-        // ]);
-
         const navTabs = ref([{ title: 'Помощь', nav: 'help' }, { title: 'ТКП', nav: 'tkp' }]);
         watch(autorizeStatus, (newValue) => {
             newValue ? navTabs.value = [{ title: 'Помощь', nav: 'help' }, { title: 'ТКП', nav: 'tkp' }] : navTabs.value = [{ title: 'Помощь', nav: 'help' }];

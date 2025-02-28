@@ -7,8 +7,6 @@ export const routeHandle = (router, userStore, questionStore, pageStore) => {
             router.push({ name: 'enginePage' });
         } else
             if (to.name == 'history') {
-                console.log(userStore().getAutorizeStatus);
-
                 userStore().getAutorizeStatus ? next() : router.push({ name: 'home' });
             }
             else

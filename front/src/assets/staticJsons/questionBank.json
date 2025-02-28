@@ -691,15 +691,6 @@
         "value": null
       },
       {
-        "id": 19.7,
-        "group": "hiddenMark",
-        "name": "испытания",
-        "inputName": "trials",
-        "type": "DisabledType",
-        "hidden": true,
-        "value": null
-      },
-      {
         "id": 18.8,
         "inputName": "assignment",
         "group": "hiddenMark",
@@ -708,6 +699,15 @@
         "value": null
       }
     ]
+  },
+  {
+    "id": 18.1,
+    "group": "hiddenMark",
+    "name": "Испытания:",
+    "inputName": "trials",
+    "type": "TextAreaType",
+    "hidden": false,
+    "value": null
   },
   {
     "id": 19,

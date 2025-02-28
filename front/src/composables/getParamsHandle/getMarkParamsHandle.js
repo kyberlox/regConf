@@ -34,8 +34,11 @@ export const getMarkParamsHandle = (stores) => {
                 helperStore.deleteErrorMessage('', 'serverError');
                 // if (data.err) return;
                 paramsToGet.map((key) => {
-                    if (key == 'open_close_type' || key == 'assignment' || key == 'material_bellows' || key == 'material_spool' || key == 'material_saddle' || key == 'weight' || key == 'painting_area' || key == 'trials') {
+                    if (key == 'open_close_type' || key == 'assignment' || key == 'material_bellows' || key == 'material_spool' || key == 'material_saddle' || key == 'weight' || key == 'painting_area') {
                         questionsStore.setQuestionValue(key, data[key], 'inputGroup', false, 'markAnswersGroup');
+                    }
+                    else if (key == 'trials') {
+                        questionsStore.setQuestionValue(key, data[key])
                     }
                     else if (key == 'contact_type' && typeof data[key] == 'string') {
                         questionsStore.setAnswers(key, [data[key]], false);

@@ -14,13 +14,13 @@ export const getTightnessParamsHandle = (stores) => {
         outletFlange: findQuestion('outlet_flange'),
         color: findQuestion('color'),
         packaging: findQuestion('packaging'),
+        trials: findQuestion('trials'),
 
         materialBellows: findQuestion('markAnswersGroup', 'material_bellows'),
         materialSpool: findQuestion('markAnswersGroup', 'material_spool'),
         materialSaddle: findQuestion('markAnswersGroup', 'material_saddle'),
         weight: findQuestion('markAnswersGroup', 'weight'),
         paintingArea: findQuestion('markAnswersGroup', 'painting_area'),
-        trials: findQuestion('markAnswersGroup', 'trials'),
         assignment: findQuestion('markAnswersGroup', 'assignment'),
     }));
 

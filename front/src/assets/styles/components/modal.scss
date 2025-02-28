@@ -39,6 +39,7 @@
         padding: 20px;
         display: flex;
         flex-direction: column;
+        max-width: 100%;
     }
 
     &__header {
@@ -52,6 +53,20 @@
             cursor: pointer;
             margin-left: auto;
         }
+    }
+
+    // &__input__wrapper {}
+
+    &__input {
+        height: 100%;
+        background-color: transparent;
+        padding: 8px 16px;
+        border: 1px solid var(--emk-brand-color);
+        border-radius: 4px;
+        color: #333;
+        transition: all 0.2s;
+        font-size: 16px;
+        outline: none;
     }
 }
 

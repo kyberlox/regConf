@@ -3,6 +3,7 @@
     <div class="main-content">
         <RouterView />
         <MsgModal v-if="showModal"
+                  :type="modalType"
                   :modalActive="showModal"
                   @closeModal="closeModal" />
     </div>
@@ -29,7 +30,7 @@ export default {
     setup() {
         const stores = useStores();
         const showModal = ref(false);
-        const isAutorize = computed(() => stores.userStore.getAutorizeStatus)
+        const isAutorize = computed(() => stores.userStore.getAutorizeStatus);
 
         const closeModal = () => {
             showModal.value = false;
@@ -63,7 +64,8 @@ export default {
 
         return {
             showModal,
-            closeModal
+            closeModal,
+            modalType: 'support',
         }
     }
 }

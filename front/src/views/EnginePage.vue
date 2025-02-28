@@ -22,14 +22,26 @@
         </transition>
     </div>
     <div class="download-button__wrapper">
-        <div class="download-button"
-             :class="{ 'download-button--disabled': jsonError }"
-             @click="downloadHandle(docName)">Документация</div>
-        <div v-if="isAuthorize"
+        <!-- <div v-if="isAuthorize"
              class="download-button"
              :class="{ 'download-button--disabled': jsonError }"
-             @click="!jsonError ? addNewPos() : ''">Добавить позицию</div>
+             @click="downloadHandle(docName, 'download')">Скачать</div> -->
+
+        <div v-if="!isAuthorize"
+             class="download-button"
+             :class="{ 'download-button--disabled': jsonError }"
+             @click="downloadHandle(docName, 'singleDownload')">Скачать</div>
+
+        <div v-else
+             class="download-button"
+             :class="{ 'download-button--disabled': jsonError }"
+             @click="!jsonError ? addNewPos() : ''">Продолжить</div>
     </div>
+    <MsgModal v-if="showModal"
+              :type="modalType"
+              :modalActive="showModal"
+              @closeModal="closeModal"
+              @modalHandle="(name, type) => modalHandle(name, type)" />
 </template>
 
 <script>
@@ -42,6 +54,7 @@ import SideHelper from "@/components/common/SideHelper.vue";
 import { formParamsHandle } from "@/composables/formParamsHandle";
 import { useStores } from "@/composables/useStores";
 import { useDownload } from "@/composables/useDownload";
+import MsgModal from "@/components/common/MsgModal.vue";
 
 export default {
     components: {
@@ -49,20 +62,41 @@ export default {
         SideHelper,
         ArrowLeft,
         CardCommon,
+        MsgModal
     },
-    setup() {
+    setup(props, { emit }) {
         const stores = useStores();
         const showHelper = ref(true);
+        const showModal = ref(false);
         const mainQuestions = computed(() => stores.questionsStore.questions);
         const { jsonError, downloadHandle, checkForDownload } = useDownload(stores);
         const goToQuestion = (name) => {
             stores.pageStore.goToQuestion(name)
         }
 
+        const closeModal = () => showModal.value = false
+
         const addNewPos = () => {
-            stores.questionsStore.resetQuestionGroup('all');
+            // emit('addNewPos');
+            showModal.value = true;
+        }
+
+        const modalHandle = (name, type) => {
+            if (jsonError.value) { return }
             stores.envModuleStore.pushToTkp();
-            stores.pageStore.goToQuestion('environmentType');
+
+            // if (type == 'download') {
+            // }
+            if (type == 'add') {
+                stores.questionsStore.resetQuestionGroup('all');
+                stores.pageStore.goToQuestion('environmentType');
+                // checkForDownload();
+            }
+            // else if (type == 'singleDownload') {
+            //     downloadHandle(name, type)
+            // }
+            closeModal();
+            downloadHandle(name, type);
         }
 
         formParamsHandle(stores);
@@ -76,7 +110,11 @@ export default {
             checkForDownload,
             isAuthorize: computed(() => stores.userStore.getAutorizeStatus),
             docName: computed(() => stores.questionsStore.getMark),
-            addNewPos
+            addNewPos,
+            modalType: 'download',
+            showModal,
+            closeModal,
+            modalHandle
         };
     }
 };
