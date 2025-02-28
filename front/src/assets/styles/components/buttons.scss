@@ -1,0 +1,69 @@
+.download-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 50px;
+    background-color: white;
+    border: 1px solid var(--emk-brand-color);
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+
+    &:hover {
+        color: var(--emk-brand-color);
+        transform: translateY(-2px);
+        box-shadow: 0 0.7rem 1.5rem rgba(0, 0, 0, 0.15);
+    }
+
+    &:active {
+        transform: translateY(0);
+        box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.1);
+    }
+
+    &__wrapper {
+        padding-bottom: 30px;
+        display: flex;
+        justify-content: center;
+        gap: 100px;
+
+        @include md {
+            gap: 50px;
+        }
+
+        @include sm {
+            gap: 20px;
+        }
+    }
+
+    &--disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        background: rgba(219, 220, 221, 0.5411764706);
+    }
+}
+
+.modal__button {
+    background-color: transparent;
+    padding: 8px 16px;
+    border: 1px solid var(--emk-brand-color);
+    border-radius: 4px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 16px;
+
+    &-group {
+        display: flex;
+        gap: 15px;
+        justify-content: flex-end;
+    }
+
+    &:hover {
+        background-color: var(--emk-brand-color);
+        color: white;
+    }
+}

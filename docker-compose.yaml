@@ -1,0 +1,94 @@
+version: '3.9'
+
+services:
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgresql
+    environment:
+      POSTGRES_DB: "pdb"
+      POSTGRES_USER: ${user}
+      POSTGRES_PASSWORD: ${pswd}
+    volumes:
+      - ./pSQL/data:/var/lib/postgresql/data
+      #- ./pSQL/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 5432:5432
+    networks:
+        - app-network
+  
+  fastapi:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    image: app/python
+    container_name: fastapi
+    volumes:
+      - ./code:/data/app
+    env_file:
+      - .env
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+  
+  frontend:
+    container_name: vue
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    #volumes:
+      #- ./front/:/app/
+    ports:
+      - 5173:5173
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    depends_on:
+      # `fastapi`Because the service (container) needs to be started first`depends_on`Is specified
+      - fastapi
+      - frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7.2.5-alpine
+    container_name: "redis"
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_USER=${user}
+      - REDIS_PASSWORD=${pswd}
+      - REDIS_PORT=${PORT}
+      - REDIS_DATABASES=16
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server --requirepass ${pswd}
+    networks:
+      - app-network
+    
+  #certbot:
+    #image: certbot/certbot
+    #depends_on:
+      #- nginx
+    #container_name: certbot
+    #volumes:
+      #- ./certbot/etc-letsencrypt:/etc/letsencrypt
+      #- ./front/:/var/www/html
+    #command: certonly --webroot --webroot-path=/var/www/html --email aleks.timofeev.00@yandex.ru --agree-tos --no-eff-email -d emk.org.ru
+
+
+
+networks:
+  app-network:
+    driver: bridge
