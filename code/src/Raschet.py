@@ -364,7 +364,7 @@ def Raschet(dt):
     kys = ["viscosity", "Pn", "Pp", "Pp_din", "Gab", "N", "pre_Kc", "density", "climate", "material", "environment"]
     for param in kys:
         if param not in dt:
-            return {"err": f"Key \'{param}\' does not exists"}
+            return {"err": f"Не корректно определён или не орпеделён параметр \'{data_mean[param]}\' "}
 
     P_atm = 0.101320
     R = 8.31446261815324  # Газовая постоянная ( Па / (моль * K))
@@ -410,7 +410,7 @@ def Raschet(dt):
         Pno = 1.05 * Pn
         Ppo = 1.1 * Pn
     else:
-        return {"err": f"Невозможно определить давление начала открытия и давление полного открытия. Давление настройки: {Pn}"}
+        return {"err": f"Невозможно определить давление начала открытия и давление полного открытия, при давлении настройки = {Pn}"}
 
     # Максимально допустимое давление аварийного сброса;
     P_ab_max = 1.1 * Pno
@@ -426,7 +426,7 @@ def Raschet(dt):
 
     if dt["environment"] == "Газ":
         if "molar_mass" not in dt:
-            return {"err": f"Key \'molar_mass\' does not exists"}
+            return {"err": f"Не корректно определён или не орпеделён параметр \'f{data_mean['molar_mass']}\' "}
 
         M = dt["molar_mass"]
 
@@ -448,11 +448,11 @@ def Raschet(dt):
         elif ((Ppo / Pn) > 1.1) and ((Ppo / Pn) <= 1.15):
             # Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.22) и (Д.23)
             return {
-                "err": f"Нет возможности расчитать Kw для соотношения 1.1 < Ppo / Pn <= 1.15, при Ppo={Ppo}, Pn={Pn} и Ppo / Pn = {Ppo / Pn}"}
+                "err": f"Нет возможности расчитать {data_mean['Kw']} для соотношения 1.1 < Ppo / Pn <= 1.15, при {data_mean['Ppo']} = {Ppo} и {data_mean['Pn']} = {Pn} "}
         elif ((Ppo / Pn) > 1.15) and ((Ppo / Pn) <= 1.2):
             # Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.23) и (Д.24)
             return {
-                "err": f"Нет возможности расчитать Kw для соотношения 1.15 < Ppo / Pn <= 1.2, при Ppo={Ppo}, Pn={Pn} и Ppo / Pn = {Ppo / Pn}"}
+                "err": f"Нет возможности расчитать {data_mean['Kw']} для соотношения 1.1 < Ppo / Pn <= 1.15, при {data_mean['Ppo']} = {Ppo} и {data_mean['Pn']} = {Pn} "}
 
         # показатель изоэнтропии
         # dt["isobaric_capacity"] / dt["isochoric_capacity"] = dt["adiabatic_index"]
@@ -481,7 +481,7 @@ def Raschet(dt):
 
         if Gideal <= 0:
             return {
-                "err": f"Одно из значений = 0:\n Ppo : {Ppo}\n Pno : {Kb}\n Pn : {Kb}\n Kp_kr : {Kp_kr}\n Kw : {Kw}\n"}
+                "err": f"Одно из значений = 0:\n {data_mean['Ppo']} : {Ppo}\n {data_mean['Pno']} : {Pno}\n {Ppo}\n {data_mean['Kb']} : {Kb}\n {data_mean['Ppo']} : {Ppo}\n  {data_mean['Kp_kr']} : {Kp_kr}\n  {data_mean['Kw']} : {Kw}\n"}
 
     else:
         alpha = 0.6
@@ -497,7 +497,7 @@ def Raschet(dt):
         Gideal = Kp * sqrt(P1 * p1)
 
         if Gideal <= 0:
-            return {"err": f"Одно из значений = 0:\n Ppo : {Ppo}\n Pno : {Pno}\n Pn : {Pn}\n Pp : {Pp}\n Kw : {Kw}\n"}
+            return {"err": f"Одно из значений = 0:\n {data_mean['Ppo']} : {Ppo}\n {data_mean['Pno']} : {Pno}\n {Ppo}\n {data_mean['Pn']} : {Pn}\n {data_mean['Pp']} : {Pp}\n {data_mean['Kw']} : {Kw}\n"}
 
     # print(Kp_kr, P1, p1)
     # print(Kp, P1, p1)
@@ -511,7 +511,7 @@ def Raschet(dt):
         # print(3.6, alpha, Kv, Kw, Kc, Gideal, N)
         pre_F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
         if pre_F == 0:
-            return {"err": f"Одно из значений = 0:\n Kv : {Kv}\n Kw : {Kw}\n Kc : {Kc}\n Gideal : {Gideal}\n"}
+            return {"err": f"Одно из значений = 0:\n {data_mean['Kv']} : {Kv}\n {data_mean['Kw']} : {Kw}\n {data_mean['Kc']} : {Kc}\n {data_mean['Gideal']} : {Gideal}\n"}
         pre_DN = sqrt((4 * pre_F) / pi)
 
         Re = (Gideal * p1 * pre_DN) / u  # Gideal
@@ -550,12 +550,11 @@ def Raschet(dt):
     if ex:
         PN = ex["PN"]
     else:
-        return {"err": f"Нет возможности подобрать PN для T={T} и Pn={Pn}"}
+        return {"err": f"Нет возможности подобрать {data_mean['PN']}, при {data_mean['T']} = {T} и {data_mean['Pn']} = {Pn}"}
     # print("PN по T и Pn:", PN)
 
     # Деаметр ПК
-    new_dt[
-        "DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
+    new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
     example = searchParams(DN_s, Pn, PN, dt["valve_type"])
 
     if example:
