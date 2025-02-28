@@ -1,9 +1,34 @@
 <template>
     <div class="history-page__wrapper">
         <div class="history-page">
+<<<<<<< HEAD
             <HistoryCalendar v-model="selectedDate"
                              :year-range="yearRange"
                              :formattedJson="formattedJson" />
+=======
+            <div @click.stop="showDropdown"
+                 class="fixed-mark lead form-control date-mark">{{ `ТКП за ${date}` }}
+                <ArrowDownIcon class="history-page__navigate-btn" />
+            </div>
+            <VueDatePicker v-if="showCalendar"
+                           v-model="dateFromDatePick"
+                           locale="ru"
+                           :enable-time-picker="false"
+                           inline
+                           auto-apply
+                           placeholder="Выберите дату"
+                           :year-range="yearRange"
+                           
+                           range>
+                <template #action-extra="{ selectAll }">
+                    <span class="history-page__calendar__btn-all"
+                          @click="selectAllDates"
+                          title="Выбрать за все время">
+                        Выбрать за все время
+                    </span>
+                </template>
+            </VueDatePicker>
+>>>>>>> f86393a2c63a1ce2b5f0e8a8dd0e395443f7fb33
             <div class="history-page__elements content-container">
                 <div v-for="item in testjson"
                      :key="'tkpNum' + item.id"
