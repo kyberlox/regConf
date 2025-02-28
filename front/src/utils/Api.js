@@ -1,5 +1,7 @@
 import { computed } from 'vue';
 import { useUserStore } from '@/store/user';
+import { saveAs } from 'file-saver';
+
 export default class Api {
     static async get(url) {
         const response = await fetch(url);
@@ -32,20 +34,7 @@ export default class Api {
 
         if (download) {
             const blob = await response.blob();
-
-            const downloadUrl = window.URL.createObjectURL(
-                new Blob([blob], {
-                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                })
-            );
-
-            const link = document.createElement('a');
-            link.href = downloadUrl;
-            link.download = name;
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(downloadUrl);
+            saveAs(blob, name + '.xlsx');
         } else {
             return await response.json();
         }
