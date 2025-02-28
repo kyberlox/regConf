@@ -89,7 +89,7 @@ class Params(Base):
 class Table2(Base):
     __tablename__ = 'table2'
     id = Column(Integer, primary_key=True)
-    Temp = Column(Float, nullable=True)
+    T = Column(Float, nullable=True)
     Pn = Column(Float, nullable=True)
     PN = Column(Float, nullable=True)
 
