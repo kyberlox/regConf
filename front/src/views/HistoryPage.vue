@@ -13,6 +13,7 @@
                            auto-apply
                            placeholder="Выберите дату"
                            :year-range="yearRange"
+                           
                            range>
                 <template #action-extra="{ selectAll }">
                     <span class="history-page__calendar__btn-all"

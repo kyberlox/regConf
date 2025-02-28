@@ -1,25 +1,36 @@
-from fastapi import FastAPI, File, UploadFile, Body, Response, Cookie, Request
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, Body, Cookie, Header, Response
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import RedirectResponse, HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.exceptions import HTTPException
 
 from src.Raschet import Raschet, mixture, mark_params, get_tightness, make_XL, make_OL
+from src.User import User
 
-import openpyxl
 from openpyxl import load_workbook
-from openpyxl import Workbook
 
-from sqlalchemy import create_engine
-from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import create_engine, MetaData, Column, Integer, Text, Float
+from sqlalchemy import create_engine, Column, Integer, Text, Float
 
 import psycopg2
 
 import json
+
+import os
+from dotenv import load_dotenv
+
+import redis
+
+#from typing import Optional
+
+
+
+load_dotenv()
+
+user = os.getenv('user')
+pswd = os.getenv('pswd')
+port = os.getenv('PORT')
+
+
 
 def DB_exec(command):
     conn = psycopg2.connect(dbname="pdb", host="postgres", user="kyberlox", password="4179", port="5432")
@@ -45,8 +56,8 @@ def DB_fetchAll(command):
     return answer
 
 
-
-engine = create_engine('postgresql+psycopg2://kyberlox:4179@postgres/pdb')
+engine = create_engine(f'postgresql+psycopg2://{user}:{pswd}@postgres/pdb')
+#engine = create_engine('postgresql+psycopg2://kyberlox:4179@postgres/pdb')
 
 class Base(DeclarativeBase): pass
 
@@ -105,6 +116,10 @@ db = SessionLocal()
 
 
 
+r = redis.Redis(host='redis', port=6379, username=user, password=pswd, db=0)
+
+
+
 app = FastAPI()
 
 
@@ -112,22 +127,31 @@ app = FastAPI()
 origins = [
     "http://localhost:8000",
     "http://localhost:5173",
-    "http://reg.conf"
+    "http://regconf.emk.ru",
+    "https://localhost:8000",
+    "https://localhost:5173",
+    "https://regconf.emk.ru",
+    "https://portal.emk.ru",
+    "http://10.34.172.121:5173",
+    "http://213.87.71.131",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=['*'],
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE", "PUT", "OPTIONS", "PATH"],
-    allow_headers=["Content-Type", "Accept", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest"],
+    allow_headers=["*"]
+    #allow_headers=["Content-Type", "Accept", "Authorization", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest", "Access-Control-Allow-Credentials"],
+
 )
 
 #app.mount("/", StaticFiles(directory="../front/dist", html=True), name="static")
 
 #миграция и таблицы эксель
-@app.get("/api/migration")
+@app.get("/api/migration", tags=["Подбор"])
 def migration():
+
     #прочитать из таблицы
     wb = load_workbook("./files/table.xlsx")
     sheet = wb['table']
@@ -359,7 +383,7 @@ def migration():
     return {"environmentTable" : result, "valveParametrsTable" : par_result, "Table2" : t2_result, "Table10" : t10_result, "PackingParams" : pak_res}
 
 #подбор сред
-@app.get("/api/get_table")
+@app.get("/api/get_table", tags=["Подбор"])
 async def get_table():
     #вывод словаря
     environments = []
@@ -385,11 +409,11 @@ async def get_table():
     return environments
 
 #подбор смесей
-@app.post("/api/get_compound")
-async def get_compound(data = Body()):
+@app.post("/api/get_compound", tags=["Подбор"])
+async def get_compound(data=Body()):
     environments = []
     lines = db.query(Table).all()
-    
+
     for env in data:
         if "id" in env and "r" in env:
             for line in lines:
@@ -397,23 +421,23 @@ async def get_compound(data = Body()):
                 r = env["r"]
                 if line.id == ID:
                     environment = {
-                        "id" : line.id,
-                        "name" : line.name,
-                        "environment" : line.environment,
-                        "molecular_weight" : line.molecular_weight,
-                        "density" : line.density,
-                        "material" : line.material,
-                        "viscosity" : line.viscosity,
-                        "isobaric_capacity" : line.isobaric_capacity,
-                        "molar_mass" : line.molar_mass,
-                        "isochoric_capacity" : line.isochoric_capacity,
-                        "adiabatic_index" : line.adiabatic_index,
-                        "compressibility_factor" : line.compressibility_factor,
-                        "r" : r
+                        "id": line.id,
+                        "name": line.name,
+                        "environment": line.environment,
+                        "molecular_weight": line.molecular_weight,
+                        "density": line.density,
+                        "material": line.material,
+                        "viscosity": line.viscosity,
+                        "isobaric_capacity": line.isobaric_capacity,
+                        "molar_mass": line.molar_mass,
+                        "isochoric_capacity": line.isochoric_capacity,
+                        "adiabatic_index": line.adiabatic_index,
+                        "compressibility_factor": line.compressibility_factor,
+                        "r": r
                     }
 
                     print(line.density, r)
-                        
+
                     environments.append(environment)
         else:
             climate = env["climate"]
@@ -421,7 +445,7 @@ async def get_compound(data = Body()):
     return mixture(environments, climate)
 
 #получение осатльных параметров
-@app.post("/api/get_pressure")
+@app.post("/api/get_pressure", tags=["Подбор"])
 def get_pressure(data = Body()):
     for key in data.keys():
         if ((data[key] == "") or (data[key] == None)):
@@ -431,72 +455,129 @@ def get_pressure(data = Body()):
             return Raschet(data)
 
 #подбор оборудования
-@app.post("/api/get_mark_params")
+@app.post("/api/get_mark_params", tags=["Подбор"])
 async def get_mark_params(data = Body()):
     return mark_params(data)
 
-@app.post("/api/get_tightness")
+@app.post("/api/get_tightness", tags=["Подбор"])
 async def web_get_tightness(data = Body()):
     return get_tightness(data)
 
 
 
 #авторизазия => генерация токена, начало сессии
+@app.post("/api/auth", tags=["Активность пользователей"])
+def login(jsn = Body()):
+    print(jsn)
+    uuid = jsn["uuid"]
+    fio = f"{jsn['fio'][1]} {jsn['fio'][0]} {jsn['fio'][2]}"
+    dep = ""
+    for dp in jsn["department"]:
+        dep += dp
+    #запрос на БД
+    usr = User(uuid=uuid, fio=fio, department=dep)
+    tkn = usr.authenticate()
 
+    return {"token" : tkn}
 
-#добавить в корзину элемент
+#проверка авторизациии
+@app.post("/api/check", tags=["Активность пользователей"])
+def check_valid(token: str = Header(None)):
+    print(token)
 
-#выгрузить из корзины элемент
+    if token[:3] == "ip:":
+        ip = token[3:]
+        usr = User(ip=ip)
+        usr_token = usr.authenticate()
 
-#изменить элемент
+        result = usr.check()
+        if result is None:
+            return {"error" : "invalid token"}
+        else:
+            content = {"token_valid": usr.check()}
+            return JSONResponse(content=content, headers={"token": usr_token})
 
-#удалить из корзиный элемент
+    else:
+        usr = User(token=token)
 
-#просмотр корзины
+        result = usr.check()
+        if result is None:
+            return {"error" : "invalid token"}
+        else:
+            return {"token_valid" : result}
 
-#выгрузка корзины -> опустошение -> сохранить в БД
+#записать json в Redis
+@app.post("/api/set_data", tags=["Активность пользователей"])
+def get_data(data = Body(), token = Header(None)):
+    usr = User(token=token, jsn=data)
+    usr.set_dt()
+
+    return usr.get_dt()
+
+#получить json из Redis
+@app.get("/api/get_data", tags=["Активность пользователей"])
+def get_data(token = Header(default=None)):
+    usr = User(token=token)
+    return usr.get_dt()
+
+#прекратить сессию -> выйти из Redis
+@app.get("/api/outh", tags=["Активность пользователей"])
+def outh_user(token = Header(default=None)):
+    usr = User(token=token)
+    usr.outh()
+    return {'status' : 'ready'}
+
+@app.post("/api/history", tags=["Активность пользователей"])
+def get_history(token = Header(None)):
+    usr = User(token=token)
+    if usr.check():
+        return usr.history()
+
+@app.post("/api/upload_tkp", tags=["Активность пользователей"])
+def upload_tkp(tkp_id = Header(None), token = Header(None)):
+    usr = User(token=token)
+    if usr.check():
+        return usr.uploadConfiguration(tkp_id)
 
 
 
 #генерация документации
-@app.post("/api/generate") #проверка сессии
-def generate(data = Body()):
-    #запись в БД
+@app.post("/api/generate/", tags=["Генерация документации"]) #проверка сессии
+def generate(data = Body(), name = Header(default=None) , token = Header(default=None)):
+    usr = User(token=token)
+    if usr.check():
+        # получить название и сохранить в БД
+        #получить json для генерации из Redis
+        jsn = usr.create_TKP(name)
+    else:
+        jsn = data
 
-    #удалить предыдущий эксель файл и чтение ID
-    ID = 1
-
-    #сохранить json
-    f = open(f"./data/TKP.json", 'w')
-    json.dump(data, f)
-    f.close()
-    
     #генерация файла
-    res = make_XL(data, ID)
+    res = make_XL(jsn)
 
     #выдать файл
     if res == True:
-        return FileResponse(f'./TKPexample.xlsx', filename=f'ТКП ПК.xlsx', media_type='application/xlsx')
+        return FileResponse("./TKPexample.xlsx", filename=f"{name} ТКП ПК.xlsx", media_type="application/xlsx")
     else:
         return res
 
-@app.post("/api/makeOL")
-def mk_OL(data = Body()):
+
+@app.post("/api/makeOL", tags=["Генерация документации"])
+def generate_OL(data = Body(), token: str = Header(None)):
     #запись в БД
+    usr = User(token=token, jsn=data)
+    if usr.create_OL():
 
-    #удалить предыдущий эксель файл и чтение ID
-    ID = 1
+        #сохранить json
+        #f = open(f"./data/OL.json", 'w')
+        #json.dump(data, f)
+        #f.close()
 
-    #сохранить json
-    f = open(f"./data/OL.json", 'w')
-    json.dump(data, f)
-    f.close()
-    
-    #генерация файла
-    res = make_OL(data)
-    #return res
-    #выдать файл
-    if res == True:
-        return FileResponse('./OLexample.xlsx', filename='ОЛ ПК.xlsx', media_type='application/xlsx')
-    else:
-        return res
+        #генерация файла
+        res = make_OL(data)
+        #return res
+        #выдать файл
+        if res:
+            return FileResponse(f'./OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx')
+        else:
+            return res

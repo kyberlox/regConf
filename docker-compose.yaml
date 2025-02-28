@@ -7,8 +7,8 @@ services:
     container_name: postgresql
     environment:
       POSTGRES_DB: "pdb"
-      POSTGRES_USER: "kyberlox"
-      POSTGRES_PASSWORD: "4179"
+      POSTGRES_USER: ${user}
+      POSTGRES_PASSWORD: ${pswd}
     volumes:
       - ./pSQL/data:/var/lib/postgresql/data
       #- ./pSQL/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -25,6 +25,8 @@ services:
     container_name: fastapi
     volumes:
       - ./code:/data/app
+    env_file:
+      - .env
     ports:
       - 8000:8000
     depends_on:
@@ -53,9 +55,25 @@ services:
       - frontend
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/:/etc/nginx/conf.d/
-      - ./front/:/app/
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7.2.5-alpine
+    container_name: "redis"
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_USER=${user}
+      - REDIS_PASSWORD=${pswd}
+      - REDIS_PORT=${PORT}
+      - REDIS_DATABASES=16
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server --requirepass ${pswd}
     networks:
       - app-network
     

@@ -15,9 +15,8 @@ export default class Api {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
                 'Access-Control-Allow-Credentials': 'true',
-                // МАСТЕР
-                // ...(needAutorize ? { 'token': authorization.value } : {}),
-                // ...(download ? { 'name': name } : {})
+                ...(needAutorize ? { 'token': authorization.value } : {}),
+                ...(download ? { 'name': name } : {})
             },
             credentials: 'include',
             body: JSON.stringify(body)
@@ -38,10 +37,19 @@ export default class Api {
                     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 })
             );
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let filename = 'Клапан_предохран.xlsx';
+
+            if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename\*=utf-8''(.*)/i);
+                if (filenameMatch && filenameMatch[1]) {
+                    filename = decodeURIComponent(filenameMatch[1]);
+                }
+            }
 
             const link = document.createElement('a');
             link.href = downloadUrl;
-            link.download = name;
+            link.download = filename;
             document.body.appendChild(link);
             link.click();
             link.remove();

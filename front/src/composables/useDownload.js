@@ -16,9 +16,7 @@ export const useDownload = (stores) => {
         }
     }, { deep: true })
 
-    const downloadHandle = (docName) => {
-        console.log(docName);
-
+    const downloadHandle = () => {
         if (jsonError.value) {
             stores.helperStore.setErrorMessage(jsonError.value, 'emptyValueError')
             return
@@ -27,15 +25,10 @@ export const useDownload = (stores) => {
         const dataToSend = computed(() => stores.envModuleStore.getAfterGetCompoundValue);
 
         if (isAutorize.value) {
-            // МАСТЕР
-            // Api.post(API_URL + '/set_data', [dataToSend.value], false, 'TESTNAME');
-            // Api.get(API_URL + '/generate/TESTNAME');
-            // Api.post(API_URL + '/makeOL', dataToSend.value, true);
+            Api.post(API_URL + '/set_data', [dataToSend.value], false, 'TESTNAME');
+            Api.get(API_URL + '/generate/TESTNAME');
+            Api.post(API_URL + '/makeOL', dataToSend.value, true);
         }
-
-        // MAIN
-        Api.post(API_URL + '/makeOL', dataToSend.value, true, false, "Опросный лист " + docName.replaceAll('.', '-'));
-        Api.post(API_URL + '/generate', [dataToSend.value], true, false, "ТКП " + docName.replaceAll('.', '-'));
     }
 
     return {

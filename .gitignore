@@ -1,6 +1,4 @@
-/pSQL/data
-.vscode
-apiDescription.txt
-front/.vscode/
-code/__pycache__/
-code/data/
+/pSQL/
+/nginx/ssl/regconf.emk.ru.crt
+/nginx/ssl/regconf.emk.ru.key
+/.env

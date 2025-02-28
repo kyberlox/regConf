@@ -24,11 +24,10 @@
     <div class="download-button__wrapper">
         <div class="download-button"
              :class="{ 'download-button--disabled': jsonError }"
-             @click="downloadHandle(docName)">Документация</div>
-        <!-- МАСТЕР -->
-        <!-- <div class="download-button"
+             @click="downloadHandle()">Документация</div>
+        <div class="download-button"
              :class="{ 'download-button--disabled': jsonError }"
-             @click="''">Создать общее ТКП</div> -->
+             @click="''">Создать общее ТКП</div>
     </div>
 </template>
 
@@ -68,7 +67,6 @@ export default {
             goToQuestion,
             downloadHandle,
             checkForDownload,
-            docName: computed(() => stores.questionsStore.getMark),
         };
     }
 };

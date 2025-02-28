@@ -123,6 +123,5 @@ export const useQuestionsStore = defineStore('questions', {
     },
     getters: {
         getQuestions: (state) => state.questions,
-        getMark: (state) => state.questions.find(item => item.inputName == 'mark').value,
     }
 });
