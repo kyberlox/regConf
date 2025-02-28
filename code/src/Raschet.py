@@ -563,7 +563,7 @@ def Raschet(dt):
         # print("PN по DN:", example["PN"])
     else:
         return {
-            "err": f"Нет возможности подобрать DN для DN_s={DN_s}, Pn={Pn}, PN={PN} и тип клапана - \'{dt['valve_type']}\' "}
+            "err": f"Нет возможности подобрать {data_mean['DN']}, при {data_mean['DN_s']} = {DN_s}, {data_mean['Pn']} = {Pn}, {data_mean['PN']} = {PN} и {data_mean['valve_type']} = \'{dt['valve_type']}\' "}
 
     DN2 = {
         25.0: 40.0,
@@ -632,7 +632,7 @@ def mark_params(dt):
     kys = ["valve_type", "PN", "PN2", "DN", "T", "joining_type", "need_bellows", "material", "mark"]
     for param in kys:
         if param not in dt:
-            return {"err" : f"Key \'{param}\' does not exists"}
+            return {"err" : f"Не корректно определён или не орпеделён параметр \'{data_mean[param]}\'"}
         
     valve_type = dt["valve_type"]
     PN = dt["PN"]
@@ -763,7 +763,7 @@ def get_tightness(dt):
     kys = ["valve_type", "contact_type", "DN"]
     for param in kys:
         if param not in dt:
-            return {"err" : f"Key \'{param}\' does not exists"}
+            return {"err" : f"Не корректно определён или не орпеделён параметр \'{data_mean[param]}\'"}
             
     #класс герметичнности
     #бывает ли АА?
@@ -779,7 +779,7 @@ def get_tightness(dt):
         else:
             tightness = ["В", "А", "С"]
     else:
-        return {"error" : "Невозможно определить класс гкрметичнности", "value" : f"Некорректое значение типа ПК: {dt['valve_type']}"}
+        return {"error" : "Невозможно определить класс герметичнности", "value" : f"Некорректое значение типа ПК: {dt['valve_type']}"}
 
     #варианты класса герметичности
     dt["tightness"] = tightness 
@@ -840,7 +840,7 @@ def make_XL(dt):
         kys += ["valve_type", "open_close_type", "environment"]
         for param in kys:
             if param not in position:
-                return {"err": f"Key \'{param}\' does not exists"}
+                return {"err": f"Не корректно определён или не орпеделён параметр \'{data_mean[param]}\'"}
 
         if position["need_bellows"] is False:
             position["material_bellows"] = ""
@@ -1050,7 +1050,7 @@ def make_OL(data):
     for i in params.keys():
         # Проверка
         if params[i] not in data:
-            return {"err": f"Некорректный ввод параметра \'{params[i]}\' "}
+            return {"err": f"Не корректно определён или не орпеделён параметр \'{data_mean[params[i]]}\'"}
         else:
             if type(data[params[i]]) == type(True):
                 if data[params[i]] == True:
