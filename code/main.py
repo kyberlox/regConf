@@ -80,7 +80,7 @@ class Params(Base):
     __tablename__ = 'parametrs_table'
     id = Column(Integer, primary_key=True)
     DNS = Column(Float, nullable=True)
-    P1 = Column(Float, nullable=True)
+    Pnd = Column(Text, nullable=True)
     DN = Column(Float, nullable=True)
     PN = Column(Float, nullable=True)
     spring_material = Column(Text, nullable=True)
@@ -209,7 +209,7 @@ def migration():
 
     for i in range(2, sheet.max_row+1):
         DNS = float(sheet[f"A{i}"].value)
-        P1_max = float(sheet[f"D{i}"].value)
+        P1_max = str(sheet[f"D{i}"].value)
         DN = float(sheet[f"C{i}"].value)
         PN = float(sheet[f"B{i}"].value)
         spring_material = str(sheet[f"F{i}"].value)
@@ -217,10 +217,10 @@ def migration():
         valve_type = str(sheet[f"H{i}"].value)
 
         #экземпляр таблицы параметров
-        example = Params(DNS = DNS, P1 = P1_max, DN = DN, PN = PN, spring_material = spring_material, spring_number = spring_number, valve_type = valve_type)
+        example = Params(DNS = DNS, Pnd = P1_max, DN = DN, PN = PN, spring_material = spring_material, spring_number = spring_number, valve_type = valve_type)
         
         #есть ли такая запись?
-        request = db.query(Params).filter(Params.DNS == DNS, Params.P1 == P1_max, Params.DN == DN, Params.PN == PN, Params.spring_material == spring_material, Params.spring_number == spring_number, Params.valve_type == valve_type).first()
+        request = db.query(Params).filter(Params.DNS == DNS, Params.Pnd == P1_max, Params.DN == DN, Params.PN == PN, Params.spring_material == spring_material, Params.spring_number == spring_number, Params.valve_type == valve_type).first()
         #print(request)
 
         #если нет - добавить
@@ -232,7 +232,7 @@ def migration():
                 "№" : i,
                 "ID" : example.id,  
                 "DNS" : DNS, 
-                "P1" : P1_max, 
+                "Pnd" : P1_max, 
                 "DN" : DN, 
                 "PN" : PN, 
                 "spring_material" : spring_material,
@@ -246,7 +246,7 @@ def migration():
             curr = {
                 "ID" : request.id,  
                 "DNS" : request.DNS, 
-                "P1" : request.P1, 
+                "Pnd" : request.Pnd, 
                 "DN" : request.DN, 
                 "PN" : request.PN, 
                 "spring_material" : request.spring_material,
@@ -483,6 +483,7 @@ def login(jsn = Body()):
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
 def check_valid(token: str = Header(None)):
+    print(token)
 
     if token[:3] == "ip:":
         ip = token[3:]
@@ -526,30 +527,39 @@ def outh_user(token = Header(default=None)):
     usr.outh()
     return {'status' : 'ready'}
 
+@app.post("/api/history", tags=["Активность пользователей"])
+def get_history(token = Header(None)):
+    usr = User(token=token)
+    if usr.check():
+        return usr.history()
+
+@app.post("/api/upload_tkp", tags=["Активность пользователей"])
+def upload_tkp(tkp_id = Header(None), token = Header(None)):
+    usr = User(token=token)
+    if usr.check():
+        return usr.uploadConfiguration(tkp_id)
+
 
 
 #генерация документации
-@app.get("/api/generate/{name}", tags=["Генерация документации"]) #проверка сессии
-def generate(name, token = Header(default=None)):
+@app.post("/api/generate/", tags=["Генерация документации"]) #проверка сессии
+def generate(data = Body(), name = Header(default=None) , token = Header(default=None)):
     usr = User(token=token)
     if usr.check():
         # получить название и сохранить в БД
         #получить json для генерации из Redis
         jsn = usr.create_TKP(name)
+    else:
+        jsn = data
 
-        #сохранить json
-        #f = open(f"./data/TKP.json", 'w')
-        #json.dump(data, f)
-        #f.close()
+    #генерация файла
+    res = make_XL(jsn)
 
-        #генерация файла
-        res = make_XL(jsn)
-
-        #выдать файл
-        if res == True:
-            return FileResponse(f'./data/TKPexample.xlsx', filename=f'{name} ТКП ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
-        else:
-            return res
+    #выдать файл
+    if res == True:
+        return FileResponse("./TKPexample.xlsx", filename=f"{name} ТКП ПК.xlsx", media_type="application/xlsx")
+    else:
+        return res
 
 
 @app.post("/api/makeOL", tags=["Генерация документации"])
@@ -568,6 +578,6 @@ def generate_OL(data = Body(), token: str = Header(None)):
         #return res
         #выдать файл
         if res:
-            return FileResponse(f'./data/OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx', headers = {'Content-Disposition' : 'attachment'})
+            return FileResponse(f'./OLexample.xlsx', filename=f'ОЛ ПК.xlsx', media_type='application/xlsx')
         else:
             return res

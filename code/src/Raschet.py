@@ -29,7 +29,7 @@ class Params(Base):
     __tablename__ = 'parametrs_table'
     id = Column(Integer, primary_key=True)
     DNS = Column(Float, nullable=True)
-    P1 = Column(Float, nullable=True)
+    Pnd = Column(Text, nullable=True)
     DN = Column(Float, nullable=True)
     PN = Column(Float, nullable=True)
     spring_material = Column(Text, nullable=True)
@@ -114,13 +114,14 @@ def searchT10(T, Pn):
     
     return ans
 
-def searchParams(DNS, curP1, PN, valve_type):
-    #print(DNS, curP1, PN, valve_type)
+def searchParams(DNS, Pn, PN, valve_type):
+    print(DNS, PN, valve_type)
     PN = PN * 10
+    Pn = Pn * 10
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Params).filter(Params.DNS >= DNS, Params.PN == PN, valve_type == valve_type).all()
 
-    if request == None:
+    if request == None or request == []:
         return False
     ans = False
 
@@ -128,21 +129,33 @@ def searchParams(DNS, curP1, PN, valve_type):
     minDNS = request[0].DNS
     #minP1 = request[0].P1
     minPN = request[0].PN
+    print("###")
     for example in request:
-        if (example.DNS <= minDNS)  and (example.PN == minPN):
-            minDNS = example.DNS
-            #minP1 = example.P1
-            minPN = example.PN
-            ans = {
-                "ID" : example.id,  
-                "DNS" : example.DNS, 
-                "P1" : example.P1, 
-                "DN" : example.DN, 
-                "PN" : example.PN, 
-                "spring_material" : example.spring_material,
-                "spring_number" : example.spring_number,
-                "valve_type" : valve_type
-            }
+        print(example.id)
+        print(example.Pnd)
+        try:
+            Pn1 = str(example.Pnd).split("...")[0]
+            Pn2 = str(example.Pnd).split("...")[1]
+            print(Pn1, Pn2)
+
+            #print(f"example.DNS <= minDNS {example.DNS <= minDNS} example.PN == minPN {example.PN == minPN} float(Pn1) <= Pn <= float(Pn2) {float(Pn1)} {Pn} {float(Pn2)} {float(Pn1) <= Pn <= float(Pn2)}")
+            if (example.DNS <= minDNS)  and (example.PN == minPN) and (float(Pn1) <= Pn <= float(Pn2)):
+                minDNS = example.DNS
+                #minP1 = example.P1
+                minPN = example.PN
+                ans = {
+                    "ID" : example.id,
+                    "DNS" : example.DNS,
+                    "Pnd" : example.Pnd,
+                    "DN" : example.DN,
+                    "PN" : example.PN,
+                    "spring_material" : example.spring_material,
+                    "spring_number" : example.spring_number,
+                    "valve_type" : valve_type
+                }
+        except:
+            print("###")
+
     #print(ans)
 
     return ans
@@ -241,7 +254,7 @@ def mixture(envs : list, climate : str):
         pre_u = 0
         for env in envs:
             r = env["r"]
-            result["name"] += f"{env['name']}:{r} "
+            result["name"] += f"{env['name']}:{r*100}% "
 
             # pre_viscosity += log10(env["viscosity"]) * r
 
@@ -266,14 +279,15 @@ def mixture(envs : list, climate : str):
 
     return result
 
+
 def Raschet(dt):
     kys = ["viscosity", "Pn", "Pp", "Pp_din", "Gab", "N", "pre_Kc", "density", "climate", "material", "environment"]
     for param in kys:
         if param not in dt:
-            return {"err" : f"Key \'{param}\' does not exists"}
-        
+            return {"err": f"Key \'{param}\' does not exists"}
+
     P_atm = 0.101320
-    R = 8.31446261815324 #Газовая постоянная ( Па / (моль * K))
+    R = 8.31446261815324  # Газовая постоянная ( Па / (моль * K))
 
     u = dt["viscosity"]
     Pn = dt["Pn"]
@@ -282,15 +296,15 @@ def Raschet(dt):
     Gab = dt["Gab"]
     N = dt["N"]
     pre_Kc = dt["pre_Kc"]
-    
-    p1 = dt["density"] 
+
+    p1 = dt["density"]
 
     climate = dt["climate"]
     model = {
-        "У1" : [-40, 40],
-        "ХЛ1" : [-60, 40],
-        "УХЛ1" : [-60, 40],
-        "М1" : [-40, 40]
+        "У1": [-40, 40],
+        "ХЛ1": [-60, 40],
+        "УХЛ1": [-60, 40],
+        "М1": [-40, 40]
     }
 
     T_min, T_max = model[climate]
@@ -302,9 +316,9 @@ def Raschet(dt):
     else:
         Kc = 1
 
-    #n = #Введите показатель изоэнтропы среды
+    # n = #Введите показатель изоэнтропы среды
 
-    #Давление начала открытия
+    # Давление начала открытия
     if Pn <= 0.3:
         Pno = Pn + 0.02
     elif (Pn > 0.3) and (Pn <= 6):
@@ -312,9 +326,9 @@ def Raschet(dt):
     elif Pn > 6:
         Pno = 1.05 * Pn
     else:
-        return {"err" : f"Невозможно определить давление начала открытия. Давление настройки: {Pn}"}
+        return {"err": f"Невозможно определить давление начала открытия. Давление настройки: {Pn}"}
 
-    #Давление полного открытия
+    # Давление полного открытия
     if Pn <= 0.3:
         Ppo = Pn + 0.05
     elif (Pn > 0.3) and (Pn <= 6):
@@ -322,206 +336,221 @@ def Raschet(dt):
     elif Pn > 6:
         Ppo = 1.1 * Pn
     else:
-        return {"err" : f"Невозможно определить давление полного открытия. Давление настройки: {Pn}"}
+        return {"err": f"Невозможно определить давление полного открытия. Давление настройки: {Pn}"}
 
-    #Максимально допустимое давление аварийного сброса;
+    # Максимально допустимое давление аварийного сброса;
     P_ab_max = 1.1 * Pno
 
-    #Абсолютное давление до клапана,
-    P1 = Ppo + P_atm # < P_ab_max
+    # Абсолютное давление до клапана,
+    P1 = Ppo + P_atm  # < P_ab_max
 
-    #Абсолютное давление за клапаном при его полном открытии
-    P2 = Pp + P_atm # = P_sbr
+    # Абсолютное давление за клапаном при его полном открытии
+    P2 = Pp + P_atm  # = P_sbr
 
-    #Отношение абсолютных давлений;
+    # Отношение абсолютных давлений;
     B = P2 / P1
-       
+
     if dt["environment"] == "Газ":
         if "molar_mass" not in dt:
-            return {"err" : f"Key \'molar_mass\' does not exists"}
-        
+            return {"err": f"Key \'molar_mass\' does not exists"}
+
         M = dt["molar_mass"]
 
-        p1 = P1 * 1000 * M / (R  * (T+273.15))
+        p1 = P1 * 1000 * M / (R * (T + 273.15))
 
         alpha = 0.8
         if (Ppo / Pn) == 1.1:
             if (Pp / Pno) <= 0.3:
                 Kw = 1
             else:
-                Kw = 1.1027 + 0.4007 * (Pp / Pno) - 2.4577 * (Pp / Pno)**2
+                Kw = 1.1027 + 0.4007 * (Pp / Pno) - 2.4577 * (Pp / Pno) ** 2
         elif (Ppo / Pn) == 1.15:
-                if (Pp / Pno) <= 0.37:
-                    Kw = 1
-                else:
-                    Kw = 1.2857 - 0.7603 * (Pp / Pno)
+            if (Pp / Pno) <= 0.37:
+                Kw = 1
+            else:
+                Kw = 1.2857 - 0.7603 * (Pp / Pno)
         elif ((Ppo / Pn) > 1.2) and ((Pp / Pno) >= 0.5):
             Kw = 1
         elif ((Ppo / Pn) > 1.1) and ((Ppo / Pn) <= 1.15):
-            #Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.22) и (Д.23)
-            return {"err" : f"Нет возможности расчитать Kw для соотношения 1.1 < Ppo / Pn <= 1.15, при Ppo={Ppo}, Pn={Pn} и Ppo / Pn = {Ppo / Pn}"}
+            # Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.22) и (Д.23)
+            return {
+                "err": f"Нет возможности расчитать Kw для соотношения 1.1 < Ppo / Pn <= 1.15, при Ppo={Ppo}, Pn={Pn} и Ppo / Pn = {Ppo / Pn}"}
         elif ((Ppo / Pn) > 1.15) and ((Ppo / Pn) <= 1.2):
-            #Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.23) и (Д.24)
-            return {"err" : f"Нет возможности расчитать Kw для соотношения 1.15 < Ppo / Pn <= 1.2, при Ppo={Ppo}, Pn={Pn} и Ppo / Pn = {Ppo / Pn}"}
-            
-        #показатель изоэнтропии
-        #dt["isobaric_capacity"] / dt["isochoric_capacity"] = dt["adiabatic_index"]
-        n = dt["adiabatic_index"] #/ dt["compressibility_factor"]
+            # Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.23) и (Д.24)
+            return {
+                "err": f"Нет возможности расчитать Kw для соотношения 1.15 < Ppo / Pn <= 1.2, при Ppo={Ppo}, Pn={Pn} и Ppo / Pn = {Ppo / Pn}"}
 
-        Bkr = (2/(n+1))**(n/(n-1))
-        #определим режим истечения
-        if B <= Bkr: #
+        # показатель изоэнтропии
+        # dt["isobaric_capacity"] / dt["isochoric_capacity"] = dt["adiabatic_index"]
+        n = dt["adiabatic_index"]  # / dt["compressibility_factor"]
+
+        Bkr = (2 / (n + 1)) ** (n / (n - 1))
+        # определим режим истечения
+        if B <= Bkr:  #
             print('критический режим истечения')
             Kb = 1
             if n == 1:
                 Kp_kr = 0.60653 ** 2
             else:
-                #Kp_kr = n*(Bkr**((n+1)/n)) #на самом деле, тут корень, но его будем извлекать в конце 
-                Kp_kr = sqrt((2*n)/(n+1)) * (2/(n+1))**(1/(n-1)) #или можно так
-        else: #докритический режим
+                # Kp_kr = n*(Bkr**((n+1)/n)) #на самом деле, тут корень, но его будем извлекать в конце
+                Kp_kr = sqrt((2 * n) / (n + 1)) * (2 / (n + 1)) ** (1 / (n - 1))  # или можно так
+        else:  # докритический режим
             print('докритический режим истечения')
-            Kp_kr = 1 
+            Kp_kr = 1
             if n == 1:
-                Kb = B**2 * -2 * exp * log(B)#на самом деле, тут корень, но его будем извлекать в конце
+                Kb = B ** 2 * -2 * exp * log(B)  # на самом деле, тут корень, но его будем извлекать в конце
             else:
-                Kb = (((n + 1) / (n - 1)) * (B**(2/n) - B**((n+1)/n)) * ((n + 1) / 2)) ** 2
+                Kb = (((n + 1) / (n - 1)) * (B ** (2 / n) - B ** ((n + 1) / n)) * ((n + 1) / 2)) ** 2
 
-        #P1 * p1
-        Gideal = Kp_kr * Kb *sqrt(P1 * p1)
+        # P1 * p1
+        Gideal = Kp_kr * Kb * sqrt(P1 * p1)
 
         if Gideal <= 0:
-            return {"err" : f"Одно из значений = 0:\n Ppo : {Ppo}\n Pno : {Kb}\n Pn : {Kb}\n Kp_kr : {Kp_kr}\n Kw : {Kw}\n"}
+            return {
+                "err": f"Одно из значений = 0:\n Ppo : {Ppo}\n Pno : {Kb}\n Pn : {Kb}\n Kp_kr : {Kp_kr}\n Kw : {Kw}\n"}
 
     else:
         alpha = 0.6
-        #p1 = dt["density"]
+        # p1 = dt["density"]
         if (Pp / Pno) <= 1.15:
             Kw = 1
         elif ((Pp / Pno) > 1.15) and ((Pp / Pno) <= 0.25):
-            Kw = 0.875 + 1.8333 * (Pp / Pno) - 6.6667 * (Pp / Pno)**2
+            Kw = 0.875 + 1.8333 * (Pp / Pno) - 6.6667 * (Pp / Pno) ** 2
         elif (Pp / Pno) > 0.25:
             Kw = 1.149 - 0.988 * (Pp / Pno)
 
-        Kp = sqrt(2*(1-B)) #на самом деле, тут корень, но его будем извлекать в конце
+        Kp = sqrt(2 * (1 - B))  # на самом деле, тут корень, но его будем извлекать в конце
         Gideal = Kp * sqrt(P1 * p1)
 
         if Gideal <= 0:
-            return {"err" : f"Одно из значений = 0:\n Ppo : {Ppo}\n Pno : {Pno}\n Pn : {Pn}\n Pp : {Pp}\n Kw : {Kw}\n"}
+            return {"err": f"Одно из значений = 0:\n Ppo : {Ppo}\n Pno : {Pno}\n Pn : {Pn}\n Pp : {Pp}\n Kw : {Kw}\n"}
 
-    #print(Kp_kr, P1, p1)
-    #print(Kp, P1, p1)
-    #print(Gideal)
+    # print(Kp_kr, P1, p1)
+    # print(Kp, P1, p1)
+    # print(Gideal)
 
     DN_s = None
     pre_DN = 0
     Kv = 1
 
     while DN_s != pre_DN:
-        #print(3.6, alpha, Kv, Kw, Kc, Gideal, N)
+        # print(3.6, alpha, Kv, Kw, Kc, Gideal, N)
         pre_F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
         if pre_F == 0:
-            return {"err" : f"Одно из значений = 0:\n Kv : {Kv}\n Kw : {Kw}\n Kc : {Kc}\n Gideal : {Gideal}\n"}
+            return {"err": f"Одно из значений = 0:\n Kv : {Kv}\n Kw : {Kw}\n Kc : {Kc}\n Gideal : {Gideal}\n"}
         pre_DN = sqrt((4 * pre_F) / pi)
-            
-        Re = (Gideal * p1 * pre_DN) / u #Gideal
+
+        Re = (Gideal * p1 * pre_DN) / u  # Gideal
         if (Re >= 1000) and (Re <= 100000):
-            Kv = (0.9935 + (2.8780/Re**0.5) + (342.75/Re**1.5))**(-1)
+            Kv = (0.9935 + (2.8780 / Re ** 0.5) + (342.75 / Re ** 1.5)) ** (-1)
         elif (Re < 1000):
-            Kv = 0.975 * sqrt(1/170/(Re+0.98))
+            Kv = 0.975 * sqrt(1 / 170 / (Re + 0.98))
         else:
             Kv = 1
-            
+
         F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
         DN_s = sqrt((4 * F) / pi)
 
-    #перевести из МПа в кгс/см2
+    # перевести из МПа в кгс/см2
     new_dt = {
-        "T_min" : T_min,     #Минимальная рабочая температура
-        "T_max" : T_max,     #Максивальная рабочая температура
-        "Pno" : Pno * 10,   #Давление начала открытия с противодавлением
-        "Ppo" : Ppo * 10,   #Давление полного открытия с противодавлением
-        "P1" : P1 * 10,     #Давление на входе
-        "P2" : P2 * 10,     #Давление на выходе
-        "Kw" : Kw,           #Коэффициент, учитывающий эффект неполного открытия разгруженных ПК из-за противодавления
-        "Gideal" : Gideal,   #Массовая скорость
-        "pre_DN" : pre_DN,   #DN предворительный
-        "DN_s" : DN_s        #Диаметр седла клапана
+        "T_min": T_min,  # Минимальная рабочая температура
+        "T_max": T_max,  # Максивальная рабочая температура
+        "Pno": Pno * 10,  # Давление начала открытия с противодавлением
+        "Ppo": Ppo * 10,  # Давление полного открытия с противодавлением
+        "P1": P1 * 10,  # Давление на входе
+        "P2": P2 * 10,  # Давление на выходе
+        "Kw": Kw,  # Коэффициент, учитывающий эффект неполного открытия разгруженных ПК из-за противодавления
+        "Gideal": Gideal,  # Массовая скорость
+        "pre_DN": pre_DN,  # DN предворительный
+        "DN_s": DN_s  # Диаметр седла клапана
     }
 
-    #Номинальное давление
-    new_dt["PN"] = f"Невозмажно подобрать при сочитании параметров: \nТемпература рабочей среды = {T} \n Давление настройки = {Pn}"
+    # Номинальное давление
+    new_dt[
+        "PN"] = f"Невозмажно подобрать при сочитании параметров: \nТемпература рабочей среды = {T} \n Давление настройки = {Pn}"
     if dt["material"] == "20ГЛ" or dt["material"] == "25Л":
         ex = searchT2(T, Pn)
     else:
         ex = searchT10(T, Pn)
-    PN = ex["PN"]
-    #print("PN по T и Pn:", PN)
 
-    #Деаметр ПК
-    new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
+    if ex:
+        PN = ex["PN"]
+    else:
+        return {"err": f"Нет возможности подобрать PN для T={T} и Pn={Pn}"}
+    # print("PN по T и Pn:", PN)
+
+    # Деаметр ПК
+    new_dt[
+        "DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
     example = searchParams(DN_s, Pn, PN, dt["valve_type"])
-    
-    new_dt["DN"] = example["DN"] #Номинальный диаметр
-    new_dt["PN"] = example["PN"] #Номиннальное давление
-    print("PN по DN:", example["PN"])
+
+    if example:
+        new_dt["DN"] = example["DN"]  # Номинальный диаметр
+        new_dt["PN"] = example["PN"]  # Номиннальное давление
+        # print("PN по DN:", example["PN"])
+    else:
+        return {
+            "err": f"Нет возможности подобрать DN для DN_s={DN_s}, Pn={Pn}, PN={PN} и тип клапана - \'{dt['valve_type']}\' "}
 
     DN2 = {
-        25.0 : 40.0,
-        50.0 : 80.0,
-        80.0 : 100.0,
-        100.0 : 150.0,
-        150.0 : 200.0,
-        200.0 : 300.0
+        25.0: 40.0,
+        50.0: 80.0,
+        80.0: 100.0,
+        100.0: 150.0,
+        150.0: 200.0,
+        200.0: 300.0
     }
     new_dt["DN2"] = DN2[new_dt["DN"]]
 
     PN2 = {
-        16.0 : 6,
-        40.0 : 16.0,
-        63.0 : 40.0,
-        100.0 : 40.0,
-        160.0 : 40.0,
-        250.0 : 40.0
+        16.0: 6,
+        40.0: 16.0,
+        63.0: 40.0,
+        100.0: 40.0,
+        160.0: 40.0,
+        250.0: 40.0
     }
     new_dt["PN2"] = PN2[new_dt["PN"]]
 
     new_dt["spring_material"] = example["spring_material"]
     new_dt["spring_number"] = example["spring_number"]
-    
-    #подбор сильфона !!!!!!!!!!!!!!!!!!!!! сильфон только на пружине
-    if (dt["valve_type"] == 'В') and  ( ( (example["spring_material"] == '51ХФА') and (T > 120) ) or ( (example["spring_material"] == '50ХФА') and (T > 250) ) ):
+    new_dt["Pnd"] = example["Pnd"]
+
+    # подбор сильфона !!!!!!!!!!!!!!!!!!!!! сильфон только на пружине
+    if (dt["valve_type"] == 'В') and (((example["spring_material"] == '51ХФА') and (T > 120)) or (
+            (example["spring_material"] == '50ХФА') and (T > 250))):
         new_dt["need_bellows"] = True
     else:
         new_dt["need_bellows"] = [True, False]
-    
-    #окр закр тип
+
+    # окр закр тип
     env_name = dt["name"]
     env_names = []
     for ev in env_name.split():
         env_names.append(ev[:ev.find(":")])
 
-    #вода агрессиваня?
+    # вода агрессиваня?
     cool_env = ["Вода", "Водяной пар", "Воздух", "Азот", "Вода"]
-    
+
     evil_env = False
     cool = 0
     for en in env_names:
-        #убрать из смеси неагрессивные среды
+        # убрать из смеси неагрессивные среды
         if en in cool_env:
-            print(en)
-            cool+=1
+            # print(en)
+            cool += 1
 
     if cool == len(env_names):
         evil_env = True
-    
-    print(evil_env)
+
+    # print(evil_env)
 
     open_close_type = "закрытого типа"
     if evil_env:
         open_close_type = "открытого типа"
         dt["need_bellows"] = False
-    
-    dt["open_close_type"] = open_close_type #открытый или закрытый тип
+
+    dt["open_close_type"] = open_close_type  # открытый или закрытый тип
 
     all_dt = dt | new_dt
     return all_dt
@@ -683,126 +712,141 @@ def get_tightness(dt):
     dt["tightness"] = tightness 
     return dt
 
+
 def make_XL(dt):
-    #files = os.listdir("./src/")
-    #print(files)
     WB = load_workbook("./src/ТКП.xlsx")
     sheet = WB['Лист1']
 
+
+
     data_keys = {
-        "B" : "OL_num",
-        "C" : "mark",
-        "F" : "quantity",
-        "G" : "pipe_material",
-        "H" : "name",
-        "I" : "T",
-        "L" : "climate",
-        "N" : "need_bellows",
-        "O" : "DN",
-        "P" : "PN",
-        "Q" : "DN2",
-        "R" : "PN2",
-        "T" : "Gab",
-        "U" : "material",
-        "V" : "material_bellows",
-        "W" : "material_spool",
-        "X" : "material_saddle",
-        "Y" : "spring_material",
-        "Z" : "joining_type",
-        "AA" : "contact_type",
-        "AB" : "weight",
-        "AC" : "painting_area",
-        "AD" : "color",
-        "AE" : "tightness",
-        "AF" : "spring_number",
-        "AK" : "Pp",
-        "AO" : "needKOF",
-        "AP" : "need_ZIP",
-        "AQ" : "adapters",
-        "AR" : "thermal_cover",
-        "AS" : "docs",
-        "AT" : "pre_Kc",
-        "AU" : "rotary_plugs",
-        "AV" : "packaging",
-        "AW" : "acceptance",
-        "AX" : "trials",
-        "AZ" : "assignment",
-        "BA" : "additionally"
+        "B": "OL_num",
+        "C": "mark",
+        "F": "quantity",
+        "G": "pipe_material",
+        "H": "name",
+        "I": "T",
+        "L": "climate",
+        "N": "need_bellows",
+        "O": "DN",
+        "P": "PN",
+        "Q": "DN2",
+        "R": "PN2",
+        "T": "Gab",
+        "U": "material",
+        "V": "material_bellows",
+        "W": "material_spool",
+        "X": "material_saddle",
+        "Y": "spring_material",
+        "Z": "joining_type",
+        "AA": "contact_type",
+        "AB": "weight",
+        "AC": "painting_area",
+        "AD": "color",
+        "AE": "tightness",
+        "AF": "spring_number",
+        "AG": "Pnd",
+        "AK": "Pp",
+        "AO": "needKOF",
+        "AP": "need_ZIP",
+        "AQ": "adapters",
+        "AR": "thermal_cover",
+        "AS": "docs",
+        "AT": "pre_Kc",
+        "AU": "rotary_plugs",
+        "AV": "packaging",
+        "AW": "acceptance",
+        "AX": "trials",
+        "AZ": "assignment",
+        "BA": "additionally"
     }
-       
+
     for i, position in enumerate(dt, start=3):
-        #проверка 
+        # проверка
         kys = list(data_keys.values())
         kys += ["valve_type", "open_close_type", "environment"]
         for param in kys:
             if param not in position:
-                return {"err" : f"Key \'{param}\' does not exists"}
-            
-        
+                return {"err": f"Key \'{param}\' does not exists"}
 
-        if position["valve_type"] == 'Н' and not position['need_bellows']:
-            #Давление настройки без противодавления
-            sheet[f"AL{i}"].value = position["Pn"] - position["Pp"]
+        if position["need_bellows"] is False:
+            position["material_bellows"] = ""
 
-            #Давление начала открытия без противодавления
-            sheet[f"AM{i}"].value = position["Ppo"] - position["Pp"]
+        if position["valve_type"] == 'Н':
+            position["spring_material"] = ""
 
-            #Давление полного открытия без противодавления
-            sheet[f"AN{i}"].value = position["Ppo"] - position["Pp"]
+        position["Pn"] = float(position["Pn"]) * 10.197162
+        position["Pp"] = float(position["Pp"]) * 10.197162
+        position["Pp_din"] = float(position["Pp"]) * 10.197162
 
-            #Давление настройки с противодавлением
-            sheet[f"AH{i}"].value = position["Pn"]
 
-            #Давление начала открытия с противодавлением 
-            sheet[f"AI{i}"].value = position["Ppo"]
 
-            #Давление полного открытия с противодавлением
-            sheet[f"AJ{i}"].value = position["Ppo"]
-        else:
-            #Давление настройки без противодавления
+        if position["valve_type"] == 'Н' or (
+                position["valve_type"] == 'В' and position["open_close_type"] == "открытого типа") or (
+                position["valve_type"] == 'В' and position["need_bellows"]):
+            # Давление настройки без противодавления
             sheet[f"AL{i}"].value = position["Pn"]
 
-            #Давление начала открытия без противодавления
+            # Давление начала открытия без противодавления
             sheet[f"AM{i}"].value = position["Ppo"]
 
-            #Давление полного открытия без противодавления
+            # Давление полного открытия без противодавления
             sheet[f"AN{i}"].value = position["Ppo"]
 
-            #Давление настройки с противодавлением
+            # Давление настройки с противодавлением
             sheet[f"AH{i}"].value = position["Pn"]
 
-            #Давление начала открытия с противодавлениемпротиводавлением
+            # Давление начала открытия с противодавлением
             sheet[f"AI{i}"].value = position["Ppo"]
 
-            #Давление полного открытия с противодавлением
+            # Давление полного открытия с противодавлением
+            sheet[f"AJ{i}"].value = position["Ppo"]
+        else:
+            # Давление настройки без противодавления
+            sheet[f"AL{i}"].value = position["Pn"] - position["Pp"]
+
+            # Давление начала открытия без противодавления
+            sheet[f"AM{i}"].value = position["Ppo"] - position["Pp"]
+
+            # Давление полного открытия без противодавления
+            sheet[f"AN{i}"].value = position["Ppo"] - position["Pp"]
+
+            # Давление настройки с противодавлением
+            sheet[f"AH{i}"].value = position["Pn"]
+
+            # Давление начала открытия с противодавлениемпротиводавлением
+            sheet[f"AI{i}"].value = position["Ppo"]
+
+            # Давление полного открытия с противодавлением
             sheet[f"AJ{i}"].value = position["Ppo"]
 
-                
-        #номерация 
-        sheet[f"A{i}"].value = int(sheet[f"A3"].value) + i-3
+        # номерация
+        sheet[f"A{i}"].value = int(sheet[f"A3"].value) + i - 3
 
-        #изготовитель
+        # изготовитель
         sheet[f"BB{i}"].value = sheet[f"BB3"].value
 
-        #Назначение
+        # Назначение
         sheet[f"D{i}"].value = "Общепромышленное"
 
-        #Номер документа
-        #print(i)
-        sheet[f"E{i}"].value = "ТУ 3742-003-38877941-2012Б" if position["valve_type"] == 'В' else "ТУ 3742-013-38877941-2016"
+        # Номер документа
+        # print(i)
+        sheet[f"E{i}"].value = "ТУ 3742-003-38877941-2012Б" if position[
+                                                                   "valve_type"] == 'В' else "ТУ 3742-013-38877941-2016"
 
         type_name = "Пружинный" if position["valve_type"] == 'В' else "Пилотный"
         do = "прямого действия, " if position["valve_type"] == 'В' else ""
-        #Тип клапана
+        # Тип клапана
         sheet[f"K{i}"].value = f"{type_name} предохранительный, сбросной, угловой, {do}{position['open_close_type']}"
 
-        #Узел подрыва недоступен для заказа
+        # Узел подрыва недоступен для заказа
         sheet[f"M{i}"].value = "Нет"
 
-        #Коэффициент расхода, α
+        # Коэффициент расхода, α
         alp = position["environment"] == "Газ"
         sheet[f"S{i}"].value = 0.8 if alp else 0.6
 
+        '''
         #Диапазон настройки, кгс/см²
         if int(position["PN"]) == 16:
             sheet[f"AG{i}"].value = "0,5...16"
@@ -816,16 +860,15 @@ def make_XL(dt):
             sheet[f"AG{i}"].value = "40...100"
         elif position["PN"] == 160:
             sheet[f"AG{i}"].value = "40...160"
+        '''
 
-        
-
-        #Гарантийный срок службы, мес.
+        # Гарантийный срок службы, мес.
         sheet[f"AY{i}"].value = 12
 
         # T окр среды
         sheet[f"J{i}"].value = f"{position['T_min']} ... {position['T_max']}"
-        
-        #заполнение по словарю
+
+        # заполнение по словарю
         for key in data_keys.keys():
             if type(position[data_keys[key]]) == type(True):
                 if position[data_keys[key]] == True:
@@ -836,56 +879,57 @@ def make_XL(dt):
                 sheet[f"{key}{i}"].value = "Нет"
             else:
                 sheet[f"{key}{i}"].value = position[data_keys[key]]
-        
-    #Создать экземпляр файла
-    WB.save("./data/TKPexample.xlsx")
+
+    # Создать экземпляр файла
+    WB.save("./TKPexample.xlsx")
 
     return True
+
 
 def make_OL(data):
     wb = load_workbook("./src/ОЛ.xlsx")
     sheet = wb['Table 1']
 
-    #Трассировка данных
+    # Трассировка данных
     params = {
-        3 : "OL_num",
-        5 : "quantity",
-        6 : "valve_type", #переделать в слова
-        7 : "environment",
-        8 : "name",
-        9 : "T",
-        10 : "abrasive_particles",
-        11 : "density",
-        12 : "molecular_weight", #если есть
-        13 : "adiabatic_index", #если есть
-        14 : "viscosity", #если жидкость
-        15 : "Pn",
-        16 : "Pno",
-        17 : "Ppo",
-        18 : "Pp",
-        19 : "Gab",
-        20 : "pre_Kc",
-        21 : "DN_s",
-        22 : "joining_type",
-        23 : "inlet_flange",
-        24 : "outlet_flange",
-        25 : "need_bellows",
-        26 : "force_open",
-        27 : "DN",
-        28 : "DN2",
-        29 : "PN",
-        30 : "PN2",
-        31 : "climate",
-        32 : "Tokr",
-        33 : "trials",
-        34 : "material",
-        35 : "need_ZIP",
-        36 : "needKOF",
-        37 : "trials",
-        38 : "color",
-        39 : "packaging",
-        40 : "acceptance",
-        41 : "additionally"
+        3: "OL_num",
+        5: "quantity",
+        6: "valve_type",  # переделать в слова
+        7: "environment",
+        8: "name",
+        9: "T",
+        10: "abrasive_particles",
+        11: "density",
+        12: "molecular_weight",  # если есть
+        13: "adiabatic_index",  # если есть
+        14: "viscosity",  # если жидкость
+        15: "Pn",
+        16: "Pno",
+        17: "Ppo",
+        18: "Pp",
+        19: "Gab",
+        20: "pre_Kc",
+        21: "DN_s",
+        22: "joining_type",
+        23: "inlet_flange",
+        24: "outlet_flange",
+        25: "need_bellows",
+        26: "force_open",
+        27: "DN",
+        28: "DN2",
+        29: "PN",
+        30: "PN2",
+        31: "climate",
+        32: "Tokr",
+        33: "trials",
+        34: "material",
+        35: "need_ZIP",
+        36: "needKOF",
+        37: "trials",
+        38: "color",
+        39: "packaging",
+        40: "acceptance",
+        41: "additionally"
     }
 
     '''Форматирование данных'''
@@ -893,12 +937,12 @@ def make_OL(data):
     valve_type = "Пружинный" if data["valve_type"] == 'В' else "Пилотный"
     data["valve_type"] = valve_type
 
-    #с противодавлением и перевести в МПа => /10
+    # с противодавлением и перевести в МПа => /10
     Pn = float(data["Pn"]) * 0.1 - float(data['Pp']) * 0.1
 
     data['Pn'] = Pn
 
-    #Давление начала открытия
+    # Давление начала открытия
     if Pn <= 0.3:
         Pno = Pn + 0.02
         data['Pno'] = Pno
@@ -908,7 +952,6 @@ def make_OL(data):
     elif Pn > 6:
         Pno = 1.05 * Pn
         data['Pno'] = Pno
-    
 
     # Давление полного открытия
     if Pn <= 0.3:
@@ -920,21 +963,19 @@ def make_OL(data):
     elif Pn > 6:
         Ppo = 1.1 * Pn
         data['Ppo'] = Ppo
-    
 
-    #Перевести в МПа => /10
+    # Перевести в МПа => /10
     Pp = data["Pp"] * 0.1
     data['Pp'] = Pp
 
     Tokr = f"{data['T_min']} ... {data['T_max']}"
     data['Tokr'] = Tokr
-    
 
     '''Автозаполнение'''
     for i in params.keys():
-        #Проверка
+        # Проверка
         if params[i] not in data:
-            return {"err" : f"Некорректный ввод параметра \'{params[i]}\' "}
+            return {"err": f"Некорректный ввод параметра \'{params[i]}\' "}
         else:
             if type(data[params[i]]) == type(True):
                 if data[params[i]] == True:
@@ -947,6 +988,6 @@ def make_OL(data):
                 sheet[f"C{i}"] = data[params[i]]
 
     # Создать экземпляр файла
-    wb.save("./data/OLexample.xlsx")
+    wb.save("./OLexample.xlsx")
 
     return True

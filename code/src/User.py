@@ -38,7 +38,7 @@ class UserData(Base):
 class Cofigurations(Base):
     __tablename__ = 'configuration_table'
     id = Column(Integer, primary_key=True)
-    author_id = Column(Text, nullable=True)
+    author_id = Column(Integer, nullable=True)
     name = Column(Text, nullable=True)
     jsn = Column(JSONB, nullable=True)
     date = Column(Date, nullable=True)
@@ -69,6 +69,7 @@ class UserRedis:
 
     def get_user(self):
         jsn = self.r.get(self.user_id)
+        print(jsn)
         self.jsn = json.loads(jsn)
         return self.jsn
 
@@ -116,7 +117,7 @@ class User:
 
         #либо есть uuid, fio, department
         elif self.uuid != "" and self.fio != "" and self.department != "":
-            db_usr = db.query(UserData).filter_by(uuid=self.uuid).first()
+            usr_uuid = db.query(UserData).filter_by(uuid=self.uuid).first()
 
             #или он уже есть
             if usr_uuid is not None:
@@ -229,10 +230,12 @@ class User:
     '''
 
     def check(self):
-        Redis = UserRedis()
+
         try:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
-            if Redis.r.get(self.uuid) is not None:
+            print("uuid", self.uuid)
+            self.Redis = UserRedis().r
+            if  self.Redis.exists(self.uuid) == 1:
                 return True
             else:
                 return False
@@ -270,22 +273,24 @@ class User:
 
         #определить id исходя из uuid
         usr = db.query(UserData).filter_by(uuid=self.uuid).first()
-        self.Id = usr.id
+        if usr is not None:
+            print(usr.id)
+            self.Id = usr.id
 
-        #взять json из Redis
-        self.current_json = UserRedis(user_id=self.uuid).get_user()
-        print(self.current_json)
+            #взять json из Redis
+            self.current_json = UserRedis(user_id=self.uuid).get_user()
+            #print(self.current_json)
 
-        #сохранить в БД
-        cnf = Cofigurations(author_id=self.Id, name=name, jsn=self.current_json, date=str(datetime.date.today()), time=datetime.datetime.now().strftime("%H:%M:%S"))
-        db.add(cnf)
-        db.commit()
+            #сохранить в БД
+            cnf = Cofigurations(author_id=self.Id, name=name, jsn=self.current_json, date=str(datetime.date.today()), time=datetime.datetime.now().strftime("%H:%M:%S"))
+            db.add(cnf)
+            db.commit()
 
-        #очистить redis
-        r = UserRedis(self.uuid, self.current_json)
-        r.set_user()
+            #очистить redis
+            r = UserRedis(self.uuid, self.current_json)
+            r.set_user()
 
-        return self.current_json
+            return self.current_json
 
     def create_OL(self):
         #найти по токену uuid или ip
@@ -315,16 +320,49 @@ class User:
         # найти по токену uuid или ip
         pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         # найти в БД
-        usr_uuid = db.query(UserData).filter_by(uuid=pre_id).first()
+        usr = db.query(UserData).filter_by(uuid=pre_id).first()
 
-        if usr_uuid is not None:
-            self.Id = usr_uuid.id
+        if usr is not None:
+            print(usr.id)
+            print(str(usr.id))
+            print(int(usr.id))
+            configs = db.query(Cofigurations).filter_by(author_id=usr.id).all()
+            if usr is not None and usr != []:
+                answer = []
+                for conf in configs:
+                    ans = {
+                        'id' : conf.id,
+                        'name' : conf.name,
+                        'date' : conf.date,
+                        'time' : conf.time,
+                    }
+                    answer.append(ans)
 
-            return ID
+                return answer
+            else:
+                return False
         else:
-            return {'err': 'пользователь не найден'}
+            return False
 
 
     def uploadConfiguration(self, ID):
         #загрузка ТКП из БД в redis
-        pass
+
+        # найти по токену uuid или ip
+        pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        # найти в БД пользователя по uuid
+        usr = db.query(UserData).filter_by(uuid=pre_id).first()
+        #найти файл по ID
+        fl = db.query(Cofigurations).filter_by(id=ID).first()
+
+        if usr is not None and fl is not None:
+            self.uuid = pre_id
+            self.current_json = fl.jsn
+
+            #заполнить сессию Redis
+            self.Redis = UserRedis(user_id=self.uuid, jsn=self.current_json)
+            self.Redis.update_user()
+            #вывести jsn для перосмотра
+            return self.current_json
+        else:
+            return False
