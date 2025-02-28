@@ -274,6 +274,7 @@ class User:
         #определить id исходя из uuid
         usr = db.query(UserData).filter_by(uuid=self.uuid).first()
         if usr is not None:
+            print("tyt")
             #print(usr.id)
             self.Id = usr.id
 
