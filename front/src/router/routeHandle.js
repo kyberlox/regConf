@@ -4,7 +4,14 @@ export const routeHandle = (router, userStore, questionStore, pageStore) => {
         questionStore().resetQuestionGroup('all');
         if (to.name === 'homeWithToken') {
             userStore().setToken(to.params.token);
-        }
-        next()
+            router.push({ name: 'enginePage' });
+        } else
+            if (to.name == 'history') {
+                console.log(userStore().getAutorizeStatus);
+
+                userStore().getAutorizeStatus ? next() : router.push({ name: 'home' });
+            }
+            else
+                next()
     })
 }

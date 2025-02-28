@@ -6,6 +6,7 @@ export const useEnvModuleStore = defineStore('envModule', {
         afterGetCompoundValue: [],
         gasEnvNames: [],
         liquidEnvNames: [],
+        TkpData: [],
 
         readyToDownload: false,
     }),
@@ -35,12 +36,21 @@ export const useEnvModuleStore = defineStore('envModule', {
 
         pushToAfterGetCompoundValue(value) {
             Object.assign(this.afterGetCompoundValue, value);
+        },
+
+        pushToTkp() {
+            this.TkpData.push(this.afterGetCompoundValue);
+            this.afterGetCompoundValue.length = 0;
+        },
+        nulifyTkpData() {
+            this.TkpData.length = 0;
         }
     },
 
     getters: {
         getLiquidEnv: state => state.envValues.filter(item => item.environment === 'Жидкость'),
         getGasEnv: state => state.envValues.filter(item => item.environment === 'Газ'),
-        getAfterGetCompoundValue: state => state.afterGetCompoundValue
+        getAfterGetCompoundValue: state => state.afterGetCompoundValue,
+        getTkpData: state => state.TkpData,
     },
 });

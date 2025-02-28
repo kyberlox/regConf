@@ -16,24 +16,39 @@ export const useDownload = (stores) => {
         }
     }, { deep: true })
 
-    const downloadHandle = () => {
+    const downloadHandle = (docName) => {
         if (jsonError.value) {
             stores.helperStore.setErrorMessage(jsonError.value, 'emptyValueError')
             return
         }
 
-        const dataToSend = computed(() => stores.envModuleStore.getAfterGetCompoundValue);
+        const olData = computed(() => stores.envModuleStore.getAfterGetCompoundValue);
+        const tkpData = computed(() => stores.envModuleStore.getTkpData);
 
         if (isAutorize.value) {
-            Api.post(API_URL + '/set_data', [dataToSend.value], false, 'TESTNAME');
-            Api.get(API_URL + '/generate/TESTNAME');
-            Api.post(API_URL + '/makeOL', dataToSend.value, true);
+            Api.post(API_URL + '/set_data', tkpData.value, false, true, docName.replaceAll('.', '-'))
+                .then(() => {
+                    Api.post(API_URL + '/generate', '', true, true, "ТКП " + docName.replaceAll('.', '-'))
+                        .then(() => {
+                            stores.envModuleStore.nulifyTkpData();
+                        });
+                });
+            Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName.replaceAll('.', '-'));
+        }
+        else {
+            Api.post(API_URL + '/generate', tkpData.value, true, true, "ТКП " + docName.replaceAll('.', '-'))
+                .then(() => {
+                    Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName.replaceAll('.', '-'))
+                        .then(() => {
+                            stores.envModuleStore.nulifyTkpData();
+                        });;
+                })
         }
     }
 
     return {
         jsonError,
         checkForDownload,
-        downloadHandle
+        downloadHandle,
     }
 }

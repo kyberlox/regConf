@@ -8,8 +8,8 @@ export default class Validator {
         }
     }
 
-    static async validPressure(pressure, type, ratio = null, store, convertor) {
-        if (pressure.value > convertor(pressure.unit, 16)
+    static async validPressure(pressure, type, ratio = null, store) {
+        if ((pressure.value > 16)
             || (ratio && pressure.value / ratio > 0.7)) {
             store.setErrorMessage(type);
         } else {

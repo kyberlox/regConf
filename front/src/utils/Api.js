@@ -6,7 +6,7 @@ export default class Api {
         return await response.json();
     }
 
-    static async post(url, body, download = false, needAutorize = false, name) {
+    static async post(url, body, download = false, needAutorize = false, name = "") {
         const authorization = computed(() => useUserStore().getToken ? useUserStore().getToken : `ip: ${useUserStore().getIp}`);
 
         const response = await fetch(url, {
@@ -16,7 +16,7 @@ export default class Api {
                 'Accept': 'application/json',
                 'Access-Control-Allow-Credentials': 'true',
                 ...(needAutorize ? { 'token': authorization.value } : {}),
-                ...(download ? { 'name': name } : {})
+                ...(download ? { 'name': encodeURIComponent(name) } : {})
             },
             credentials: 'include',
             body: JSON.stringify(body)
@@ -37,19 +37,10 @@ export default class Api {
                     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 })
             );
-            const contentDisposition = response.headers.get('Content-Disposition');
-            let filename = 'Клапан_предохран.xlsx';
-
-            if (contentDisposition) {
-                const filenameMatch = contentDisposition.match(/filename\*=utf-8''(.*)/i);
-                if (filenameMatch && filenameMatch[1]) {
-                    filename = decodeURIComponent(filenameMatch[1]);
-                }
-            }
 
             const link = document.createElement('a');
             link.href = downloadUrl;
-            link.download = filename;
+            link.download = name;
             document.body.appendChild(link);
             link.click();
             link.remove();

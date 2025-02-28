@@ -24,10 +24,11 @@
     <div class="download-button__wrapper">
         <div class="download-button"
              :class="{ 'download-button--disabled': jsonError }"
-             @click="downloadHandle()">Документация</div>
-        <div class="download-button"
+             @click="downloadHandle(docName)">Документация</div>
+        <div v-if="isAuthorize"
+             class="download-button"
              :class="{ 'download-button--disabled': jsonError }"
-             @click="''">Создать общее ТКП</div>
+             @click="!jsonError ? addNewPos() : ''">Добавить позицию</div>
     </div>
 </template>
 
@@ -58,6 +59,12 @@ export default {
             stores.pageStore.goToQuestion(name)
         }
 
+        const addNewPos = () => {
+            stores.questionsStore.resetQuestionGroup('all');
+            stores.envModuleStore.pushToTkp();
+            stores.pageStore.goToQuestion('environmentType');
+        }
+
         formParamsHandle(stores);
 
         return {
@@ -67,6 +74,9 @@ export default {
             goToQuestion,
             downloadHandle,
             checkForDownload,
+            isAuthorize: computed(() => stores.userStore.getAutorizeStatus),
+            docName: computed(() => stores.questionsStore.getMark),
+            addNewPos
         };
     }
 };

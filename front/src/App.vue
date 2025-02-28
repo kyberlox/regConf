@@ -16,8 +16,9 @@ import PageFooter from "./components/layout/PageFooter.vue";
 import { onMounted, ref, watch, computed } from "vue";
 import YandexMetrika from "./components/tools/YandexMetrika.vue";
 import Api from "./utils/Api";
-import { useUserStore } from "./store/user";
-import { useHelperStore } from "./store/helper";
+
+import { useStores } from "@/composables/useStores";
+
 export default {
     components: {
         PageHeader,
@@ -26,10 +27,9 @@ export default {
         YandexMetrika
     },
     setup() {
-        const userStore = useUserStore();
-        const helperStore = useHelperStore();
+        const stores = useStores();
         const showModal = ref(false);
-        const isAutorize = computed(() => userStore.getAutorizeStatus)
+        const isAutorize = computed(() => stores.userStore.getAutorizeStatus)
 
         const closeModal = () => {
             showModal.value = false;
@@ -37,18 +37,27 @@ export default {
 
         onMounted(() => {
             Api.get('https://api.ipify.org?format=json').then((res) => {
-                userStore.setIp(res.ip)
+                stores.userStore.setIp(res.ip)
             }).then(() => {
-                Api.post(API_URL + '/check', "", false, true)
+                Api.post(API_URL + '/check', "", false, true).then((res) => {
+                    if (res.token_valid == false || res.error) {
+                        stores.userStore.setAutorizeStatus(false);
+                    } else {
+                        stores.userStore.setAutorizeStatus(true);
+                        Api.post(API_URL + '/history', "", false, true).then((data) => {
+                            stores.historyStore.setTkpHistory(data);
+                        })
+                    }
+                })
             });
         })
 
         watch((isAutorize), (newValue) => {
             if (newValue == false) {
-                helperStore.setErrorMessage('tkpError', 'autorizeError');
+                stores.helperStore.setErrorMessage('tkpError', 'autorizeError');
             }
             else {
-                helperStore.deleteErrorMessage('tkpError');
+                stores.helperStore.deleteErrorMessage('tkpError');
             }
         }, { immediate: true })
 

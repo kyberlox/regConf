@@ -8,6 +8,10 @@
         margin-top: 5px;
         padding-bottom: 25px;
         text-align: center;
+
+        @include sm {
+            text-align: left;
+        }
     }
 
     &__content {
@@ -23,6 +27,14 @@
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
         position: relative;
         padding: 12px;
+
+        &-link {
+            color: var(--default-link-text);
+
+            &:hover {
+                border-bottom: 1px solid var(--default-link-text);
+            }
+        }
 
         &:not(:first-child) {
             margin-top: 15px;
@@ -94,5 +106,91 @@
             top: 0px;
             cursor: pointer;
         }
+    }
+
+    &__nav {
+        &-title {
+            margin-top: -18px;
+            padding: 0 0 23px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0);
+            cursor: pointer;
+            transition: 0.2s all;
+
+            &:hover {
+                color: var(--emk-brand-color);
+            }
+
+            @include sm {
+                margin: 0;
+                padding: 0 0 10px 0;
+            }
+        }
+
+        &__wrapper {
+            border-bottom: 1px solid rgba(0, 0, 0, 0);
+            margin-bottom: -1px;
+            flex-grow: 1;
+
+            @include sm {
+                width: 100%;
+            }
+
+            &--active {
+                border-bottom: 1px solid var(--emk-brand-color);
+            }
+        }
+
+        &-group {
+            margin-top: 23px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            padding-left: 13px;
+            // gap: 26px;
+            padding-right: 20px;
+
+            @include sm {
+                flex-direction: column;
+                row-gap: 10px;
+            }
+        }
+    }
+
+    &__message--tkp {
+        cursor: pointer;
+        border: 1px solid rgba(128, 128, 128, 0.227) !important;
+        background: white !important;
+        transition: 0.1s all ease-in-out;
+
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: -1px -1px 0px var(--emk-brand-color);
+        }
+
+        &--active {
+            transform: translateY(-1px);
+            box-shadow: -1px -1px 0px var(--emk-brand-color) !important;
+        }
+
+        &-pos {
+            border: 1px solid rgba(128, 128, 128, 0.227) !important;
+            background: white !important;
+            transition: 0.1s all ease-in-out;
+            padding: 8px;
+
+            &:first-child {
+                margin-top: 10px;
+            }
+
+            &:hover {
+                background: #e3b10e;
+                transform: translateX(5px);
+                border-left: 2px solid var(--emk-brand-color) !important;
+
+            }
+        }
+
     }
 }

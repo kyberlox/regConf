@@ -10,7 +10,7 @@
 
     &__support {
         &__text {
-            color: #055cfd;
+            color: var(--default-link-text);
             transition: 0.2s all;
             cursor: pointer;
 
