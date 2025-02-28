@@ -119,7 +119,7 @@ r = redis.Redis(host='redis', port=6379, username=user, password=pswd, db=0)
 
 
 
-app = FastAPI(ignore_trailing_slash=True)
+app = FastAPI()
 
 
 
@@ -541,7 +541,7 @@ def upload_tkp(tkp_id = Header(None), token = Header(None)):
 
 
 #генерация документации
-@app.post("/api/generate/", tags=["Генерация документации"]) #проверка сессии
+@app.post("/api/generate", tags=["Генерация документации"]) #проверка сессии
 def generate(data = Body(), name = Header(default=None) , token = Header(default=None)):
     usr = User(token=token)
     if usr.check():
