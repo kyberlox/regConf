@@ -1,0 +1,14 @@
+[
+    {
+        "title": "Главная",
+        "route": "home"
+    },
+    {
+        "title": "Предохранительная Арматура",
+        "route": "enginePage"
+    },
+    {
+        "title": "История запросов",
+        "route": "history"
+    }
+]
