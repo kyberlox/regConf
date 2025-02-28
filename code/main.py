@@ -91,7 +91,7 @@ class Table2(Base):
     id = Column(Integer, primary_key=True)
     T = Column(Float, nullable=True)
     Pn = Column(Float, nullable=True)
-    PN = Column(Float, nullable=True)
+    P = Column(Float, nullable=True)
 
 class Table10(Base):
     __tablename__ = 'table10'
