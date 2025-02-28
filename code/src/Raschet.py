@@ -69,7 +69,7 @@ def searchT2(T, Pn):
     print(T, Pn)
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Table2).filter(Table2.T >= T, Table2.Pn >= Pn).all()
-    print(request)
+
     if request == None or len(request) == 0:
         return False
     ans = False
@@ -79,6 +79,7 @@ def searchT2(T, Pn):
     minT = request[0].T
     minPn = request[0].Pn
     for example in request:
+        print(example.id, example.T, example.Pn, example.P)
         if (example.T <= minT) and (example.Pn <= minPn):
             minT = example.T
             minPn = example.Pn
@@ -541,8 +542,7 @@ def Raschet(dt):
     }
 
     # Номинальное давление
-    new_dt[
-        "PN"] = f"Невозмажно подобрать при сочитании параметров: \nТемпература рабочей среды = {T} \n Давление настройки = {Pn}"
+    new_dt["PN"] = f"Невозмажно подобрать при сочитании параметров: \nТемпература рабочей среды = {T} \n Давление настройки = {Pn}"
     if dt["material"] == "20ГЛ" or dt["material"] == "25Л":
         ex = searchT2(T, Pn)
     else:
