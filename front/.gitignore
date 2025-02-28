@@ -31,4 +31,4 @@ coverage
 
 !regulatorTestBuild/front/
 !regulatorTestBuild/front/**
-Dockerfile
+# Dockerfile
