@@ -66,10 +66,7 @@ db = SessionLocal()
 
 
 def searchT2(T, Pn):
-    test = db.query(Table2).filter(Table2.T >= T).all()
-    for example in test:
-        print(example.id, example.T, example.Pn, example.P)
-    print(T, Pn)
+    #print(T, Pn)
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Table2).filter(Table2.T >= T, Table2.Pn >= Pn).all()
 
@@ -78,11 +75,9 @@ def searchT2(T, Pn):
     ans = False
 
     #найти самый подходящий - MIN по DNS и P1
-    print(request[0])
     minT = request[0].T
     minPn = request[0].Pn
     for example in request:
-        print(example.id, example.T, example.Pn, example.P)
         if (example.T <= minT) and (example.Pn <= minPn):
             minT = example.T
             minPn = example.Pn
