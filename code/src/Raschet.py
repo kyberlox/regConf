@@ -66,7 +66,7 @@ db = SessionLocal()
 
 
 def searchT2(T, Pn):
-    print(T, Pn)
+    #print(T, Pn)
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Table2).filter(Table2.T >= T, Table2.Pn >= Pn).all()
 
@@ -75,11 +75,9 @@ def searchT2(T, Pn):
     ans = False
 
     #найти самый подходящий - MIN по DNS и P1
-    print(request[0])
     minT = request[0].T
     minPn = request[0].Pn
     for example in request:
-        print(example.id, example.T, example.Pn, example.P)
         if (example.T <= minT) and (example.Pn <= minPn):
             minT = example.T
             minPn = example.Pn
@@ -155,6 +153,20 @@ def searchParams(DNS, Pn, PN, valve_type):
                     "spring_number" : example.spring_number,
                     "valve_type" : valve_type
                 }
+            elif (Pn <= float(Pn2)) and (Pn <= 4) and (example.DNS <= minDNS)  and (example.PN == minPN):
+                minDNS = example.DNS
+                # minP1 = example.P1
+                minPN = example.PN
+                ans = {
+                    "ID": example.id,
+                    "DNS": example.DNS,
+                    "Pnd": example.Pnd,
+                    "DN": example.DN,
+                    "PN": example.PN,
+                    "spring_material": example.spring_material,
+                    "spring_number": example.spring_number,
+                    "valve_type": valve_type
+                }
         except:
             print("###")
 
@@ -212,7 +224,7 @@ data_mean = {
     "pre_DN": "DN предворительный",
     "DN_s": "Диаметр седла клапана",
     "Pnd": "Диапазон давлений настройки",
-    "DN": "Номинналлльный иаметр",
+    "DN": "Номинналлльный диаметр",
     "PN": "Номинальное давление",
     "DN2": "Номинналлльный иаметр на выходе",
     "PN2": "Номинальное давление на выходе",

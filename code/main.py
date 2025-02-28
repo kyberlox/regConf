@@ -266,7 +266,7 @@ def migration():
         #print(i, T, Pn, P)
 
         example = Table2(T=T, Pn=Pn, P=P)
-        request = db.query(Table2).filter(Table2.T == T, Table2.Pn == Table2.Pn, Table2.P == P).first()
+        request = db.query(Table2).filter(Table2.T == T, Table2.Pn == Pn, Table2.P == P).first()
 
         #если нет - добавить
         if request == None:
