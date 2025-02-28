@@ -545,6 +545,7 @@ def upload_tkp(tkp_id = Header(None), token = Header(None)):
 def generate(data = Body(), name = Header(default=None) , token = Header(default=None)):
     usr = User(token=token)
     if usr.check():
+        print("тут")
         # получить название и сохранить в БД
         #получить json для генерации из Redis
         jsn = usr.create_TKP(name)
