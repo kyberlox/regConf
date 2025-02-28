@@ -45,9 +45,12 @@ export default {
                         stores.userStore.setAutorizeStatus(false);
                     } else {
                         stores.userStore.setAutorizeStatus(true);
-                        Api.post(API_URL + '/history', "", false, true).then((data) => {
-                            stores.historyStore.setTkpHistory(data);
-                        })
+                        Api.post(API_URL + '/history', "", false, true)
+                            .then((data) => {
+                                if (data !== false) {
+                                    stores.historyStore.setTkpHistory(data);
+                                }
+                            })
                     }
                 })
             });
