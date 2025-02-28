@@ -93,7 +93,8 @@ export default {
             modalBodyInner,
             download,
             addPos: () => emit('modalHandle', docName.value, 'add'),
-            docName
+            docName,
+            noDoc
         }
     }
 }
