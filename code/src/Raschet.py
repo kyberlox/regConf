@@ -66,10 +66,10 @@ db = SessionLocal()
 
 
 def searchT2(T, Pn):
-    #print(T, Pn)
+    print(T, Pn)
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Table2).filter(Table2.T >= T, Table2.Pn >= Pn).all()
-
+    print(request)
     if request == None or len(request) == 0:
         return False
     ans = False
