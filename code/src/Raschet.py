@@ -66,7 +66,7 @@ db = SessionLocal()
 
 
 def searchT2(T, Pn):
-    test = db.query(Table2).filter().all()
+    test = db.query(Table2).filter(Table2.T >= T).all()
     for example in test:
         print(example.id, example.T, example.Pn, example.P)
     print(T, Pn)
