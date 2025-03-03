@@ -1,4 +1,4 @@
 #!/bin/bash
 git add .
-git commit -m "Отладка загрузки XL"
+git commit -m "Финальные штрихи"
 git push origin main
