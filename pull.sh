@@ -1,4 +1,4 @@
 #!/bin/bash
-#docker-compose stop
+docker-compose stop
 git pull
-docker-compose up
+docker-compose up -d
