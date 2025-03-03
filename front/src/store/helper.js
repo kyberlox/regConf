@@ -241,10 +241,9 @@ export const useHelperStore = defineStore('helper', {
                     if (nodeRefs.value[error.inputName] && error.type == 'emptyValueError') {
                         nodeRefs.value[error.inputName].classList.add('card--attention-highlight');
                     }
-                    else
-                        if (nodeRefs.value[error.inputName]) {
-                            nodeRefs.value[error.inputName].classList.add('card--error-highlight');
-                        }
+                    else if (nodeRefs.value[error.inputName]) {
+                        nodeRefs.value[error.inputName].classList.add('card--error-highlight');
+                    }
                 });
             }
         },
