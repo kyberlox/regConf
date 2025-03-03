@@ -43,18 +43,9 @@ export const getPressureParamsHandle = (stores) => {
         }
 
         // Проверка работающих клапанов !== 0
-        if (newVal.n.value && newVal.n.value == 0) {
-            helperStore.setErrorMessage('N');
-        } else {
-            helperStore.deleteErrorMessage('N');
-        }
-
+        Validator.validForNull(newVal.n.value, helperStore);
         // Проверка расхода жидкости и газа
-        if (newVal.gab.value.length && newVal.gab.value[0].value == 0) {
-            helperStore.setErrorMessage('Gab');
-        } else {
-            helperStore.deleteErrorMessage('Gab');
-        }
+        Validator.validForNull(newVal.gab.value, helperStore);
 
         if (noErrors.value && newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.value && newVal.n.value && newVal.T.value && newVal.valveType.value) {
             const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', "DN_s", 'DN', "PN", "need_bellows", "PN2", "DN2"];

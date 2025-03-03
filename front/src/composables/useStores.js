@@ -4,6 +4,7 @@ import { usePageStore } from "@/store/page"
 import { useEnvModuleStore } from "@/store/envModule"
 import { useUserStore } from "@/store/user"
 import { useHistoryStore } from "@/store/history"
+import { useToastStore } from "@/store/toast"
 
 export const useStores = () => {
     return {
@@ -13,5 +14,6 @@ export const useStores = () => {
         envModuleStore: useEnvModuleStore(),
         userStore: useUserStore(),
         historyStore: useHistoryStore(),
+        toastStore: useToastStore(),
     }
 }

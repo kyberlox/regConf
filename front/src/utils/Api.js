@@ -24,7 +24,7 @@ export default class Api {
                 ...(needAutorize ? { 'token': authorization.value } : {}),
                 ...(download ? { 'name': encodeURIComponent(name) } : {})
             },
-            credentials: 'include',
+            credentials: 'same-origin',
             body: JSON.stringify(body)
         });
 

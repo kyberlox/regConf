@@ -12,14 +12,15 @@
             </div>
             <div v-if="navActive == 'help'"
                  class="helper__content helper__content--help">
-                <TransitionGroup name="slide-down">
-                    <div class="helper__message"
-                         v-for="(message, index) in messages"
-                         :key="'message' + index"
-                         @click="goToQuestion(message.inputName)"
-                         v-html=message.text>
-                    </div>
-                </TransitionGroup>
+                <!-- <TransitionGroup name="slide-down"> -->
+                <div class="helper__message"
+                     v-for="(message, index) in messages"
+                     :class="{ 'helper__message--attention': message.type == 'emptyValueError' }"
+                     :key="'message' + index"
+                     @click="goToQuestion(message.inputName)"
+                     v-html=message.text>
+                </div>
+                <!-- </TransitionGroup> -->
             </div>
 
             <div v-if="navActive == 'tkp'"
@@ -87,7 +88,7 @@ export default {
         const navTabs = ref([{ title: 'Помощь', nav: 'help' }, { title: 'ТКП', nav: 'tkp' }]);
         watch(autorizeStatus, (newValue) => {
             newValue ? navTabs.value = [{ title: 'Помощь', nav: 'help' }, { title: 'ТКП', nav: 'tkp' }] : navTabs.value = [{ title: 'Помощь', nav: 'help' }];
-        }, { deep: true, immediate: true })
+        }, { deep: true, immediate: true });
 
         return {
             closeCalcParams: () => emit("closeCalcParams"),
