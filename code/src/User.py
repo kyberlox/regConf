@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, select, update
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from sqlalchemy import create_engine, MetaData, Column, Integer, Text, Float, JSON, Date, Time, Boolean
 from sqlalchemy.dialects.postgresql import JSONB
@@ -341,6 +341,7 @@ class User:
             return False
 
 
+
     def uploadConfiguration(self, ID):
         #загрузка ТКП из БД в redis
 
@@ -378,3 +379,33 @@ class User:
             return True
         else:
             return False
+
+    def addPosition(self, tkp_position):
+        self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        self.Redis = UserRedis(user_id=self.uuid)
+        jsn = self.Redis.get_user()
+        jsn.insert(tkp_position["position_num"], tkp_position["body"])
+        self.Redis.jsn = jsn
+        self.Redis.update_user()
+
+        # сохранить в БД
+        tkp = db.query(Cofigurations).filter_by(id=tkp_position["tkp_id"]).first()
+        tkp.jsn = jsn
+        db.commit()
+
+        return jsn
+
+    def deletePosition(self, tkp_id, position):
+        self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
+        self.Redis = UserRedis(user_id=self.uuid)
+        jsn = self.Redis.get_user()
+        jsn.pop(position)
+        self.Redis.jsn = jsn
+        self.Redis.update_user()
+
+        # сохранить в БД
+        tkp = db.query(Cofigurations).filter_by(id=tkp_id).first()
+        tkp.jsn = jsn
+        db.commit()
+
+        return jsn

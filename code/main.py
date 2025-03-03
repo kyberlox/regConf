@@ -466,7 +466,7 @@ async def web_get_tightness(data = Body()):
 
 #авторизазия => генерация токена, начало сессии
 @app.post("/api/auth", tags=["Активность пользователей"])
-def login(jsn = Body()):
+async def login(jsn = Body()):
     print(jsn)
     uuid = jsn["uuid"]
     fio = f"{jsn['fio'][1]} {jsn['fio'][0]} {jsn['fio'][2]}"
@@ -481,7 +481,7 @@ def login(jsn = Body()):
 
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
-def check_valid(token: str = Header(None)):
+async def check_valid(token: str = Header(None)):
     print(token)
 
     if token[:3] == "ip:":
@@ -515,19 +515,19 @@ def get_data(data = Body(), token = Header(None)):
 
 #получить json из Redis
 @app.get("/api/get_data", tags=["Активность пользователей"])
-def get_data(token = Header(default=None)):
+async def get_data(token = Header(default=None)):
     usr = User(token=token)
     return usr.get_dt()
 
 #прекратить сессию -> выйти из Redis
 @app.get("/api/outh", tags=["Активность пользователей"])
-def outh_user(token = Header(default=None)):
+async def outh_user(token = Header(default=None)):
     usr = User(token=token)
     usr.outh()
     return {'status' : 'ready'}
 
 @app.post("/api/history", tags=["Активность пользователей"])
-def get_history(token = Header(None)):
+async def get_history(token = Header(None)):
     usr = User(token=token)
     if usr.check():
         print("y")
@@ -536,16 +536,28 @@ def get_history(token = Header(None)):
         return {"error" : "invalid token"}
 
 @app.delete("/api/delete_tkp/{tkp_id}", tags=["Активность пользователей"])
-def delete_tkp_id(tkp_id, token = Header(None)):
+async def delete_tkp_id(tkp_id, token = Header(None)):
     usr = User(token=token)
     if usr.check():
         return usr.deleteConfiguration(tkp_id)
 
 @app.get("/api/upload_tkp/{tkp_id}", tags=["Активность пользователей"])
-def upload_tkp_id(tkp_id, token = Header(None)):
+async def upload_tkp_id(tkp_id, token = Header(None)):
     usr = User(token=token)
     if usr.check():
         return usr.uploadConfiguration(tkp_id)
+
+@app.post("/api/add_position_tkp", tags=["Активность пользователей"])
+async def add_position_tkp_id(tkp_position = Body(), token = Header(None)):
+    usr = User(token=token)
+    if usr.check():
+        return usr.addPosition(tkp_position)
+
+@app.delete("/api/delete_position_tkp/{tkp_id}/{position_id}", tags=["Активность пользователей"])
+async def delete_position_tkp_id(tkp_id, position_id, token = Header(None)):
+    usr = User(token=token)
+    if usr.check():
+        return usr.deletePosition(tkp_id, position_id)
 
 
 
