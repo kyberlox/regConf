@@ -176,7 +176,7 @@ export const useHelperStore = defineStore('helper', {
                 id: 1,
                 type: 'autorizeError',
                 inputName: 'tkpError',
-                text: `<a class='helper__message-link' href='https://portal.emk.ru/intranet/tools/regconf.php'>Авторизуйтесь</a> для получения доступа к генерации ткп и истории запросов, без авторизации доступна только генерация опросного листа`
+                text: `<a class='helper__message-link' href='https://portal.emk.ru/intranet/tools/regconf.php'>Авторизуйтесь</a> для получения доступа к генерации ткп и истории запросов`
             }],
         };
     },
@@ -195,7 +195,7 @@ export const useHelperStore = defineStore('helper', {
                 this.messages = this.messages.filter((item) => item.type !== 'emptyValueError');
 
                 const existingMessage = this.messages.find(item => item.inputName === name && item.type == 'emptyValueError');
-                const newError = this.emptyValueErrors.find(item => item.inputName === name && item.type == 'emptyValueError');
+                const newError = this.emptyValueErrors.find(item => item.inputName === name);
 
                 if (!existingMessage && newError) {
                     this.messages.push(newError);
@@ -220,8 +220,7 @@ export const useHelperStore = defineStore('helper', {
         },
         deleteErrorMessage(name, group = false, nameFromGroup = false) {
             if (nameFromGroup) {
-                this.messages.find(e => e.inputName === name);
-                this.messages = this.messages.filter((item) => (item.inputName !== name && item.type !== group));
+                this.messages = this.messages.filter((item) => (item.inputName !== name || item.type !== group));
             }
             else if (!group) {
                 this.messages = this.messages.filter((item) => item.inputName !== name);

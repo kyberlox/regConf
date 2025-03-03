@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import Api from '@/utils/Api'
 import Validator from '@/utils/Validator'
+import { updateHistory } from './updateHistory'
 export const useDownload = (stores) => {
     const jsonError = ref(false)
 
@@ -30,6 +31,7 @@ export const useDownload = (stores) => {
                     Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName.replaceAll('.', '-'))
                         .then(() => {
                             stores.envModuleStore.nulifyTkpData();
+                            updateHistory();
                         });
                 })
         }
@@ -47,6 +49,7 @@ export const useDownload = (stores) => {
                             Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName.replaceAll('.', '-'))
                                 .then(() => {
                                     stores.envModuleStore.nulifyTkpData();
+                                    updateHistory();
                                 });
                         })
                 })

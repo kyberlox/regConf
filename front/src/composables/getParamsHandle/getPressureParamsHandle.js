@@ -43,9 +43,9 @@ export const getPressureParamsHandle = (stores) => {
         }
 
         // Проверка работающих клапанов !== 0
-        Validator.validForNull(newVal.n.value, helperStore);
+        Validator.validForNull(newVal.n.value, newVal.n.inputName, helperStore);
         // Проверка расхода жидкости и газа
-        Validator.validForNull(newVal.gab.value, helperStore);
+        Validator.validForNull(newVal.gab.value, newVal.gab.inputName, helperStore);
 
         if (noErrors.value && newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.value && newVal.n.value && newVal.T.value && newVal.valveType.value) {
             const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', "DN_s", 'DN', "PN", "need_bellows", "PN2", "DN2"];

@@ -82,7 +82,6 @@ export default {
                 .then((data) => {
                     Api.post(API_URL + '/generate/', data, true, false, name)
                 })
-            // latestTkps.value[index].hidden = !latestTkps.value[index].hidden;
         }
 
         const navTabs = ref([{ title: 'Помощь', nav: 'help' }, { title: 'ТКП', nav: 'tkp' }]);

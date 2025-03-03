@@ -1,6 +1,7 @@
 <template>
     <div class="form-group">
         <div class="card-header"
+             :class="{ 'card-header__input-block': question.type !== 'inputGroup' }"
              :ref="el => questionInGroup[question.inputName] = el"
              v-if="question.id || question.name">
             <h5 class="mb-0">{{ question.id ? question.id + ')' : '' }} {{ question.name }}</h5>

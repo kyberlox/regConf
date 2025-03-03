@@ -5,7 +5,7 @@ export default class Validator {
             store.setErrorMessage('T', 'calcError');
         }
         else {
-            // store.deleteErrorMessage('T', 'calcError', true);
+            store.deleteErrorMessage('T', 'calcError', true);
         }
     }
 
@@ -15,26 +15,15 @@ export default class Validator {
             store.setErrorMessage(type, 'calcError');
         }
         else {
-            // store.deleteErrorMessage(type, 'calcError', true);
+            store.deleteErrorMessage(type, 'calcError', true);
         };
     }
 
-    static async validForNull(val, store) {
-        if (!Array.isArray(val)) {
-            // Проверка работающих клапанов !== 0
-            if (val && val == 0) {
-                store.setErrorMessage('N', 'calcType');
-            } else {
-                store.deleteErrorMessage('N', 'calcType');
-            }
-        }
-        else {
-            // Проверка расхода жидкости и газа
-            if (val.length && val[0].value == 0) {
-                store.setErrorMessage('Gab', 'calcType');
-            } else {
-                store.deleteErrorMessage('Gab', 'calcType');
-            }
+    static async validForNull(val, name, store) {
+        if (val && val == 0 || Array.isArray(val) && val.length && val[0].value == 0) {
+            store.setErrorMessage(name, 'calcError');
+        } else {
+            store.deleteErrorMessage(name, 'calcError', true);
         }
     }
 
