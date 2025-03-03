@@ -35,6 +35,11 @@
         font-weight: 400;
         border: 1px solid #00000029;
 
+        &:hover {
+            color: #666;
+            background: #6666660a;
+        }
+
         &-link {
             color: var(--default-link-text);
 
@@ -48,9 +53,9 @@
             background: #ff5f5f1c;
             border-radius: 8px;
             padding: 12px 16px;
-            /* transform: translateY(-2px); */
-            box-shadow: 0 4px 12px rgb(0 0 0 / 20%), 0 0 0 2px rgb(255 33 33);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 4px 0 0 rgb(255, 33, 33);
             cursor: pointer;
+            transition: 0.2s all ease;
         }
 
         &--attention {

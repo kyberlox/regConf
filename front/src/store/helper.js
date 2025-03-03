@@ -221,8 +221,6 @@ export const useHelperStore = defineStore('helper', {
         deleteErrorMessage(name, group = false, nameFromGroup = false) {
             if (nameFromGroup) {
                 this.messages.find(e => e.inputName === name);
-                console.log(this.messages);
-
                 this.messages = this.messages.filter((item) => (item.inputName !== name && item.type !== group));
             }
             else if (!group) {

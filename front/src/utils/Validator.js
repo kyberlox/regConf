@@ -5,7 +5,7 @@ export default class Validator {
             store.setErrorMessage('T', 'calcError');
         }
         else {
-            store.deleteErrorMessage('T', 'calcError', true);
+            // store.deleteErrorMessage('T', 'calcError', true);
         }
     }
 
