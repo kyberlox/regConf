@@ -9,11 +9,11 @@ export const useDownload = (stores) => {
         jsonError.value = Validator.validDownloadJson(stores.questionsStore.questions, stores.helperStore)
     }
     // Проверка на соответствие обязательных параметров
-    // watch(() => jsonError, (oldVal, newVal) => {
-    //     if (newVal && oldVal !== false) {
-    //         // stores.helperStore.deleteErrorMessage(null, 'emptyValueError');
-    //     }
-    // }, { deep: true })
+    watch(() => jsonError, (oldVal, newVal) => {
+        if (newVal && oldVal !== false) {
+            stores.helperStore.deleteErrorMessage(null, 'emptyValueError');
+        }
+    }, { deep: true })
 
     const downloadHandle = (docName, type) => {
         if (jsonError.value) {

@@ -94,26 +94,10 @@
     }
 
     &--error-highlight {
-        &>.card-body {
-            animation: shake 0.5s ease-in-out;
-            box-shadow: 0 0 0 2px #ff4444;
-            background-color: rgba(255, 68, 68, 0.05);
-            transition: 0.2s box-shadow;
-            border-radius: 3px;
-        }
-    }
-
-    &--attention-highlight {
-        // box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-        // letter-spacing: 0.02em;
-
-        // border-left: 2px solid var(--emk-brand-color);
-        color: white;
-        text-shadow: 1px 1px 0px rgb(0 0 0 / 87%);
-
-        font-weight: 600;
-        background-color: var(--emk-brand-color);
-        transition: 0.2s ease-in-out;
+        animation: shake 0.5s ease-in-out;
+        box-shadow: 0 0 0 2px #ff4444;
+        background-color: rgba(255, 68, 68, 0.05);
+        transition: 0.2s box-shadow;
         border-radius: 3px;
     }
 

@@ -1,11 +1,11 @@
 <template>
     <div class="form-group">
         <div class="card-header"
-             :ref="el => questionInGroup[question.inputName] = el"
              v-if="question.id || question.name">
             <h5 class="mb-0">{{ question.id ? question.id + ')' : '' }} {{ question.name }}</h5>
         </div>
-        <div class="card-body">
+        <div class="card-body"
+             :ref="el => questionInGroup[question.inputName] = el">
             <component :is="question.type"
                        :question="question"
                        @saveNewValue="saveNewValue" />

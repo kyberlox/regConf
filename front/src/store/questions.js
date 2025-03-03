@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import questionsBank from '@/assets/staticJsons/questionBank.json';
 import { useEnvModuleStore } from './envModule';
-import { useStores } from '@/composables/useStores';
 
 export const useQuestionsStore = defineStore('questions', {
     state: () => ({
