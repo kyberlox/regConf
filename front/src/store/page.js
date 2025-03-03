@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 export const usePageStore = defineStore('page', {
     state: () => {
         return {
-            debugMode: true,
+            debugMode: false,
             currentRoute: '',
             nodeRefs: {},
         }
