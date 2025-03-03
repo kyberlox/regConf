@@ -6,6 +6,7 @@
                   :type="modalType"
                   :modalActive="showModal"
                   @closeModal="closeModal" />
+        <Toast />
     </div>
     <PageFooter @callSupportModal="showModal = true" />
     <YandexMetrika />
@@ -19,13 +20,15 @@ import YandexMetrika from "./components/tools/YandexMetrika.vue";
 import Api from "./utils/Api";
 import { updateHistory } from "./composables/updateHistory";
 import { useStores } from "@/composables/useStores";
+import Toast from "./components/common/Toast.vue";
 
 export default {
     components: {
         PageHeader,
         PageFooter,
         MsgModal,
-        YandexMetrika
+        YandexMetrika,
+        Toast
     },
     setup() {
         const stores = useStores();

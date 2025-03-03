@@ -2,26 +2,40 @@ export default class Validator {
 
     static async validTemperature(value, store) {
         if (value < -60 || value > 600) {
-<<<<<<< HEAD
             store.setErrorMessage('T', 'calcError');
         }
         else {
             // store.deleteErrorMessage('T', 'calcError', true);
-=======
-            store.setErrorMessage('T');
-        } else {
-            store.deleteErrorMessage('T');
->>>>>>> parent of 9aa0991 (iss/добавил тост и подсветку пути)
         }
     }
 
     static async validPressure(pressure, type, ratio = null, store) {
         if ((pressure.value > 16)
             || (ratio && pressure.value / ratio > 0.7)) {
-            store.setErrorMessage(type);
-        } else {
-            store.deleteErrorMessage(type);
+            store.setErrorMessage(type, 'calcError');
+        }
+        else {
+            // store.deleteErrorMessage(type, 'calcError', true);
         };
+    }
+
+    static async validForNull(val, store) {
+        if (!Array.isArray(val)) {
+            // Проверка работающих клапанов !== 0
+            if (val && val == 0) {
+                store.setErrorMessage('N', 'calcType');
+            } else {
+                store.deleteErrorMessage('N', 'calcType');
+            }
+        }
+        else {
+            // Проверка расхода жидкости и газа
+            if (val.length && val[0].value == 0) {
+                store.setErrorMessage('Gab', 'calcType');
+            } else {
+                store.deleteErrorMessage('Gab', 'calcType');
+            }
+        }
     }
 
     static validDownloadJson(data) {

@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import ArrowLeft from "@/assets/icons/ArrowLeft.vue";
 import EngineMark from "../components/common/EngineMark.vue";
 import CardCommon from "@/components/common/CardCommon.vue";
@@ -77,7 +77,6 @@ export default {
         const closeModal = () => showModal.value = false
 
         const addNewPos = () => {
-            // emit('addNewPos');
             showModal.value = true;
         }
 
@@ -85,21 +84,19 @@ export default {
             if (jsonError.value) { return }
             stores.envModuleStore.pushToTkp();
 
-            // if (type == 'download') {
-            // }
             if (type == 'add') {
                 stores.questionsStore.resetQuestionGroup('all');
                 stores.pageStore.goToQuestion('environmentType');
-                // checkForDownload();
             }
-            // else if (type == 'singleDownload') {
-            //     downloadHandle(name, type)
-            // }
             closeModal();
             downloadHandle(name, type);
         }
 
         formParamsHandle(stores);
+
+        onMounted(() => {
+            stores.toastStore.initToast('Расчет происходит по модели идеального сопла для идеального газа', true)
+        })
 
         return {
             showHelper,

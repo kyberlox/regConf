@@ -1,57 +1,59 @@
 import { defineStore } from 'pinia';
 import { watch } from 'vue';
-
-const DEFAULT_MESSAGE = {
-    id: 0,
-    text: 'Здесь будут содержаться подсказки и ошибки, возникающие при подборе. Расчет происходит по модели идеального сопла для идеального газа',
-};
-
 export const useHelperStore = defineStore('helper', {
     state: () => {
         return {
-            messages: [DEFAULT_MESSAGE],
+            messages: [],
             errors: [
                 {
                     id: 1,
                     inputGroup: 'envAnswersGroup',
                     inputName: 'envSumm',
-                    text: 'Сумма объемных долей компонентов должна быть равна 100%'
+                    text: 'Сумма объемных долей компонентов должна быть равна 100%',
+                    type: 'calcError'
                 },
                 {
                     id: 1.1,
                     inputGroup: 'envAnswersGroup',
                     inputName: 'bothEnvSumm',
-                    text: 'Сумма объемных долей по двум агрегатным состояниям должна быть равна 100%'
+                    text: 'Сумма объемных долей по двум агрегатным состояниям должна быть равна 100%',
+                    type: 'calcError'
                 },
                 {
                     id: 2,
                     inputName: 'T',
-                    text: 'Температура должна быть в диапазоне от -60°С до 600°С'
+                    text: 'Температура должна быть в диапазоне от -60°С до 600°С',
+                    type: 'calcError'
                 },
                 {
                     id: 3,
                     inputName: 'Pn',
-                    text: 'Давление настройки должно быть меньше 16Мпа'
+                    text: 'Давление настройки должно быть меньше 16Мпа',
+                    type: 'calcError'
                 },
                 {
                     id: 4,
                     inputName: 'Pp',
-                    text: 'Значение должно быть меньше 16Мпа и составлять не более 70% от давления настройки'
+                    text: 'Значение должно быть меньше 16Мпа и составлять не более 70% от давления настройки',
+                    type: 'calcError'
                 },
                 {
                     id: 5,
                     inputName: 'Pp_din',
-                    text: 'Значение должно быть меньше 16Мпа и составлять не более 70% от давления настройки'
+                    text: 'Значение должно быть меньше 16Мпа и составлять не более 70% от давления настройки',
+                    type: 'calcError'
                 },
                 {
                     id: 6,
                     inputName: 'N',
-                    text: 'Значение не может быть равно 0'
+                    text: 'Значение не может быть равно 0',
+                    type: 'calcError'
                 },
                 {
                     id: 7,
                     inputName: 'Gab',
-                    text: 'Значение не может быть равно 0'
+                    text: 'Значение не может быть равно 0',
+                    type: 'calcError'
                 },
             ],
             emptyValueErrors: [
@@ -59,109 +61,109 @@ export const useHelperStore = defineStore('helper', {
                     id: 1,
                     type: 'emptyValueError',
                     inputName: 'environmentType',
-                    text: 'Пропущено значение агрегатного состояния',
+                    text: 'Укажите агрегатное состояние несущей рабочей среды:',
                 },
                 {
                     id: 2,
-                    inputName: 'climate',
+                    inputName: 'environment',
                     type: 'emptyValueError',
-                    text: 'Пропущено значение климатического исполнения',
+                    text: 'Заполните мольную долю состава рабочей среды, в %',
                 },
                 {
                     id: 3,
-                    inputName: 'valve_type',
+                    inputName: 'climate',
                     type: 'emptyValueError',
-                    text: 'Пропущено значение типа клапана',
+                    text: 'Укажите климатическое исполнение',
                 },
                 {
                     id: 4,
-                    inputName: 'Pn',
+                    inputName: 'valve_type',
                     type: 'emptyValueError',
-                    text: 'Пропущено значение давления настройки',
+                    text: 'Укажите тип предохранительного клапана',
                 },
                 {
                     id: 5,
-                    inputName: 'Pp',
+                    inputName: 'Pn',
                     type: 'emptyValueError',
-                    text: 'Пропущено значение статического давления',
+                    text: 'Заполните значение давления настройки',
                 },
                 {
                     id: 6,
-                    inputName: 'Pp_din',
+                    inputName: 'Pp',
                     type: 'emptyValueError',
-                    text: 'Пропущено значение динамического давления',
+                    text: 'Заполните значение статического давления',
                 },
                 {
                     id: 7,
-                    inputName: 'Gab',
+                    inputName: 'Pp_din',
                     type: 'emptyValueError',
-                    text: 'Пропущено значение максимального аварийного расхода',
+                    text: 'Заполните значение динамического давления',
                 },
                 {
                     id: 8,
-                    inputName: 'N',
+                    inputName: 'Gab',
                     type: 'emptyValueError',
-                    text: 'Пропущено значение количества клапанов',
+                    text: 'Заполните значение максимального аварийного расхода',
                 },
                 {
                     id: 9,
-                    inputName: 'T',
+                    inputName: 'N',
                     type: 'emptyValueError',
-                    text: 'Пропущено значение температуры',
+                    text: 'Укажите количество клапанов',
                 },
                 {
                     id: 10,
-                    inputName: 'joining_type',
+                    inputName: 'T',
                     type: 'emptyValueError',
-                    text: 'Пропущено значение типа присоединения',
+                    text: 'Укажите значение температуры',
                 },
                 {
                     id: 11,
-                    inputName: 'contact_type',
+                    inputName: 'joining_type',
                     type: 'emptyValueError',
-                    text: 'Пропущено значение типа контакта',
+                    text: 'Укажите значение типа присоединения',
                 },
                 {
                     id: 12,
-                    inputName: 'inlet_flange',
+                    inputName: 'contact_type',
                     type: 'emptyValueError',
-                    text: 'Пропущено значение фланца на входе',
+                    text: 'Заполните тип контакта',
                 },
                 {
                     id: 13,
-                    inputName: 'outlet_flange',
+                    inputName: 'inlet_flange',
                     type: 'emptyValueError',
-                    text: 'Пропущено значение фланца на выходе',
+                    text: 'Заполните фланец на входе',
                 },
                 {
                     id: 14,
-                    inputName: 'color',
+                    inputName: 'outlet_flange',
                     type: 'emptyValueError',
-                    text: 'Пропущена покраска',
+                    text: 'Заполните фланец на выходе',
                 },
                 {
                     id: 15,
-                    inputName: 'packaging',
+                    inputName: 'color',
                     type: 'emptyValueError',
-                    text: 'Пропущена упаковка',
+                    text: 'Укажите способ покраски',
                 },
                 {
                     id: 16,
-                    inputName: 'tightness',
+                    inputName: 'packaging',
                     type: 'emptyValueError',
-                    text: 'Пропущена герметичность затвора ',
+                    text: 'Выберите упаковку',
                 },
                 {
                     id: 17,
-                    inputName: 'docs',
+                    inputName: 'tightness',
                     type: 'emptyValueError',
-                    text: 'Укажите сопроводительную документацию',
+                    text: 'Укажите герметичность затвора ',
                 },
                 {
                     id: 18,
                     inputName: 'pipe_material',
                     type: 'emptyValueError',
-                    text: 'Пропущен материал и размер трубы',
+                    text: 'Заполните материал и размер трубопровода',
                 },
                 {
                     id: 19,
@@ -175,18 +177,15 @@ export const useHelperStore = defineStore('helper', {
                 type: 'autorizeError',
                 inputName: 'tkpError',
                 text: `<a class='helper__message-link' href='https://portal.emk.ru/intranet/tools/regconf.php'>Авторизуйтесь</a> для получения доступа к генерации ткп и истории запросов, без авторизации доступна только генерация опросного листа`
-            }]
+            }],
         };
     },
 
     actions: {
-        setDefaultMessage() {
-            this.messages = DEFAULT_MESSAGE;
-        },
         setErrorMessage(name, type = 'calcError') {
             if (type == 'calcError') {
-                const existingMessage = this.messages.find(item => item.inputName === name);
-                const newError = this.errors.find(item => item.inputName === name);
+                const existingMessage = this.messages.find(item => item.inputName == name && item.type == 'calcError');
+                const newError = this.errors.find(item => item.inputName == name && item.type == 'calcError');
 
                 if (!existingMessage && newError) {
                     this.messages.push(newError);
@@ -195,8 +194,8 @@ export const useHelperStore = defineStore('helper', {
             else if (type == 'emptyValueError') {
                 this.messages = this.messages.filter((item) => item.type !== 'emptyValueError');
 
-                const existingMessage = this.messages.find(item => item.inputName === name);
-                const newError = this.emptyValueErrors.find(item => item.inputName === name);
+                const existingMessage = this.messages.find(item => item.inputName === name && item.type == 'emptyValueError');
+                const newError = this.emptyValueErrors.find(item => item.inputName === name && item.type == 'emptyValueError');
 
                 if (!existingMessage && newError) {
                     this.messages.push(newError);
@@ -212,24 +211,19 @@ export const useHelperStore = defineStore('helper', {
             }
             else if (type == 'autorizeError') {
                 this.deleteErrorMessage('', 'autorizeError');
-                const newError = this.autorizeErrors.find(item => item.inputName === name);
-                const existingMessage = this.messages.find(item => item.inputName === name);
+                const newError = this.autorizeErrors.find(item => item.inputName === name && item.type == 'autorizeError');
+                const existingMessage = this.messages.find(item => item.inputName === name && item.type == 'autorizeError');
                 if (!existingMessage && newError) {
                     this.messages.push(newError);
                 }
             }
         },
-<<<<<<< HEAD
         deleteErrorMessage(name, group = false, nameFromGroup = false) {
             if (nameFromGroup) {
                 this.messages.find(e => e.inputName === name);
                 this.messages = this.messages.filter((item) => (item.inputName !== name && item.type !== group));
             }
             else if (!group) {
-=======
-        deleteErrorMessage(name, group = false) {
-            if (!group) {
->>>>>>> parent of 9aa0991 (iss/добавил тост и подсветку пути)
                 this.messages = this.messages.filter((item) => item.inputName !== name);
             }
             else {
@@ -239,19 +233,17 @@ export const useHelperStore = defineStore('helper', {
         handleErrorHighlight(newErrors, nodeRefs) {
             Object.values(nodeRefs.value).forEach(element => {
                 element?.classList?.contains('card--error-highlight') && element.classList.remove('card--error-highlight');
+                element?.classList?.contains('card--attention-highlight') && element.classList.remove('card--attention-highlight');
             });
 
-            if (newErrors.length > 1) {
+            if (newErrors.length) {
                 newErrors.forEach(error => {
-                    if (error.id !== 0 && nodeRefs.value[error.inputName]) {
-                        nodeRefs.value[error.inputName].classList.add('card--error-highlight');
+                    if (nodeRefs.value[error.inputName] && error.type == 'emptyValueError') {
+                        nodeRefs.value[error.inputName].classList.add('card--attention-highlight');
                     }
-<<<<<<< HEAD
                     else if (nodeRefs.value[error.inputName]) {
                         nodeRefs.value[error.inputName].classList.add('card--error-highlight');
                     }
-=======
->>>>>>> parent of 9aa0991 (iss/добавил тост и подсветку пути)
                 });
             }
         },
@@ -266,6 +258,6 @@ export const useHelperStore = defineStore('helper', {
 
     getters: {
         getMessages: (state) => state.messages,
-        isValid: (state) => state.messages.filter(item => item.type !== 'serverError' && item.type !== 'autorizeError').length == 1,
+        isValid: (state) => state.messages.filter(item => item.type == 'calcError').length == 0,
     },
 });

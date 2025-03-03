@@ -31,6 +31,9 @@
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
         position: relative;
         padding: 12px;
+        font-size: 19px;
+        font-weight: 400;
+        border: 1px solid #00000029;
 
         &:hover {
             color: #666;
@@ -45,9 +48,8 @@
             }
         }
 
-        &:not(:first-child) {
+        &:not(:first-child):not(.helper__message--attention):not(.helper__message--tkp) {
             margin-top: 15px;
-<<<<<<< HEAD
             background: #ff5f5f1c;
             border-radius: 8px;
             padding: 12px 16px;
@@ -66,12 +68,6 @@
                 inset 4px 0 0 var(--emk-brand-color);
             cursor: pointer;
             transition: all 0.2s ease;
-=======
-            cursor: pointer;
-            background: #fff3cd;
-            border-left: 2px solid var(--emk-brand-color);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
->>>>>>> parent of 9aa0991 (iss/добавил тост и подсветку пути)
         }
     }
 
@@ -199,6 +195,7 @@
     }
 
     &__message--tkp {
+        margin-top: 15px;
         cursor: pointer;
         border: 1px solid rgba(128, 128, 128, 0.227) !important;
         background: white !important;
