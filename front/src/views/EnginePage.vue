@@ -95,7 +95,7 @@ export default {
         formParamsHandle(stores);
 
         onMounted(() => {
-            stores.toastStore.initToast('Расчет происходит по модели идеального сопла для идеального газа', true)
+            stores.helperStore.setErrorMessage('typeOfCalc', 'temporaryMessage');
         })
 
         return {

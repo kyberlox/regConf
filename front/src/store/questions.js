@@ -2,7 +2,6 @@ import { defineStore } from 'pinia';
 import questionsBank from '@/assets/staticJsons/questionBank.json';
 import { useEnvModuleStore } from './envModule';
 import { useStores } from '@/composables/useStores';
-
 export const useQuestionsStore = defineStore('questions', {
     state: () => ({
         questions: questionsBank,
@@ -101,6 +100,7 @@ export const useQuestionsStore = defineStore('questions', {
 
             this.questions.map((item) => {
                 if (targetGroups.includes(item.group)) {
+                    let needMessage = false;
                     if (item.type == 'oneLineType') {
                         item.value.map((e) => {
                             e.value = null;
@@ -111,6 +111,9 @@ export const useQuestionsStore = defineStore('questions', {
                         })
                     } else if (item.type == 'inputGroup') {
                         item.answers.map((e) => {
+                            if (e.value) {
+                                needMessage = true;
+                            }
                             e.value = null;
                         })
                     } else if (item.type == 'CheckboxType') {
@@ -118,6 +121,9 @@ export const useQuestionsStore = defineStore('questions', {
                     } else {
                         item.value = null;
                     }
+                    if (!needMessage) return;
+                    const stores = useStores();
+                    stores.helperStore.setErrorMessage('reset', 'temporaryMessage');
                 }
             })
         }

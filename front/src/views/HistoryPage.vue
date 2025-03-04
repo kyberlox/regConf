@@ -5,26 +5,28 @@
                              :year-range="yearRange"
                              :formattedJson="formattedJson" />
             <div class="history-page__elements content-container">
-                <div v-for="item in testjson"
-                     :key="'tkpNum' + item.id"
-                     class="history-page__element"
-                     :class="{ hidden: item.hidden }"
-                     @click="handleClick('download', item.id, item.name)">
-                    <div class="history-page__element__title">{{ item.name }}</div>
-                    <div class="history-page__element__footer">
-                        <div class="history-page__element__date">{{ item.date }}</div>
-                        <div class="history-page__element__btn-group">
-                            <div class="history-page__element-btn"
-                                 v-for="button in buttons"
-                                 :key="'btn' + button.name">
-                                <component :is="button.icon"
-                                           @click.stop="handleClick(button.name, item.id, item.name)"
-                                           :class="`history-page__element-btn-svg history-page__element-btn-svg--${button.name}`" />
-                                <span class="tooltipo">{{ button.title }}</span>
+                <TransitionGroup name="list">
+                    <div v-for="item in testjson"
+                         :key="'tkpNum' + item.id"
+                         class="history-page__element"
+                         :class="{ hidden: item.hidden }"
+                         @click="handleClick('download', item.id, item.name)">
+                        <div class="history-page__element__title">{{ item.name }}</div>
+                        <div class="history-page__element__footer">
+                            <div class="history-page__element__date">{{ item.date }}</div>
+                            <div class="history-page__element__btn-group">
+                                <div class="history-page__element-btn"
+                                     v-for="button in buttons"
+                                     :key="'btn' + button.name">
+                                    <component :is="button.icon"
+                                               @click.stop="handleClick(button.name, item.id, item.name)"
+                                               :class="`history-page__element-btn-svg history-page__element-btn-svg--${button.name}`" />
+                                    <span class="tooltipo">{{ button.title }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </TransitionGroup>
             </div>
         </div>
     </div>
@@ -39,6 +41,7 @@ import HistoryCalendar from '@/components/tools/HistoryCalendar.vue';
 import Api from '@/utils/Api';
 import { useHistoryStore } from '@/store/history';
 import { updateHistory } from '@/composables/updateHistory';
+import { useHelperStore } from '@/store/helper';
 
 export default {
     components: {
@@ -75,6 +78,7 @@ export default {
         const deleteTkp = (id) => {
             Api.delete(API_URL + '/delete_tkp/' + id)
                 .then(() => updateHistory());
+            useHelperStore().setErrorMessage('succesDelete', 'temporaryMessage')
         }
 
         const downloadTkp = (id, name) => {

@@ -12,15 +12,25 @@
             </div>
             <div v-if="navActive == 'help'"
                  class="helper__content helper__content--help">
-                <!-- <TransitionGroup name="slide-down"> -->
-                <div class="helper__message"
-                     v-for="(message, index) in messages"
-                     :class="{ 'helper__message--attention': message.type == 'emptyValueError' }"
-                     :key="'message' + index"
-                     @click="goToQuestion(message.inputName)"
-                     v-html=message.text>
-                </div>
-                <!-- </TransitionGroup> -->
+                <TransitionGroup name="slide-down">
+                    <div class="helper__message"
+                         v-for="(message, index) in messages"
+                         :class="[
+                            {
+                                'helper__message--attention': message.type === 'emptyValueError' ||
+                                    message.class === 'attention'
+                            },
+                            {
+                                'helper__message--greetings': message.class === 'greetings'
+                            },
+                            {
+                                'helper__message--neutral': message.class === 'neutral'
+                            }]"
+                         :key="'message' + index"
+                         @click="goToQuestion(message.inputName)"
+                         v-html=addSvgToHtml(message.text)>
+                    </div>
+                </TransitionGroup>
             </div>
 
             <div v-if="navActive == 'tkp'"
@@ -98,7 +108,22 @@ export default {
             navActive,
             navTabs,
             goToNav: (name) => navActive.value = name,
-            download
+            download,
+            addSvgToHtml: (html) => {
+                return html + `<svg class="helper__message__icon" viewBox="0 0 24 24"
+                 fill="none"
+                 xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                      clip-rule="evenodd"
+                      d="M12.75 9.49794V14.4961H11.25V9.49794H12.75Z"
+                      fill="currentColor" />
+                <path d="M13 17.495H11V15.4957H13V17.495Z"
+                      fill="currentColor" />
+                <path fill-rule="evenodd"
+                      clip-rule="evenodd"
+                      d="M11.567 3.99695L3 18.8299V19.9969L21 19.9968V18.8298L12.433 3.99695H11.567ZM19.076 18.4974L4.92404 18.4975L12 6.24613L19.076 18.4974Z"
+                      fill="currentColor" />
+            </svg>`}
         }
     }
 }

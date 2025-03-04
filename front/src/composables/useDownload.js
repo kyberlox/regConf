@@ -49,6 +49,7 @@ export const useDownload = (stores) => {
                             Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName.replaceAll('.', '-'))
                                 .then(() => {
                                     stores.envModuleStore.nulifyTkpData();
+                                    stores.helperStore.setErrorMessage('successDownload', 'temporaryMessage');
                                     updateHistory();
                                 });
                         })

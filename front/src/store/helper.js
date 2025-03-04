@@ -176,8 +176,38 @@ export const useHelperStore = defineStore('helper', {
                 id: 1,
                 type: 'autorizeError',
                 inputName: 'tkpError',
-                text: `<a class='helper__message-link' href='https://portal.emk.ru/intranet/tools/regconf.php'>Авторизуйтесь</a> для получения доступа к генерации ткп и истории запросов`
+                text: `<a class='helper__message-link' href='https://portal.emk.ru/intranet/tools/regconf.php'>Авторизуйтесь</a> для сохранения ТКП и получения доступа к истории запросов`
             }],
+            temporaryMessages: [
+                {
+                    id: 1,
+                    class: 'greetings',
+                    inputName: 'successDownload',
+                    type: 'temporaryMessage',
+                    text: 'ТКП успешно добавлен'
+                },
+                {
+                    id: 2,
+                    class: 'neutral',
+                    inputName: 'typeOfCalc',
+                    type: 'temporaryMessage',
+                    text: 'Расчет происходит по модели идеального сопла для идеального газа'
+                },
+                {
+                    id: 3,
+                    class: 'attention',
+                    inputName: 'reset',
+                    type: 'temporaryMessage',
+                    text: 'Для перерасчета были удалены некоторые значения, пожалуйста, заполните их заново'
+                },
+                {
+                    id: 4,
+                    class: 'greetings',
+                    inputName: 'succesDelete',
+                    type: 'temporaryMessage',
+                    text: 'ТКП успешно удален'
+                }
+            ]
         };
     },
 
@@ -214,7 +244,19 @@ export const useHelperStore = defineStore('helper', {
                 const newError = this.autorizeErrors.find(item => item.inputName === name && item.type == 'autorizeError');
                 const existingMessage = this.messages.find(item => item.inputName === name && item.type == 'autorizeError');
                 if (!existingMessage && newError) {
+                    this.messages.unshift(newError);
+                }
+            }
+            else if (type == 'temporaryMessage') {
+                const existingMessage = this.messages.find(item => item.inputName == name);
+                const newError = this.temporaryMessages.find(item => item.inputName == name);
+
+                if (!existingMessage && newError) {
                     this.messages.push(newError);
+
+                    setTimeout(() => {
+                        this.deleteErrorMessage(name, 'temporaryMessage');
+                    }, 8000);
                 }
             }
         },
