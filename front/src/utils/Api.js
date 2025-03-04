@@ -29,6 +29,8 @@ export default class Api {
         });
 
         if (response.headers.get('token')) {
+            console.log('ds');
+
             useUserStore().setToken(response.headers.get('token'));
         }
 

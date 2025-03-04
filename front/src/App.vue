@@ -1,26 +1,29 @@
 <template>
     <PageHeader />
-    <div class="main-content">
+    <main class="main-content">
         <RouterView />
         <MsgModal v-if="showModal"
                   :type="modalType"
                   :modalActive="showModal"
-                  @closeModal="closeModal" />
-    </div>
-    <PageFooter @callSupportModal="showModal = true" />
+                  @closeModal="toggleModal(false)" />
+    </main>
+    <PageFooter @callSupportModal="toggleModal(true)" />
     <YandexMetrika />
 </template>
-<script>
-import PageHeader from "./components/layout/PageHeader.vue";
-import MsgModal from "./components/common/MsgModal.vue"
-import PageFooter from "./components/layout/PageFooter.vue";
-import { onMounted, ref, watch, computed } from "vue";
-import YandexMetrika from "./components/tools/YandexMetrika.vue";
-import Api from "./utils/Api";
-import { updateHistory } from "./composables/updateHistory";
-import { useStores } from "@/composables/useStores";
 
-export default {
+<script>
+import { defineComponent } from 'vue'
+import { onMounted, ref, watch, computed } from "vue"
+import { useStores } from "@/composables/useStores"
+import { updateHistory } from "./composables/updateHistory"
+import Api from "./utils/Api"
+import PageHeader from "./components/layout/PageHeader.vue"
+import PageFooter from "./components/layout/PageFooter.vue"
+import MsgModal from "./components/common/MsgModal.vue"
+import YandexMetrika from "./components/tools/YandexMetrika.vue"
+
+export default defineComponent({
+    name: 'App',
     components: {
         PageHeader,
         PageFooter,
@@ -28,15 +31,15 @@ export default {
         YandexMetrika,
     },
     setup() {
-        const stores = useStores();
-        const showModal = ref(false);
-        const isAutorize = computed(() => stores.userStore.getAutorizeStatus);
+        const stores = useStores()
+        const showModal = ref(false)
+        const isAutorize = computed(() => stores.userStore.getAutorizeStatus)
 
-        const closeModal = () => {
-            showModal.value = false;
+        const toggleModal = (value) => {
+            showModal.value = value
         }
 
-        onMounted(() => {
+        const handleAuthCheck = () => {
             Api.get('https://api.ipify.org?format=json')
                 .then((res) => {
                     stores.userStore.setIp(res.ip)
@@ -51,23 +54,23 @@ export default {
                             }
                         })
                 });
-        })
+        }
 
-        watch((isAutorize), (newValue) => {
-            if (newValue !== null && newValue == false) {
-                stores.helperStore.setErrorMessage('tkpError', 'autorizeError');
-            }
-            else {
-                stores.helperStore.deleteErrorMessage('tkpError');
+        onMounted(handleAuthCheck)
+
+        watch(isAutorize, (newValue) => {
+            if (newValue === false) {
+                stores.helperStore.setErrorMessage('tkpError', 'autorizeError')
+            } else {
+                stores.helperStore.deleteErrorMessage('tkpError')
             }
         })
 
         return {
             showModal,
-            closeModal,
-            modalType: 'support',
-
+            toggleModal,
+            modalType: 'support'
         }
     }
-}
+})
 </script>

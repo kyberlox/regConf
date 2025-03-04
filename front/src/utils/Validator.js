@@ -10,8 +10,17 @@ export default class Validator {
     }
 
     static async validPressure(pressure, type, ratio = null, store) {
-        if ((pressure.value > 16)
-            || (ratio && pressure.value / ratio > 0.7)) {
+        console.log(type);
+        console.log(pressure);
+
+        if ((pressure.value > 16) ||
+            (pressure.value < 0) ||
+            (ratio && pressure.value / ratio > 0.7)) {
+            store.setErrorMessage(type, 'calcError');
+        }
+        else if (pressure.value == 0 && type == 'Pn') {
+            console.log(pressure);
+
             store.setErrorMessage(type, 'calcError');
         }
         else {
@@ -20,7 +29,7 @@ export default class Validator {
     }
 
     static async validForNull(val, name, store) {
-        if (val && val == 0 || Array.isArray(val) && val.length && val[0].value == 0) {
+        if (val && val <= 0 || Array.isArray(val) && val.length && val[0].value !== null && val[0].value <= 0) {
             store.setErrorMessage(name, 'calcError');
         } else {
             store.deleteErrorMessage(name, 'calcError', true);

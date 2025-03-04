@@ -1,59 +1,61 @@
-
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import Api from '@/utils/Api'
 import Validator from '@/utils/Validator'
 import { updateHistory } from './updateHistory'
+
 export const useDownload = (stores) => {
     const jsonError = ref(false)
+    const olData = computed(() => stores.envModuleStore.getAfterGetCompoundValue)
+    const tkpData = computed(() => stores.envModuleStore.getTkpData)
 
     const checkForDownload = () => {
-        jsonError.value = Validator.validDownloadJson(stores.questionsStore.questions, stores.helperStore)
+        jsonError.value = Validator.validDownloadJson(
+            stores.questionsStore.questions,
+            stores.helperStore
+        )
     }
-    // Проверка на соответствие обязательных параметров
-    // watch(() => jsonError, (oldVal, newVal) => {
-    //     if (newVal && oldVal !== false) {
-    //         // stores.helperStore.deleteErrorMessage(null, 'emptyValueError');
-    //     }
-    // }, { deep: true })
 
-    const downloadHandle = (docName, type) => {
+    const handlePostSuccess = async (docName) => {
+        await Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName)
+        stores.envModuleStore.nulifyTkpData()
+        stores.helperStore.setErrorMessage('successDownload', 'temporaryMessage')
+        updateHistory()
+    }
+
+    const downloadStrategies = {
+        singleDownload: async (docName) => {
+            stores.envModuleStore.pushToTkp();
+            console.log(tkpData.value);
+
+            await Api.post(API_URL + '/generate', tkpData.value, true, true, "ТКП " + docName)
+            await Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName)
+            await stores.envModuleStore.nulifyTkpData()
+            updateHistory()
+        },
+
+        add: async (docName) => {
+            await Api.post(API_URL + '/set_data', tkpData.value, false, true, docName)
+            await Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName)
+        },
+
+        download: async (docName) => {
+            await Api.post(API_URL + '/set_data', tkpData.value, false, true, docName)
+            await Api.post(API_URL + '/generate', '', true, true, "ТКП " + docName)
+            await handlePostSuccess(docName)
+        }
+    }
+
+    const downloadHandle = async (docName, type) => {
         if (jsonError.value) {
             stores.helperStore.setErrorMessage(jsonError.value, 'emptyValueError')
             return
         }
 
-        const olData = computed(() => stores.envModuleStore.getAfterGetCompoundValue);
-        const tkpData = computed(() => stores.envModuleStore.getTkpData);
+        const formattedName = docName.replaceAll('.', '-')
+        const downloadStrategy = downloadStrategies[type]
 
-        if (type == 'singleDownload') {
-            Api.post(API_URL + '/generate', tkpData.value, true, true, "ТКП " + docName.replaceAll('.', '-'))
-                .then(() => {
-                    Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName.replaceAll('.', '-'))
-                        .then(() => {
-                            stores.envModuleStore.nulifyTkpData();
-                            updateHistory();
-                        });
-                })
-        }
-        else if (type == 'add') {
-            Api.post(API_URL + '/set_data', tkpData.value, false, true, docName.replaceAll('.', '-'))
-                .then(() => {
-                    Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName.replaceAll('.', '-'));
-                });
-        }
-        else if (type == 'download') {
-            Api.post(API_URL + '/set_data', tkpData.value, false, true, docName.replaceAll('.', '-'))
-                .then(() => {
-                    Api.post(API_URL + '/generate', '', true, true, "ТКП " + docName.replaceAll('.', '-'))
-                        .then(() => {
-                            Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName.replaceAll('.', '-'))
-                                .then(() => {
-                                    stores.envModuleStore.nulifyTkpData();
-                                    stores.helperStore.setErrorMessage('successDownload', 'temporaryMessage');
-                                    updateHistory();
-                                });
-                        })
-                })
+        if (downloadStrategy) {
+            await downloadStrategy(formattedName)
         }
     }
 

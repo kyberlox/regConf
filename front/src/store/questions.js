@@ -98,34 +98,44 @@ export const useQuestionsStore = defineStore('questions', {
             const targetGroups = this.resetGroups[group];
             if (!targetGroups) return;
 
-            this.questions.map((item) => {
-                if (targetGroups.includes(item.group)) {
-                    let needMessage = false;
-                    if (item.type == 'oneLineType') {
-                        item.value.map((e) => {
-                            e.value = null;
-                            e.id = null;
-                        })
-                        item.inner.map((e) => {
-                            e.value = null;
-                        })
-                    } else if (item.type == 'inputGroup') {
-                        item.answers.map((e) => {
-                            if (e.value) {
-                                needMessage = true;
-                            }
-                            e.value = null;
-                        })
-                    } else if (item.type == 'CheckboxType') {
-                        item.value = false;
-                    } else {
-                        item.value = null;
-                    }
-                    if (!needMessage) return;
+            const resetHandlers = {
+                oneLineType: (item) => {
+                    item.value.forEach(e => {
+                        e.value = null;
+                        e.id = null;
+                    });
+                    item.inner.forEach(e => e.value = null);
+                    return false;
+                },
+                inputGroup: (item) => {
+                    let hasValue = false;
+                    item.answers.forEach(e => {
+                        if (e.value) hasValue = true;
+                        e.value = null;
+                    });
+                    return hasValue;
+                },
+                CheckboxType: (item) => {
+                    item.value = false;
+                    return false;
+                },
+                default: (item) => {
+                    item.value = null;
+                    return false;
+                }
+            };
+
+            this.questions.forEach(item => {
+                if (!targetGroups.includes(item.group)) return;
+
+                const handler = resetHandlers[item.type] || resetHandlers.default;
+                const needMessage = handler(item);
+
+                if (needMessage) {
                     const stores = useStores();
                     stores.helperStore.setErrorMessage('reset', 'temporaryMessage');
                 }
-            })
+            });
         }
     },
     getters: {

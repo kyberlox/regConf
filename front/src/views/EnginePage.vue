@@ -83,11 +83,8 @@ export default {
         const modalHandle = (name, type) => {
             if (jsonError.value) { return }
             stores.envModuleStore.pushToTkp();
-
-            if (type == 'add') {
-                stores.questionsStore.resetQuestionGroup('all');
-                stores.pageStore.goToQuestion('environmentType');
-            }
+            stores.questionsStore.resetQuestionGroup('all');
+            stores.pageStore.goToQuestion('environmentType');
             closeModal();
             downloadHandle(name, type);
         }
