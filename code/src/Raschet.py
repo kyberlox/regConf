@@ -797,19 +797,22 @@ def mark_params(dt):
         color = [
             f"Серый RAL7035 по технологической инструкции 38877941.25206.01013 АО \"НПО Регулятор\" ", #Заводская
             f"Серый RAL7035 cистема АКП С4 по № П2-05 ТИ-0002", #Роснефть
-            f"Красный RAL3020 по СТО Газпром 9.1-018-2012" #Газпром
+            f"Красный RAL3020 по СТО Газпром 9.1-018-2012", #Газпром
+            "Другое"
             ]
     elif dt["material"] == "20ГЛ":
         color = [
             f"Синий RAL5017 по технологической инструкции 38877941.25206.01013 АО \"НПО Регулятор\" ", #Заводская
             f"Синий RAL5017 система АКП С4 по № П2-05 ТИ-0002", #Роснефть
-            f"Красный RAL3020 по СТО Газпром 9.1-018-2012" #Газпром
+            f"Красный RAL3020 по СТО Газпром 9.1-018-2012", #Газпром
+            "Другое"
             ]
     else:
         color = [
             f"Голубой RAL5012 по технологической инструкции 38877941.25206.01013 АО \"НПО Регулятор\" ", #Заводская
             f"Голубой RAL5012 система АКП С4 по № П2-05 ТИ-0002", #Роснефть
-            f"Красный RAL3020 по СТО Газпром 9.1-018-2012" #Газпром
+            f"Красный RAL3020 по СТО Газпром 9.1-018-2012", #Газпром
+            "Другое"
             ]
 
     weight, painting_area = get_by_mark(dt["mark"], DN, PN)
@@ -907,7 +910,7 @@ def make_XL(dt):
         "W": "material_spool",
         "X": "material_saddle",
         "Y": "spring_material",
-        "Z": "joining_type",
+        #"Z": "joining_type",
         "AA": "contact_type",
         "AB": "weight",
         "AC": "painting_area",
@@ -948,7 +951,9 @@ def make_XL(dt):
         position["Pp"] = float(position["Pp"]) * 10.197162
         position["Pp_din"] = float(position["Pp"]) * 10.197162
 
-
+        # Фланцы по ГОСТ 33259-2015
+        if position["inlet_flange"] is not None:
+            position["joining_type"] = position["joining_type"] + f" по ГОСТ 33259-2015 {position['inlet_flange']} / {position['outlet_flange']}"
 
         if position["valve_type"] == 'Н' or (
                 position["valve_type"] == 'В' and position["open_close_type"] == "открытого типа") or (
@@ -1112,6 +1117,11 @@ def make_OL(data):
     Pn = float(data["Pn"]) * 0.1 - float(data['Pp']) * 0.1
 
     data['Pn'] = Pn
+
+    #Фланцы по ГОСТ 33259-2015
+    if data["inlet_flange"] is not None:
+        data["inlet_flange"] = data["inlet_flange"] + " по ГОСТ 33259-2015"
+        data["outlet_flange"] = data["outlet_flange"] + " по ГОСТ 33259-2015"
 
     # Давление начала открытия
     if Pn <= 0.3:
