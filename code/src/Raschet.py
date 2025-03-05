@@ -899,7 +899,7 @@ def make_XL(dt):
         "H": "name",
         "I": "T",
         "L": "climate",
-        "M": "detonation_node",
+        #"M": "detonation_node",
         "N": "need_bellows",
         "O": "DN",
         "P": "PN",
