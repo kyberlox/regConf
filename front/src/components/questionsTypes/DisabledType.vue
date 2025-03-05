@@ -1,11 +1,12 @@
 <template>
     <div class="result-display">
-        <div class="result-display__content">
-            {{ question.value }}
-        </div>
+        <span class="result-display__content"
+              v-html="question.value">
+        </span>
     </div>
 </template>
 <script>
+
 export default {
     props: {
         question: {

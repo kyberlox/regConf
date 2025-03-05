@@ -4,7 +4,6 @@ import { getPressureParamsHandle } from "@/composables/getParamsHandle/getPressu
 import { getMarkParamsHandle } from "@/composables/getParamsHandle/getMarkParamsHandle";
 import { getTightnessParamsHandle } from "@/composables/getParamsHandle/getTightnessParamsHandle";
 import { getDocParamsHandle } from "@/composables/getParamsHandle/getDocParamsHandle";
-import { noSkipChecker } from "./noSkipChecker";
 import Api from "@/utils/Api";
 
 export const formParamsHandle = (stores) => {
@@ -23,7 +22,6 @@ export const formParamsHandle = (stores) => {
         }
     });
 
-    noSkipChecker();
     getCompoundParamsHandle(stores);
     getPressureParamsHandle(stores);
     getMarkParamsHandle(stores);

@@ -697,29 +697,37 @@
         "type": "DisabledType",
         "hidden": true,
         "value": null
+      },
+      {
+        "id": 18.9,
+        "inputName": "trials",
+        "group": "hiddenMark",
+        "name": "Обязательные испытания:",
+        "type": "DisabledType",
+        "value": null
       }
     ]
   },
   {
-    "id": 18.1,
+    "id": 19,
     "group": "hiddenMark",
-    "name": "Испытания:",
-    "inputName": "trials",
+    "name": "Дополнительные Испытания:",
+    "inputName": "addTrials",
     "type": "TextAreaType",
     "hidden": false,
     "value": null
   },
   {
-    "id": 19,
+    "id": 20,
     "group": "tightness",
-    "name": "Тип контакта:",
+    "name": "Тип уплотнения затвора:",
     "inputName": "contact_type",
     "type": "SelectType",
     "value": null,
     "answers": []
   },
   {
-    "id": 19.1,
+    "id": 21,
     "group": "tightness",
     "name": "Фланец на входе:",
     "inputName": "inlet_flange",
@@ -729,7 +737,7 @@
     "answers": []
   },
   {
-    "id": 19.2,
+    "id": 22,
     "group": "tightness",
     "name": "Фланец на выходе:",
     "inputName": "outlet_flange",
@@ -739,7 +747,7 @@
     "answers": []
   },
   {
-    "id": 20,
+    "id": 23,
     "group": "tightness",
     "name": "Покраска:",
     "inputName": "color",
@@ -748,7 +756,7 @@
     "answers": []
   },
   {
-    "id": 21,
+    "id": 24,
     "group": "tightness",
     "name": "Упаковка:",
     "inputName": "packaging",
@@ -758,7 +766,7 @@
     "answers": []
   },
   {
-    "id": 22,
+    "id": 25,
     "group": "tightness",
     "name": "Герметичность затвора по ГОСТ 9544-2015:",
     "type": "SelectType",
@@ -767,7 +775,7 @@
     "answers": []
   },
   {
-    "id": 23,
+    "id": 26,
     "group": "additional",
     "inputName": "additionalAnswersGroup",
     "type": "CheckboxType",
@@ -777,7 +785,7 @@
     "value": [],
     "answers": [
       {
-        "id": 23.1,
+        "id": 26.1,
         "group": "additional",
         "name": "Поворотные заглушки",
         "type": "CheckboxType",
@@ -785,7 +793,7 @@
         "value": false
       },
       {
-        "id": 23.2,
+        "id": 26.2,
         "group": "additional",
         "name": "Термочехол",
         "type": "CheckboxType",
@@ -793,7 +801,7 @@
         "value": false
       },
       {
-        "id": 23.3,
+        "id": 26.3,
         "group": "additional",
         "name": "ЗИП",
         "type": "CheckboxType",
@@ -801,7 +809,7 @@
         "value": false
       },
       {
-        "id": 23.4,
+        "id": 26.4,
         "group": "additional",
         "name": "Приемка",
         "type": "CheckboxType",
@@ -809,7 +817,7 @@
         "value": false
       },
       {
-        "id": 23.5,
+        "id": 26.5,
         "group": "additional",
         "name": "Переходники",
         "type": "CheckboxType",
@@ -817,7 +825,7 @@
         "value": false
       },
       {
-        "id": 23.6,
+        "id": 26.6,
         "group": "additional",
         "name": "Наличие в рабочей среде абразивных частиц",
         "type": "CheckboxType",
@@ -825,7 +833,7 @@
         "value": false
       },
       {
-        "id": 23.7,
+        "id": 26.7,
         "group": "additional",
         "name": "Комплект ответных присоединительных частей",
         "type": "CheckboxType",
@@ -835,7 +843,7 @@
     ]
   },
   {
-    "id": 24,
+    "id": 27,
     "group": "additional",
     "name": "Сопроводительная документация:",
     "type": "TextAreaType",
@@ -843,7 +851,7 @@
     "value": "Руководство по эксплуатации и паспорт изделия"
   },
   {
-    "id": 25,
+    "id": 28,
     "group": "additional",
     "name": "Материал и размер трубопровода:",
     "type": "TextAreaType",
@@ -851,7 +859,7 @@
     "value": null
   },
   {
-    "id": 26,
+    "id": 29,
     "group": "additional",
     "name": "Дополнительные требования:",
     "type": "TextAreaType",
@@ -859,7 +867,7 @@
     "value": null
   },
   {
-    "id": 27,
+    "id": 30,
     "group": "additional",
     "name": "Количество:",
     "type": "TextType",
@@ -868,7 +876,7 @@
     "value": null
   },
   {
-    "id": 28,
+    "id": 31,
     "group": "additional",
     "name": "Номер опросного листа:",
     "type": "TextType",

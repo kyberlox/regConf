@@ -9,10 +9,7 @@ export const useDownload = (stores) => {
     const tkpData = computed(() => stores.envModuleStore.getTkpData)
 
     const checkForDownload = () => {
-        jsonError.value = Validator.validDownloadJson(
-            stores.questionsStore.questions,
-            stores.helperStore
-        )
+        jsonError.value = Validator.validDownloadJson();
     }
 
     const handlePostSuccess = async (docName) => {
@@ -25,8 +22,6 @@ export const useDownload = (stores) => {
     const downloadStrategies = {
         singleDownload: async (docName) => {
             stores.envModuleStore.pushToTkp();
-            console.log(tkpData.value);
-
             await Api.post(API_URL + '/generate', tkpData.value, true, true, "ТКП " + docName)
             await Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName)
             await stores.envModuleStore.nulifyTkpData()
@@ -36,6 +31,7 @@ export const useDownload = (stores) => {
         add: async (docName) => {
             await Api.post(API_URL + '/set_data', tkpData.value, false, true, docName)
             await Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName)
+            stores.helperStore.setErrorMessage('successAdd', 'temporaryMessage')
         },
 
         download: async (docName) => {

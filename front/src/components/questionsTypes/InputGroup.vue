@@ -9,8 +9,10 @@
                 {{ answer.name }}
             </div>
             <div class="card__results__result-value">
-                <span class="card__results__result-value__number">
-                    {{ answer.value }}</span>
+                <span class="card__results__result-value__number"
+                      :class="{ 'card__results__result-value__number--min-font': answer.inputName == 'trials' }"
+                      v-html="answer.value">
+                </span>
             </div>
         </div>
     </div>
@@ -22,7 +24,7 @@ import { ref, onMounted } from "vue";
 import { usePageStore } from "@/store/page";
 export default {
     props: ["question"],
-    setup() {
+    setup(props) {
         const pageStore = usePageStore();
         const questionInGroup = ref({});
 

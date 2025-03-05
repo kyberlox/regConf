@@ -26,5 +26,12 @@ export const temporaryMessages = [
         inputName: 'succesDelete',
         type: 'temporaryMessage',
         text: 'ТКП успешно удален'
+    },
+    {
+        id: 5,
+        class: 'greetings',
+        inputName: 'successAdd',
+        type: 'temporaryMessage',
+        text: 'Позиция успешно добавлена, заполните следующую'
     }
 ]

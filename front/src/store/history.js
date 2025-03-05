@@ -10,12 +10,13 @@ export const useHistoryStore = defineStore('history', {
 
     actions: {
         setTkpHistory(tkpHistory) {
-            if (!tkpHistory.length) return;
-            tkpHistory.forEach((item) => {
-                item.name = decodeURIComponent(item.name);
-                item.date = item.date.split('-').reverse().join('-');
-                return
-            });
+            if (tkpHistory && tkpHistory.length) {
+                tkpHistory.forEach((item) => {
+                    item.name = decodeURIComponent(item.name);
+                    item.date = item.date.split('-').reverse().join('-');
+                    return
+                });
+            }
             this.tkpHistory = tkpHistory;
         },
     },

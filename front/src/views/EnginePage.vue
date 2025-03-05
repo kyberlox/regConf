@@ -22,11 +22,6 @@
         </transition>
     </div>
     <div class="download-button__wrapper">
-        <!-- <div v-if="isAuthorize"
-             class="download-button"
-             :class="{ 'download-button--disabled': jsonError }"
-             @click="downloadHandle(docName, 'download')">Скачать</div> -->
-
         <div v-if="!isAuthorize"
              class="download-button"
              :class="{ 'download-button--disabled': jsonError }"
@@ -70,6 +65,7 @@ export default {
         const showModal = ref(false);
         const mainQuestions = computed(() => stores.questionsStore.questions);
         const { jsonError, downloadHandle, checkForDownload } = useDownload(stores);
+
         const goToQuestion = (name) => {
             stores.pageStore.goToQuestion(name)
         }

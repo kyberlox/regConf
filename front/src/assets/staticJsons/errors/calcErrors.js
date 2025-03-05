@@ -2,14 +2,14 @@ export const calcErrors = [
     {
         id: 1,
         inputGroup: 'envAnswersGroup',
-        inputName: 'envSumm',
+        inputName: 'environment',
         text: 'Сумма объемных долей компонентов должна быть равна 100%',
         type: 'calcError'
     },
     {
         id: 1.1,
         inputGroup: 'envAnswersGroup',
-        inputName: 'bothEnvSumm',
+        inputName: 'secondEnv',
         text: 'Сумма объемных долей по двум агрегатным состояниям должна быть равна 100%',
         type: 'calcError'
     },

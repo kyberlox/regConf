@@ -4,7 +4,7 @@
             <HistoryCalendar v-model="selectedDate"
                              :year-range="yearRange"
                              :formattedJson="formattedJson" />
-            <div class="history-page__elements content-container">
+            <div v-if="testjson.length" class="history-page__elements content-container">
                 <TransitionGroup name="list">
                     <div v-for="item in testjson"
                          :key="'tkpNum' + item.id"
@@ -41,7 +41,6 @@ import HistoryCalendar from '@/components/tools/HistoryCalendar.vue';
 import Api from '@/utils/Api';
 import { useHistoryStore } from '@/store/history';
 import { updateHistory } from '@/composables/updateHistory';
-import { useHelperStore } from '@/store/helper';
 
 export default {
     components: {
@@ -78,7 +77,6 @@ export default {
         const deleteTkp = (id) => {
             Api.delete(API_URL + '/delete_tkp/' + id)
                 .then(() => updateHistory());
-            useHelperStore().setErrorMessage('succesDelete', 'temporaryMessage')
         }
 
         const downloadTkp = (id, name) => {

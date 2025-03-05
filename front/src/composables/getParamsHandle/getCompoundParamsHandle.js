@@ -1,6 +1,7 @@
 import { computed, watch, ref } from 'vue'
 import { findQuestion } from "@/utils/findQuestionInStore"
 import Api from "@/utils/Api";
+import Validator from '@/utils/Validator';
 
 export const getCompoundParamsHandle = (stores) => {
     const questionsStore = stores.questionsStore;
@@ -33,50 +34,15 @@ export const getCompoundParamsHandle = (stores) => {
         changeVisibility(newVal)
     }, { deep: true })
 
-
-    const checkEnvSum = () => {
-        const isSecondEnv = paramsToGetCompound.value.isSecondEnv.value
-        const summary = ref([])
-
-        summary.value = isSecondEnv
-            ? [...paramsToGetCompound.value.environment.value, ...paramsToGetCompound.value.secondEnv.value]
-            : [...paramsToGetCompound.value.environment.value]
-
-        let sum = 0
-        summary.value.forEach(i => {
-            if (i?.value) {
-                sum += Number(i.value)
-                questionsStore.setQuestionValue('bothEnvSumm', sum, 'inputGroup', false, 'envAnswersGroup')
-                if (!isSecondEnv) {
-                    questionsStore.setQuestionValue('envSumm', sum, 'inputGroup', false, 'envAnswersGroup')
-                }
-            }
-        })
-
-        const targetInput = isSecondEnv ? 'bothEnvSumm' : 'envSumm'
-        const hiddenInput = isSecondEnv ? 'envSumm' : 'bothEnvSumm'
-        const targetQuestion = isSecondEnv ? paramsToGetCompound.value.secondEnv : paramsToGetCompound.value.environment
-
-        helperStore.deleteErrorMessage(hiddenInput)
-
-        if (targetQuestion.value.length > 0) {
-            if (sum !== 100) {
-                helperStore.setErrorMessage(targetInput)
-                return false
-            }
-            helperStore.deleteErrorMessage(targetInput)
-            return true
-        }
-    }
-
     watch(
         () => [
             paramsToGetCompound.value.environment.value.length,
             paramsToGetCompound.value.secondEnv.value.length
         ],
         ([envLength, secondEnvLength]) => {
-            if (envLength || secondEnvLength) {
-                checkEnvSum()
+            if (envLength && paramsToGetCompound.value.environment.value[0].value || secondEnvLength && paramsToGetCompound.value.secondEnv.value[0].value) {
+                const summary = ref();
+                Validator.validEnvSumm(paramsToGetCompound, questionsStore, helperStore, summary)
             }
         }
     )
