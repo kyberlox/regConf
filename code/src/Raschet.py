@@ -1098,7 +1098,7 @@ def make_OL(data):
         30: "PN2",
         31: "climate",
         32: "Tokr",
-        33: "trials",
+        33: "tightness",
         34: "material",
         35: "need_ZIP",
         36: "needKOF",
