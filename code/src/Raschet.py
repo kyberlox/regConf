@@ -910,7 +910,7 @@ def make_XL(dt):
         "W": "material_spool",
         "X": "material_saddle",
         "Y": "spring_material",
-        #"Z": "joining_type",
+        "Z": "joining_type",
         "AA": "contact_type",
         "AB": "weight",
         "AC": "painting_area",
