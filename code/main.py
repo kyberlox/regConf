@@ -530,7 +530,6 @@ async def outh_user(token = Header(default=None)):
 async def get_history(token = Header(None)):
     usr = User(token=token)
     if usr.check():
-        print("y")
         return usr.history()
     else:
         return {"error" : "invalid token"}

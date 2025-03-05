@@ -323,7 +323,7 @@ class User:
 
         if usr is not None:
             configs = db.query(Cofigurations).filter_by(author_id=usr.id).all()
-            if usr is not None and usr != []:
+            if configs is not None and configs != []:
                 answer = []
                 for conf in configs:
                     ans = {
