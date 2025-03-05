@@ -15,6 +15,8 @@ from openpyxl import Workbook
 import os
 from dotenv import load_dotenv
 
+
+
 load_dotenv()
 
 user = os.getenv('user')
@@ -289,15 +291,7 @@ def mixture(envs : list, climate : str):
     for env in envs:
         env_type.add(env["environment"])
 
-    material = []
-    for env in envs:
-        material.append(env['material'])
-    
-    ln = 0
-    for mat in material:
-        if len(mat) > ln:
-            ln = len(mat)
-            result["material"] = mat
+
 
     #проверка типа среды смеси
     if len(env_type) == 1: #если среда однородная
@@ -308,7 +302,7 @@ def mixture(envs : list, climate : str):
             pre_viscosity = 0
             for env in envs:
                 r = env["r"]
-                result["name"] += f"{env['name']}:{r} "
+                result["name"] += f"{env['name']}:{r*100}% "
                 result["molecular_weight"] += env["molecular_weight"] * r
                 ch_den += env["density"] * r
                 zn_den += r
@@ -333,7 +327,7 @@ def mixture(envs : list, climate : str):
             adiabatic_index_zn = 0
             for env in envs:
                 r = env["r"]
-                result["name"] += f"{env['name']}:{r} "
+                result["name"] += f"{env['name']}:{r*100}% "
                 M_i = env["molar_mass"]
                 u_i = env["viscosity"]
                 pre_M += M_i * r
@@ -350,6 +344,7 @@ def mixture(envs : list, climate : str):
         density_zn = 0
         pre_u = 0
         for env in envs:
+
             r = env["r"]
             result["name"] += f"{env['name']}:{r*100}% "
 
@@ -368,7 +363,18 @@ def mixture(envs : list, climate : str):
         result["density"] = density_ch / density_zn
         result["viscosity"] = pre_u
         # result["viscosity"] = 10**(pre_viscosity)
-    
+
+    material = []
+    for env in envs:
+        if env['name'] == 'Сероводород' and int(env["r"]) < 0.06 and result["environment"] == "Смесь":
+            material.append("25ГЛ")
+        material.append(env['material'])
+
+    ln = 0
+    for mat in material:
+        if len(mat) > ln:
+            ln = len(mat)
+            result["material"] = mat
 
     #если климатика => то материал
     if ((climate == "ХЛ1") or (climate == "УХЛ1")) and (result["material"] == "25Л"):
@@ -612,7 +618,7 @@ def Raschet(dt):
     else:
         new_dt["need_bellows"] = [True, False]
 
-    # окр закр тип
+    # окрытый закрытый тип
     env_name = dt["name"]
     env_names = []
     for ev in env_name.split():
@@ -640,6 +646,10 @@ def Raschet(dt):
         dt["need_bellows"] = False
 
     dt["open_close_type"] = open_close_type  # открытый или закрытый тип
+
+    if "Сероводород" in dt["name"] and "Хлор" in dt["name"] and PN >= 0.003:
+            #молибденовое исполнение
+            dt["material"] = "12Х18Н12М3ТЛ"
 
     all_dt = dt | new_dt
     return all_dt
@@ -702,6 +712,45 @@ def mark_params(dt):
 
     material_bellows = "08Х18Р10Т" if dt["need_bellows"] else ""
 
+
+
+    # Испытания
+    if "Сероводород" in dt["name"]:
+        need = False
+        need_M = False
+
+        s = dt["name"]
+        inx = s.rfind("Сероводород")
+        s_new = s[inx + 12:]
+        r = float(s_new[:s_new.find("%")])
+
+        if r > 6.0 and dt["environment"] == "Смесь":
+            need = True
+
+        if PN >= 0.003:
+            need = True
+
+        if need and "Хлор" in dt["name"]:
+            need_M = True
+
+        if need:
+            # нержавеющее исполнение
+            dt["material"] = "12Х18Н9ТЛ"
+            dt[
+                "trials"] = "По СТ ЦКБА 052-2008\nИспытания материала корпуса:\n 1)Хим. Состав \n 2)На растяжение при +20 град. С \n 3) KCU при -60 град. С \n 4) Твердость \n 5)Стойкость к МКК \n 6)ВИК \n 7)РК \n 8)Капиллярный контроль  \nИспытания материала золотника и седла: \n 1)Хим. Состав \n 2)На растяжение при +20 град. С \n 3) Контроль неметаллических включений \n 4) Контроль макроструктуры \n 5) Твердость \n 6)Стойкость к МКК \n 7)ВИК \n 8)РК \n 9)Капиллярный контроль"
+        if need_M:
+            # молибденовое исполнение
+            dt["material"] = "12Х18Н12М3ТЛ"
+            dt[
+                "trials"] = "По СТ ЦКБА 052-2008\nИспытания материала корпуса:\n 1)Хим. Состав \n 2)На растяжение при +20 град. С \n 3) KCU при -60 град. С \n 4) Твердость \n 5)Стойкость к МКК \n 6)ВИК \n 7)РК \n 8)Капиллярный контроль  \nИспытания материала золотника и седла: \n 1)Хим. Состав \n 2)На растяжение при +20 град. С \n 3) Контроль неметаллических включений \n 4) Контроль макроструктуры \n 5) Твердость \n 6)Стойкость к МКК \n 7)ВИК \n 8)РК \n 9)Капиллярный контроль"
+
+        else:
+            dt["trials"] = "По ТУ"
+    else:
+        dt["trials"] = "По ТУ"
+
+
+    
     if dt["material"] == "25Л" and T <= 200:
         material_spool = "20Х13"
     elif dt["material"] == "25Л" and T > 200:
@@ -752,17 +801,19 @@ def mark_params(dt):
         packaging.insert(1, "Пенная защитная упаковка груза")
 
     assignment = "25 лет" if dt["need_bellows"] else "30 лет"
-    
+
+
+
     new_dt = {
-        "material_bellows" : material_bellows,      #Материал сильфона
-        "material_spool" : material_spool,          #Материал золотника
-        "material_saddle" : material_spool,         #Материал седла
-        "weight" : weight,                          #Маccа
-        "color" : color,                            #Цвет
-        "painting_area" : painting_area,            #Площадь под покраску
-        "packaging" : packaging,                    #Упаковка
-        "trials" : "",                              #Испытания
-        "assignment" : assignment,                  #Срок службы
+        "material_bellows": material_bellows,   # Материал сильфона
+        "material_spool": material_spool,       # Материал золотника
+        "material_saddle": material_spool,      # Материал седла
+        "weight": weight,                       # Маccа
+        "color": color,                         # Цвет
+        "painting_area": painting_area,         # Площадь под покраску
+        "packaging": packaging,                 # Упаковка
+        "trials": "",                           # Испытания
+        "assignment": assignment,               # Срок службы
     }
             
     #заполнеие параметров и выгрузка
@@ -798,7 +849,8 @@ def get_tightness(dt):
         return {"error" : "Невозможно определить класс герметичнности", "value" : f"Некорректое значение типа ПК: {dt['valve_type']}"}
 
     #варианты класса герметичности
-    dt["tightness"] = tightness 
+    dt["tightness"] = tightness
+
     return dt
 
 
