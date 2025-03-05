@@ -366,8 +366,8 @@ def mixture(envs : list, climate : str):
 
     material = []
     for env in envs:
-        if env['name'] == 'Сероводород' and int(env["r"]) < 0.06 and result["environment"] == "Смесь":
-            material.append(f"25ГЛ+{r}")
+        if env['name'] == 'Сероводород' and r < 0.06 and result["environment"] == "Смесь":
+            material.append(f"25Л")
         else:
             material.append(env['material'])
 
