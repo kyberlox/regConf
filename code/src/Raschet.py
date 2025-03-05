@@ -685,7 +685,7 @@ def mark_params(dt):
     #подбор фланцев
     if joining_type == "Фланцевое":
         inlet_flange = ['B']#B C D F J K
-        if PN == 16.0 or PN == 16.4:
+        if PN == 16.0:
             inlet_flange = ['B', 'C', 'D', 'F']
         if PN == 40.0:
             inlet_flange = ['F', 'C', 'D']
@@ -695,6 +695,8 @@ def mark_params(dt):
             inlet_flange = ['K', 'D']
         
         outlet_flange = ['B']#B C D F J K
+        if PN2 == 6.0:
+            outlet_flange = ['B', 'C', 'D', 'F']
         if PN2 == 16.0 or PN2 == 16.4:
             outlet_flange = ['B', 'C', 'D', 'F']
         if PN2 == 40.0:
