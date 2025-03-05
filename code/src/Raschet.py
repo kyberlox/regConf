@@ -613,8 +613,7 @@ def Raschet(dt):
     new_dt["Pnd"] = example["Pnd"]
 
     # подбор сильфона !!!!!!!!!!!!!!!!!!!!! сильфон только на пружине
-    if (dt["valve_type"] == 'В') and (((example["spring_material"] == '51ХФА') and (T > 120)) or (
-            (example["spring_material"] == '50ХФА') and (T > 250))):
+    if (dt["valve_type"] == 'В') and (((example["spring_material"] == '51ХФА') and (T > 120)) or ((example["spring_material"] == '50ХФА') and (T > 250))):
         new_dt["need_bellows"] = True
     else:
         new_dt["need_bellows"] = [True, False]
@@ -636,13 +635,13 @@ def Raschet(dt):
             # print(en)
             cool += 1
 
-    if cool == len(env_names):
+    if cool == len(env_names) and (dt["valve_type"] == 'В') and (((example["spring_material"] == '51ХФА') and (T > 120)) or ((example["spring_material"] == '50ХФА') and (T > 250))):
         evil_env = True
 
     # print(evil_env)
 
     open_close_type = "закрытого типа"
-    if evil_env:
+    if evil_env and T :
         open_close_type = "открытого типа"
         dt["need_bellows"] = False
 
