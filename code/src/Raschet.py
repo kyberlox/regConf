@@ -979,22 +979,22 @@ def make_XL(dt):
             sheet[f"AJ{i}"].value = position["Ppo"]
         else:
             # Давление настройки без противодавления
-            sheet[f"AL{i}"].value = position["Pn"] - position["Pp"]
+            sheet[f"AL{i}"].value = position["Pn"]
 
             # Давление начала открытия без противодавления
-            sheet[f"AM{i}"].value = position["Ppo"] - position["Pp"]
+            sheet[f"AM{i}"].value = position["Ppo"]
 
             # Давление полного открытия без противодавления
-            sheet[f"AN{i}"].value = position["Ppo"] - position["Pp"]
+            sheet[f"AN{i}"].value = position["Ppo"]
 
             # Давление настройки с противодавлением
-            sheet[f"AH{i}"].value = position["Pn"]
+            sheet[f"AH{i}"].value = position["Pn"] - position["Pp"]
 
             # Давление начала открытия с противодавлениемпротиводавлением
-            sheet[f"AI{i}"].value = position["Ppo"]
+            sheet[f"AI{i}"].value = position["Ppo"] - position["Pp"]
 
             # Давление полного открытия с противодавлением
-            sheet[f"AJ{i}"].value = position["Ppo"]
+            sheet[f"AJ{i}"].value = position["Ppo"] - position["Pp"]
 
         # номерация
         sheet[f"A{i}"].value = int(sheet[f"A3"].value) + i - 3
