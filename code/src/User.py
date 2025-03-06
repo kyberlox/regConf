@@ -405,7 +405,12 @@ class User:
 
         # сохранить в БД
         tkp = db.query(Cofigurations).filter_by(id=tkp_id).first()
-        tkp.jsn = jsn
+        #если позиций не - осталось удалить запись из БД
+        if jsn == []:
+            db.delete(tkp)
+        #если позиции есть - сохранить
+        else:
+            tkp.jsn = jsn
         db.commit()
 
         return jsn
