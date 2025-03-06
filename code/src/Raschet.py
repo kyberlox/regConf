@@ -121,7 +121,7 @@ def searchParams(DNS, Pn, PN, valve_type):
     PN = PN * 10
     Pn = Pn * 10
     #найти все подходящие строки их DNS и P1 - больше искомых
-    request = db.query(Params).filter(Params.DNS >= DNS, Params.PN == PN, valve_type == valve_type).all()
+    request = db.query(Params).filter(Params.DNS >= DNS, Params.PN == PN, Params.valve_type == valve_type).all()
 
     if request == None or request == []:
         return False
@@ -133,8 +133,9 @@ def searchParams(DNS, Pn, PN, valve_type):
     minPN = request[0].PN
     print("###")
     for example in request:
+
         print(example.id, example.DNS, example.valve_type, example.DN, example.PN)
-        print("###")
+
         try:
             Pn1 = str(example.Pnd).split("...")[0]
             Pn2 = str(example.Pnd).split("...")[1]
@@ -174,7 +175,7 @@ def searchParams(DNS, Pn, PN, valve_type):
             print(example.id)
             print(example.Pnd)
             print("###")
-
+    print("###")
     print(ans)
 
     return ans
