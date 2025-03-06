@@ -278,13 +278,14 @@ def mixture(envs : list, climate : str):
         "environment" : "",
         "molecular_weight" : 0,
         "density" : 0,
+        "density_ns": 0,
         "material" : "",
         "viscosity" : 0,
         "isobaric_capacity" : 0,
         "molar_mass" : 0,
         "isochoric_capacity" : 0,
         "adiabatic_index" : 0,
-        "compressibility_factor" : 0
+        "compressibility_factor" : 1,
     }
 
     env_type = set()
@@ -292,7 +293,7 @@ def mixture(envs : list, climate : str):
         env_type.add(env["environment"])
 
 
-
+    r_max = 0
     #проверка типа среды смеси
     if len(env_type) == 1: #если среда однородная
         result["environment"] = env_type.pop()
@@ -307,6 +308,11 @@ def mixture(envs : list, climate : str):
                 ch_den += env["density"] * r
                 zn_den += r
                 pre_viscosity += log10(env["viscosity"]) * r
+
+                if r > r_max:
+                    # Плотность несущей среды
+                    r_max = r
+                    result["density_ns"] = env["density"]
 
             result["density"] = ch_den/zn_den
             result["viscosity"] = 10**(pre_viscosity)
@@ -334,10 +340,17 @@ def mixture(envs : list, climate : str):
                 viscosity_сh += u_i * r * sqrt(M_i)
                 viscosity_zn += r * sqrt(M_i)
                 adiabatic_index += env['adiabatic_index'] * r
+
+                if r > r_max:
+                    # Плотность несущей среды
+                    r_max = r
+                    result["density_ns"] = ((env["molar_mass"] / 22.4) * r) / r
                 
             result["molar_mass"] = pre_M #/100
             result["viscosity"] = viscosity_сh / viscosity_zn
             result["adiabatic_index"] = adiabatic_index
+
+
     else:
         result["environment"] = "Смесь"
         density_ch = 0
@@ -360,9 +373,15 @@ def mixture(envs : list, climate : str):
                 density_zn += r
             pre_u += r * env["viscosity"] * M
 
+            if r > r_max:
+                # Плотность несущей среды
+                r_max = r
+                result["density_ns"] = density_ch / density_zn
+
         result["density"] = density_ch / density_zn
         result["viscosity"] = pre_u
         # result["viscosity"] = 10**(pre_viscosity)
+
 
     material = []
     for env in envs:
@@ -559,8 +578,8 @@ def Raschet(dt):
         "P2": P2 * 10.197162,  # Давление на выходе
         "Kw": Kw,  # Коэффициент, учитывающий эффект неполного открытия разгруженных ПК из-за противодавления
         "Gideal": Gideal,  # Массовая скорость
-        "pre_DN": pre_DN,  # DN предварительный
-        "DN_s": DN_s  # Диаметр седла клапана
+        #"pre_DN": pre_DN,
+        "pre_DN": DN_s  # DN предварительный
     }
 
     # Номинальное давление
@@ -580,9 +599,11 @@ def Raschet(dt):
     new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
     example = searchParams(DN_s, Pn, PN, dt["valve_type"])
 
+
     if example:
-        new_dt["DN"] = example["DN"]  # Номинальный диаметр
-        new_dt["PN"] = example["PN"]  # Номиннальное давление
+        new_dt["DN_s"] = example["DNS"] # Номинальный диаметр седла
+        new_dt["DN"] = example["DN"]    # Номинальный диаметр
+        new_dt["PN"] = example["PN"]    # Номиннальное давление
         # print("PN по DN:", example["PN"])
     else:
         return {
@@ -608,13 +629,18 @@ def Raschet(dt):
     }
     new_dt["PN2"] = PN2[new_dt["PN"]]
 
+    # Площадь седла клапана
+    S = (pi * DN_s**2 )/ 4
+    new_dt["S"] = S
+    # Эффективная площадь седла калапан
+    new_dt["S_eff"] = S * alpha
+
     new_dt["spring_material"] = example["spring_material"]
     new_dt["spring_number"] = example["spring_number"]
     new_dt["Pnd"] = example["Pnd"]
 
     # подбор сильфона !!!!!!!!!!!!!!!!!!!!! сильфон только на пружине
-    if (dt["valve_type"] == 'В') and (((example["spring_material"] == '51ХФА') and (T > 120)) or (
-            (example["spring_material"] == '50ХФА') and (T > 250))):
+    if (dt["valve_type"] == 'В') and (((example["spring_material"] == '51ХФА') and (T > 120)) or ((example["spring_material"] == '50ХФА') and (T > 250))):
         new_dt["need_bellows"] = True
     else:
         new_dt["need_bellows"] = [True, False]
@@ -636,13 +662,13 @@ def Raschet(dt):
             # print(en)
             cool += 1
 
-    if cool == len(env_names):
+    if cool == len(env_names) and (dt["valve_type"] == 'В') and (((example["spring_material"] == '51ХФА') and (T > 120)) or ((example["spring_material"] == '50ХФА') and (T > 250))):
         evil_env = True
 
     # print(evil_env)
 
     open_close_type = "закрытого типа"
-    if evil_env:
+    if evil_env and T :
         open_close_type = "открытого типа"
         dt["need_bellows"] = False
 
@@ -666,6 +692,7 @@ def mark_params(dt):
     PN2 = dt["PN2"]
     DN = dt["DN"]
     T = dt["T"]
+    Ppo = dt["Ppo"]
     joining_type = dt["joining_type"]
 
     err = False
@@ -686,22 +713,26 @@ def mark_params(dt):
     #подбор фланцев
     if joining_type == "Фланцевое":
         inlet_flange = ['B']#B C D F J K
-        if PN == 16.0 or PN == 16.4:
-            inlet_flange = ['B', 'C', 'D', 'F']
+        if PN == 6.0:
+            inlet_flange = ['B', 'C', 'D', 'E', 'F']
+        if PN == 16.0:
+            inlet_flange = ['B', 'C', 'D', 'E', 'F']
         if PN == 40.0:
-            inlet_flange = ['F', 'C', 'D']
+            inlet_flange = ['F', 'C', 'D', 'E']
         if PN == 63.0 or PN == 100.0 or PN == 160.0:
-            inlet_flange = ['J', 'K', 'F', 'C', 'D']
+            inlet_flange = ['J', 'K', 'F', 'C', 'D', 'E']
         if PN == 250.0:
             inlet_flange = ['K', 'D']
         
         outlet_flange = ['B']#B C D F J K
+        if PN2 == 6.0:
+            outlet_flange = ['B', 'C', 'D', 'E', 'F']
         if PN2 == 16.0 or PN2 == 16.4:
-            outlet_flange = ['B', 'C', 'D', 'F']
+            outlet_flange = ['B', 'C', 'D', 'E', 'F']
         if PN2 == 40.0:
-            outlet_flange = ['F', 'C', 'D']
+            outlet_flange = ['F', 'C', 'D', 'E']
         if PN2 == 63.0 or PN2 == 100.0 or PN2 == 160.0:
-            outlet_flange = ['J', 'K', 'F', 'C', 'D']
+            outlet_flange = ['J', 'K', 'F', 'C', 'D', 'E']
         if PN2 == 250.0:
             outlet_flange = ['K', 'D']
 
@@ -729,7 +760,8 @@ def mark_params(dt):
         if r > 6.0 and dt["environment"] == "Смесь":
             need = True
 
-        if PN >= 0.003:
+        r *= 0.01
+        if Ppo * r >= 0.003:
             need = True
 
         if need and "Хлор" in dt["name"]:
@@ -765,19 +797,22 @@ def mark_params(dt):
         color = [
             f"Серый RAL7035 по технологической инструкции 38877941.25206.01013 АО \"НПО Регулятор\" ", #Заводская
             f"Серый RAL7035 cистема АКП С4 по № П2-05 ТИ-0002", #Роснефть
-            f"Красный RAL3020 по СТО Газпром 9.1-018-2012" #Газпром
+            f"Красный RAL3020 по СТО Газпром 9.1-018-2012", #Газпром
+            "Другое"
             ]
     elif dt["material"] == "20ГЛ":
         color = [
             f"Синий RAL5017 по технологической инструкции 38877941.25206.01013 АО \"НПО Регулятор\" ", #Заводская
             f"Синий RAL5017 система АКП С4 по № П2-05 ТИ-0002", #Роснефть
-            f"Красный RAL3020 по СТО Газпром 9.1-018-2012" #Газпром
+            f"Красный RAL3020 по СТО Газпром 9.1-018-2012", #Газпром
+            "Другое"
             ]
     else:
         color = [
             f"Голубой RAL5012 по технологической инструкции 38877941.25206.01013 АО \"НПО Регулятор\" ", #Заводская
             f"Голубой RAL5012 система АКП С4 по № П2-05 ТИ-0002", #Роснефть
-            f"Красный RAL3020 по СТО Газпром 9.1-018-2012" #Газпром
+            f"Красный RAL3020 по СТО Газпром 9.1-018-2012", #Газпром
+            "Другое"
             ]
 
     weight, painting_area = get_by_mark(dt["mark"], DN, PN)
@@ -864,6 +899,7 @@ def make_XL(dt):
         "H": "name",
         "I": "T",
         "L": "climate",
+        #"M": "detonation_node",
         "N": "need_bellows",
         "O": "DN",
         "P": "PN",
@@ -916,7 +952,9 @@ def make_XL(dt):
         position["Pp"] = float(position["Pp"]) * 10.197162
         position["Pp_din"] = float(position["Pp"]) * 10.197162
 
-
+        # Фланцы по ГОСТ 33259-2015
+        if position["inlet_flange"] is not None:
+            position["joining_type"] = position["joining_type"] + f" по ГОСТ 33259-2015 {position['inlet_flange']} / {position['outlet_flange']}"
 
         if position["valve_type"] == 'Н' or (
                 position["valve_type"] == 'В' and position["open_close_type"] == "открытого типа") or (
@@ -1060,7 +1098,7 @@ def make_OL(data):
         30: "PN2",
         31: "climate",
         32: "Tokr",
-        33: "trials",
+        33: "tightness",
         34: "material",
         35: "need_ZIP",
         36: "needKOF",
@@ -1080,6 +1118,11 @@ def make_OL(data):
     Pn = float(data["Pn"]) * 0.1 - float(data['Pp']) * 0.1
 
     data['Pn'] = Pn
+
+    #Фланцы по ГОСТ 33259-2015
+    if data["inlet_flange"] is not None:
+        data["inlet_flange"] = data["inlet_flange"] + " по ГОСТ 33259-2015"
+        data["outlet_flange"] = data["outlet_flange"] + " по ГОСТ 33259-2015"
 
     # Давление начала открытия
     if Pn <= 0.3:

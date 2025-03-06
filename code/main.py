@@ -530,7 +530,6 @@ async def outh_user(token = Header(default=None)):
 async def get_history(token = Header(None)):
     usr = User(token=token)
     if usr.check():
-        print("y")
         return usr.history()
     else:
         return {"error" : "invalid token"}
@@ -554,7 +553,7 @@ async def add_position_tkp_id(tkp_position = Body(), token = Header(None)):
         return usr.addPosition(tkp_position)
 
 @app.delete("/api/delete_position_tkp/{tkp_id}/{position_id}", tags=["Активность пользователей"])
-async def delete_position_tkp_id(tkp_id, position_id, token = Header(None)):
+async def delete_position_tkp_id(tkp_id : int, position_id : int, token = Header(None)):
     usr = User(token=token)
     if usr.check():
         return usr.deletePosition(tkp_id, position_id)

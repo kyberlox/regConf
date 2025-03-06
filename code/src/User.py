@@ -323,7 +323,7 @@ class User:
 
         if usr is not None:
             configs = db.query(Cofigurations).filter_by(author_id=usr.id).all()
-            if usr is not None and usr != []:
+            if configs is not None and configs != []:
                 answer = []
                 for conf in configs:
                     ans = {
@@ -399,13 +399,18 @@ class User:
         self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         self.Redis = UserRedis(user_id=self.uuid)
         jsn = self.Redis.get_user()
-        jsn.pop(position)
+        jsn.pop(int(position))
         self.Redis.jsn = jsn
         self.Redis.update_user()
 
         # сохранить в БД
         tkp = db.query(Cofigurations).filter_by(id=tkp_id).first()
-        tkp.jsn = jsn
+        #если позиций не - осталось удалить запись из БД
+        if jsn == []:
+            db.delete(tkp)
+        #если позиции есть - сохранить
+        else:
+            tkp.jsn = jsn
         db.commit()
 
         return jsn
