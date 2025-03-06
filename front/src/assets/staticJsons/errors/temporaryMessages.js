@@ -33,5 +33,12 @@ export const temporaryMessages = [
         inputName: 'successAdd',
         type: 'temporaryMessage',
         text: 'Позиция успешно добавлена, заполните следующую'
+    },
+    {
+        id: 6,
+        class: 'attention',
+        inputName: 'need_bellows',
+        type: 'temporaryMessage',
+        text: 'Для данной конфигурации возможно только одно значение сильфона'
     }
 ]

@@ -107,6 +107,7 @@ export default {
         const formattedJson = ref([]);
 
         onMounted(() => {
+            updateHistory();
                 yearRange.value.length = 0;
                 const dateArr = [];
                 formattedJson.value = tkpJson.value;

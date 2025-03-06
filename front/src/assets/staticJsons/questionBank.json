@@ -498,14 +498,14 @@
       },
       {
         "id": 15.3,
-        "name": "Давление на входе, в кгс/см2:",
+        "name": "Давление на входе, в кгс/см2 (абс.):",
         "type": "DisabledType",
         "inputName": "P1",
         "value": null
       },
       {
         "id": 15.4,
-        "name": "Давление на выходе, в кгс/см2:",
+        "name": "Давление на выходе, в кгс/см2 (абс.):",
         "type": "DisabledType",
         "inputName": "P2",
         "value": null
@@ -526,35 +526,35 @@
       },
       {
         "id": 15.7,
-        "name": "Площадь седла клапана:",
+        "name": "Площадь седла клапана, мм2:",
         "type": "DisabledType",
         "inputName": "S",
         "value": null
       },
       {
         "id": 15.8,
-        "name": "Эффективная площадь седла клапана:",
+        "name": "Эффективная площадь седла клапана, мм2:",
         "type": "DisabledType",
         "inputName": "S_eff",
         "value": null
       },
       {
         "id": 15.9,
-        "name": "Диаметр предворительный:",
+        "name": "Диаметр предворительный, мм:",
         "type": "DisabledType",
         "inputName": "pre_DN",
         "value": null
       },
       {
         "id": 15.10,
-        "name": "Диаметр седла клапана:",
+        "name": "Диаметр седла клапана, мм:",
         "type": "DisabledType",
         "inputName": "DN_s",
         "value": null
       },
       {
         "id": 15.11,
-        "name": "Диаметр номинальный:",
+        "name": "Диаметр номинальный, мм:",
         "type": "DisabledType",
         "inputName": "DN",
         "value": null
