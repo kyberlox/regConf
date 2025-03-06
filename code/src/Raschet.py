@@ -964,7 +964,7 @@ def make_XL(dt):
             sheet[f"AL{i}"].value = position["Pn"]
 
             # Давление начала открытия без противодавления
-            sheet[f"AM{i}"].value = position["Ppo"]
+            sheet[f"AM{i}"].value = position["Pno"]
 
             # Давление полного открытия без противодавления
             sheet[f"AN{i}"].value = position["Ppo"]
@@ -973,7 +973,7 @@ def make_XL(dt):
             sheet[f"AH{i}"].value = position["Pn"]
 
             # Давление начала открытия с противодавлением
-            sheet[f"AI{i}"].value = position["Ppo"]
+            sheet[f"AI{i}"].value = position["Pno"]
 
             # Давление полного открытия с противодавлением
             sheet[f"AJ{i}"].value = position["Ppo"]
@@ -982,7 +982,7 @@ def make_XL(dt):
             sheet[f"AL{i}"].value = position["Pn"]
 
             # Давление начала открытия без противодавления
-            sheet[f"AM{i}"].value = position["Ppo"]
+            sheet[f"AM{i}"].value = position["Pno"]
 
             # Давление полного открытия без противодавления
             sheet[f"AN{i}"].value = position["Ppo"]
@@ -991,7 +991,7 @@ def make_XL(dt):
             sheet[f"AH{i}"].value = position["Pn"] - position["Pp"]
 
             # Давление начала открытия с противодавлениемпротиводавлением
-            sheet[f"AI{i}"].value = position["Ppo"] - position["Pp"]
+            sheet[f"AI{i}"].value = position["Pno"] - position["Pp"]
 
             # Давление полного открытия с противодавлением
             sheet[f"AJ{i}"].value = position["Ppo"] - position["Pp"]
