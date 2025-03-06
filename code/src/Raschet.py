@@ -646,6 +646,8 @@ def Raschet(dt):
         new_dt["need_bellows"] = True
     elif dt["valve_type"] == 'В':
             new_dt["need_bellows"] = [True, False]
+    elif dt["valve_type"] == 'Н':
+        new_dt["need_bellows"] = False
     else:
         new_dt["need_bellows"] = False
 
