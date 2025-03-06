@@ -399,7 +399,7 @@ class User:
         self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         self.Redis = UserRedis(user_id=self.uuid)
         jsn = self.Redis.get_user()
-        jsn.pop(position)
+        jsn.pop(int(position))
         self.Redis.jsn = jsn
         self.Redis.update_user()
 
