@@ -133,7 +133,7 @@ def searchParams(DNS, Pn, PN, valve_type):
     minPN = request[0].PN
     print("###")
     for example in request:
-        print(example.id, example.DN_s, example.valve_type, example.DN, example.PN)
+        print(example.id, example.DNS, example.valve_type, example.DN, example.PN)
         print("###")
         try:
             Pn1 = str(example.Pnd).split("...")[0]
