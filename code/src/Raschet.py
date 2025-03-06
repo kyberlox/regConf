@@ -117,7 +117,7 @@ def searchT10(T, Pn):
     return ans
 
 def searchParams(DNS, Pn, PN, valve_type):
-    print(DNS, PN, valve_type)
+    #print(DNS, PN, valve_type)
     PN = PN * 10
     Pn = Pn * 10
     #найти все подходящие строки их DNS и P1 - больше искомых
@@ -131,10 +131,10 @@ def searchParams(DNS, Pn, PN, valve_type):
     minDNS = request[0].DNS
     #minP1 = request[0].P1
     minPN = request[0].PN
-    print("###")
+    ##print("###")
     for example in request:
 
-        print(example.id, example.DNS, example.valve_type, example.DN, example.PN)
+        #print(example.id, example.DNS, example.valve_type, example.DN, example.PN)
 
         try:
             Pn1 = str(example.Pnd).split("...")[0]
@@ -175,8 +175,8 @@ def searchParams(DNS, Pn, PN, valve_type):
             print(example.id)
             print(example.Pnd)
             print("###")
-    print("###")
-    print(ans)
+    #print("###")
+    #print(ans)
 
     return ans
 
@@ -631,6 +631,7 @@ def Raschet(dt):
     new_dt["PN2"] = PN2[new_dt["PN"]]
 
     # Площадь седла клапана
+    DN_s = example["DNS"]
     S = (pi * DN_s**2 )/ 4
     new_dt["S"] = S
     # Эффективная площадь седла калапан
@@ -643,8 +644,11 @@ def Raschet(dt):
     # подбор сильфона !!!!!!!!!!!!!!!!!!!!! сильфон только на пружине
     if (dt["valve_type"] == 'В') and (((example["spring_material"] == '51ХФА') and (T > 120)) or ((example["spring_material"] == '50ХФА') and (T > 250))):
         new_dt["need_bellows"] = True
+    elif dt["valve_type"] == 'В':
+            new_dt["need_bellows"] = [True, False]
     else:
-        new_dt["need_bellows"] = [True, False]
+        new_dt["need_bellows"] = False
+
 
     # окрытый закрытый тип
     env_name = dt["name"]
