@@ -69,7 +69,7 @@ export const emptyValueErrors = [
         id: 12,
         inputName: 'contact_type',
         type: 'emptyValueError',
-        text: 'Заполните тип контакта',
+        text: 'Заполните тип уплотнения затвора',
     },
     {
         id: 13,
@@ -88,6 +88,12 @@ export const emptyValueErrors = [
         inputName: 'color',
         type: 'emptyValueError',
         text: 'Укажите способ покраски',
+    },
+    {
+        id: 15.1,
+        inputName: 'addColor',
+        type: 'emptyValueError',
+        text: 'Укажите другой способ покраски',
     },
     {
         id: 16,

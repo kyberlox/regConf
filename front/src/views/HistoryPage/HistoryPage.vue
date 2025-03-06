@@ -1,25 +1,27 @@
 <template>
     <div class="history-page__wrapper">
         <div class="history-page">
-            <HistoryCalendar v-model="selectedDate"
+            <HistoryCalendar 
+                             v-model="selectedDate"
                              :year-range="yearRange"
                              :formattedJson="formattedJson" />
-            <div v-if="testjson.length" class="history-page__elements content-container">
+            <div class="history-page__elements content-container">
                 <TransitionGroup name="list">
-                    <div v-for="item in testjson"
+                    <div v-for="(item, index) in formattedJson"
                          :key="'tkpNum' + item.id"
                          class="history-page__element"
                          :class="{ hidden: item.hidden }"
-                         @click="handleClick('download', item.id, item.name)">
+                         @click="handleClick('open', item)">
                         <div class="history-page__element__title">{{ item.name }}</div>
                         <div class="history-page__element__footer">
-                            <div class="history-page__element__date">{{ item.date }}</div>
+                            <div 
+                                 class="history-page__element__date">{{ item.date }}</div>
                             <div class="history-page__element__btn-group">
                                 <div class="history-page__element-btn"
                                      v-for="button in buttons"
                                      :key="'btn' + button.name">
                                     <component :is="button.icon"
-                                               @click.stop="handleClick(button.name, item.id, item.name)"
+                                               @click.stop="handleClick(button.name, item, index)"
                                                :class="`history-page__element-btn-svg history-page__element-btn-svg--${button.name}`" />
                                     <span class="tooltipo">{{ button.title }}</span>
                                 </div>
@@ -41,6 +43,7 @@ import HistoryCalendar from '@/components/tools/HistoryCalendar.vue';
 import Api from '@/utils/Api';
 import { useHistoryStore } from '@/store/history';
 import { updateHistory } from '@/composables/updateHistory';
+import { useRouter } from 'vue-router';
 
 export default {
     components: {
@@ -51,17 +54,15 @@ export default {
     },
     emits: ['updateHistory'],
     setup(props, { emit }) {
+        const historyStore = useHistoryStore();
+        const router = useRouter();
+
         const buttons = [
             {
                 title: 'Скачать',
                 name: 'download',
                 icon: DownloadIcon
             },
-            // {
-            //     title: 'Редактировать',
-            //     name: 'edit',
-            //     icon: EditIcon
-            // },
             {
                 title: 'Удалить',
                 name: 'delete',
@@ -70,8 +71,6 @@ export default {
         ]
         const yearRange = ref([]);
         const selectedDate = ref('все время');
-        const historyStore = useHistoryStore();
-
         const showCalendar = ref(false);
 
         const deleteTkp = (id) => {
@@ -86,11 +85,14 @@ export default {
                 })
         }
 
-        const handleClick = (type, id, name) => {
+        const handleClick = (type, item, index) => {
             if (type == 'delete') {
-                deleteTkp(id);
+              deleteTkp(item.id);
             } else if (type == 'download') {
-                downloadTkp(id, name);
+              downloadTkp(item.id, item.name);
+            }
+            else if (type == 'open') {
+                router.push({ name: 'positionHistory', params: { id: item.id } });
             }
         }
 
@@ -100,20 +102,21 @@ export default {
 
         const dateFromDatePick = ref(null);
 
-        const testjson = computed(() => historyStore.getTkpHistory);
+        const tkpJson = computed(() => historyStore.getTkpHistory);
 
         const formattedJson = ref([]);
 
         onMounted(() => {
-            yearRange.value.length = 0;
-            const dateArr = [];
-            formattedJson.value = testjson.value;
-            formattedJson.value.map((e) => {
-                e.hidden = false;
-                dateArr.push(Number(e.date.split('-')[2]));
-            });
-            yearRange.value.push(Math.min.apply(null, dateArr));
-            yearRange.value.push(Math.max.apply(null, dateArr));
+                yearRange.value.length = 0;
+                const dateArr = [];
+                formattedJson.value = tkpJson.value;
+                formattedJson.value.map((e) => {
+                    e.hidden = false;
+                    dateArr.push(Number(e.date.split('-')[2]));
+                });
+                yearRange.value.push(Math.min.apply(null, dateArr));
+                yearRange.value.push(Math.max.apply(null, dateArr));
+            
         });
 
         return {
@@ -124,7 +127,7 @@ export default {
             formattedJson,
             yearRange,
             selectedDate,
-            testjson,
+            testjson: computed(() => tkpJson),
             buttons,
             selectAllDates: () => dateFromDatePick.value = null,
         }

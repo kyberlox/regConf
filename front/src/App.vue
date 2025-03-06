@@ -8,11 +8,10 @@
                   @closeModal="toggleModal(false)" />
     </main>
     <PageFooter @callSupportModal="toggleModal(true)" />
-    <YandexMetrika />
+    <YandexMetrika v-if="!debugMode" />
 </template>
 
 <script>
-import { defineComponent } from 'vue'
 import { onMounted, ref, watch, computed } from "vue"
 import { useStores } from "@/composables/useStores"
 import { updateHistory } from "./composables/updateHistory"
@@ -22,7 +21,7 @@ import PageFooter from "./components/layout/PageFooter.vue"
 import MsgModal from "./components/common/MsgModal.vue"
 import YandexMetrika from "./components/tools/YandexMetrika.vue"
 
-export default defineComponent({
+export default {
     name: 'App',
     components: {
         PageHeader,
@@ -69,8 +68,9 @@ export default defineComponent({
         return {
             showModal,
             toggleModal,
-            modalType: 'support'
+            modalType: 'support',
+            debugMode: computed(() => useStores().pageStore.debugMode),
         }
     }
-})
+}
 </script>

@@ -9,10 +9,11 @@
                 {{ answer.name }}
             </div>
             <div class="card__results__result-value">
-                <span class="card__results__result-value__number"
-                      :class="{ 'card__results__result-value__number--min-font': answer.inputName == 'trials' }"
-                      v-html="answer.value">
-                </span>
+                <div class="card__results__result-value__number"
+                     :class="{ 'card__results__result-value__number--min-font': answer.inputName == 'trials' }">
+                    <span class="card__results__result-value__number-inner"
+                          v-html="specialize(answer)"></span>
+                </div>
             </div>
         </div>
     </div>
@@ -32,8 +33,17 @@ export default {
             pageStore.pushToRefGroup(questionInGroup.value)
         })
 
+        const specialize = (answer) => {
+            if (answer.value > 0) { return answer.inputName == 'viscosity' ? answer.value : answer.value.toFixed(2) }
+            else {
+                return answer.inputName == 'compress_factor' ? 1 : answer.value;
+            }
+
+        }
+
         return {
-            questionInGroup
+            questionInGroup,
+            specialize
         }
     }
 }

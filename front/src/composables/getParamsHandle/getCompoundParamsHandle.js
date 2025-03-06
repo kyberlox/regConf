@@ -51,7 +51,7 @@ export const getCompoundParamsHandle = (stores) => {
     // запрос (#2, get_compound) на параметры для конкр сред (Вязкость, материал, молекулярная масса, вязкость)
     watch(paramsToGetCompound, (newVal) => {
         if ((newVal.environment.value || newVal.secondEnv.value) && newVal.climate.value && noErrors.value) {
-            const envParamsToGet = ['molecular_weight', 'density', 'material', 'viscosity'];
+            const envParamsToGet = ['molecular_weight', 'density', 'material', 'viscosity', 'density_ns'];
             let dataToSend = [];
 
             if (paramsToGetCompound.value.isSecondEnv.value) {

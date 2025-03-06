@@ -35,7 +35,8 @@
     </div>
 </template>
 <script>
-import { ref } from 'vue';
+import { useQuestionsStore } from '@/store/questions';
+import { ref, computed } from 'vue';
 export default {
     props: {
         type: {
@@ -76,7 +77,8 @@ export default {
             emit('closeModal');
         }
 
-        const docName = ref('');
+        const olName = computed(() => useQuestionsStore().getMark)
+        const docName = ref(olName.value ? olName.value : '');
         const noDoc = ref(false);
 
         const download = () => {

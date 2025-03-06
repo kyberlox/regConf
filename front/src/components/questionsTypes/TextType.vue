@@ -5,6 +5,7 @@
                :placeholder="question.placeholder"
                :type="question.inputType"
                @input="saveNewValue(question.inputName, $event.target.value)"
+               @wheel.prevent="handleWheel"
                :value="defaultValue" />
     </div>
 </template>

@@ -15,6 +15,7 @@ export const getTightnessParamsHandle = (stores) => {
         color: findQuestion('color'),
         packaging: findQuestion('packaging'),
         addTrials: findQuestion('addTrials'),
+        addColor: findQuestion('addColor'),
 
         trials: findQuestion('markAnswersGroup', 'trials'),
         materialBellows: findQuestion('markAnswersGroup', 'material_bellows'),
@@ -27,6 +28,12 @@ export const getTightnessParamsHandle = (stores) => {
 
     // запрос №5, get_tightness 
     watch(paramsToGetTightness, (newVal) => {
+        if (newVal.color.value == "Другое") {
+            findQuestion('addColor').hidden = false;
+        } else {
+            findQuestion('addColor').hidden = true;
+        }
+
         if (newVal.contactType.value && newVal.color.value && typeof newVal.color.value == 'string' && noErrors.value) {
             const paramsToGet = ['tightness'];
 
@@ -34,14 +41,14 @@ export const getTightnessParamsHandle = (stores) => {
                 "contact_type": newVal.contactType.value,
                 "inlet_flange": newVal.inletFlange.value,
                 "outlet_flange": newVal.outletFlange.value,
-                "color": newVal.color.value,
+                "color": newVal.color.value == 'Другое' && newVal.addColor.value ? newVal.addColor.value : newVal.color.value,
                 "packaging": newVal.packaging.value,
                 "material_bellows": newVal.materialBellows.value,
                 "material_spool": newVal.materialSpool.value,
                 'material_saddle': newVal.materialSaddle.value,
                 'weight': newVal.weight.value,
                 'painting_area': newVal.paintingArea.value,
-                'trials': newVal.trials.value + '/n' + newVal.addTrials.value,
+                'trials': newVal.addTrials.value ? newVal.addTrials.value + " " + newVal.trials.value : newVal.trials.value,
                 'assignment': newVal.assignment.value,
             };
 

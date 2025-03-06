@@ -90,7 +90,13 @@ export default class Validator {
                     return true;
                 }
             }
-
+            else if (question.inputName == 'addColor') {
+                if (findQuestion('color').value !== 'Другое') {
+                    return true;
+                } else if (findQuestion('addColor').value) {
+                    return true;
+                }
+            }
             else if (question.type == 'oneLineType') {
                 return Boolean(question.value.length &&
                     question.value[0].id &&
@@ -105,7 +111,6 @@ export default class Validator {
         };
         const target = ref();
         target.value = questions.find((e) => (!conditions(e)));
-
         if (!target.value && noErrors.value) {
             stores.helperStore.deleteErrorMessage('', 'emptyValueError')
             return jsonError.value = false;

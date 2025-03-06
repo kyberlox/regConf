@@ -39,9 +39,10 @@
                 <TransitionGroup name="slide-down">
                     <div class="helper__message helper__message--tkp"
                          v-for="(doc, index) in latestTkps"
-                         :key="'message' + index"
-                         @click.stop="download(doc.id, doc.name)">
-                        {{ doc.name }}
+                         :key="'message' + index">
+                        <RouterLink :to="{ name: 'positionHistory', params: { id: doc.id } }">
+                            {{ doc.name }}
+                        </RouterLink>
                         <!-- <div class="helper__message helper__message--tkp-pos"
                              :class="{ hidden: doc.hidden }"
                              v-for="(item, index) in doc.inner"

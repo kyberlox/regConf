@@ -140,6 +140,6 @@ export const useQuestionsStore = defineStore('questions', {
     },
     getters: {
         getQuestions: (state) => state.questions,
-        getMark: (state) => state.questions.find(item => item.inputName == 'mark').value,
+        getMark: (state) => state.questions.find(item => item.inputName == 'OL_num').value ? state.questions.find(item => item.inputName == 'OL_num').value + '-' + state.questions.find(item => item.inputName == 'mark').value : state.questions.find(item => item.inputName == 'mark').value,
     }
 });
