@@ -133,6 +133,7 @@ def searchParams(DNS, Pn, PN, valve_type):
     minPN = request[0].PN
     #print("###")
     for example in request:
+        print()
         #print(example.id)
         #print(example.Pnd)
         try:
@@ -899,7 +900,7 @@ def make_XL(dt):
         "H": "name",
         "I": "T",
         "L": "climate",
-        #"M": "detonation_node",
+        "M": "force_open",
         "N": "need_bellows",
         "O": "DN",
         "P": "PN",
