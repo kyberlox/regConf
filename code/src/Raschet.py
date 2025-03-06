@@ -117,11 +117,11 @@ def searchT10(T, Pn):
     return ans
 
 def searchParams(DNS, Pn, PN, valve_type):
-    print(DNS, PN, valve_type)
+    #print(DNS, PN, valve_type)
     PN = PN * 10
     Pn = Pn * 10
     #найти все подходящие строки их DNS и P1 - больше искомых
-    request = db.query(Params).filter(Params.DNS >= DNS, Params.PN == PN, valve_type == valve_type).all()
+    request = db.query(Params).filter(Params.DNS >= DNS, Params.PN == PN, Params.valve_type == valve_type).all()
 
     if request == None or request == []:
         return False
@@ -131,10 +131,11 @@ def searchParams(DNS, Pn, PN, valve_type):
     minDNS = request[0].DNS
     #minP1 = request[0].P1
     minPN = request[0].PN
-    #print("###")
+    ##print("###")
     for example in request:
-        #print(example.id)
-        #print(example.Pnd)
+
+        #print(example.id, example.DNS, example.valve_type, example.DN, example.PN)
+
         try:
             Pn1 = str(example.Pnd).split("...")[0]
             Pn2 = str(example.Pnd).split("...")[1]
@@ -174,7 +175,7 @@ def searchParams(DNS, Pn, PN, valve_type):
             print(example.id)
             print(example.Pnd)
             print("###")
-
+    #print("###")
     #print(ans)
 
     return ans
@@ -630,6 +631,7 @@ def Raschet(dt):
     new_dt["PN2"] = PN2[new_dt["PN"]]
 
     # Площадь седла клапана
+    DN_s = example["DNS"]
     S = (pi * DN_s**2 )/ 4
     new_dt["S"] = S
     # Эффективная площадь седла калапан
@@ -642,8 +644,13 @@ def Raschet(dt):
     # подбор сильфона !!!!!!!!!!!!!!!!!!!!! сильфон только на пружине
     if (dt["valve_type"] == 'В') and (((example["spring_material"] == '51ХФА') and (T > 120)) or ((example["spring_material"] == '50ХФА') and (T > 250))):
         new_dt["need_bellows"] = True
+    elif dt["valve_type"] == 'В':
+            new_dt["need_bellows"] = [True, False]
+    elif dt["valve_type"] == 'Н':
+        new_dt["need_bellows"] = False
     else:
-        new_dt["need_bellows"] = [True, False]
+        new_dt["need_bellows"] = False
+
 
     # окрытый закрытый тип
     env_name = dt["name"]
@@ -899,7 +906,7 @@ def make_XL(dt):
         "H": "name",
         "I": "T",
         "L": "climate",
-        #"M": "detonation_node",
+        "M": "force_open",
         "N": "need_bellows",
         "O": "DN",
         "P": "PN",
@@ -963,7 +970,7 @@ def make_XL(dt):
             sheet[f"AL{i}"].value = position["Pn"]
 
             # Давление начала открытия без противодавления
-            sheet[f"AM{i}"].value = position["Ppo"]
+            sheet[f"AM{i}"].value = position["Pno"]
 
             # Давление полного открытия без противодавления
             sheet[f"AN{i}"].value = position["Ppo"]
@@ -972,28 +979,28 @@ def make_XL(dt):
             sheet[f"AH{i}"].value = position["Pn"]
 
             # Давление начала открытия с противодавлением
-            sheet[f"AI{i}"].value = position["Ppo"]
+            sheet[f"AI{i}"].value = position["Pno"]
 
             # Давление полного открытия с противодавлением
             sheet[f"AJ{i}"].value = position["Ppo"]
         else:
             # Давление настройки без противодавления
-            sheet[f"AL{i}"].value = position["Pn"] - position["Pp"]
+            sheet[f"AL{i}"].value = position["Pn"]
 
             # Давление начала открытия без противодавления
-            sheet[f"AM{i}"].value = position["Ppo"] - position["Pp"]
+            sheet[f"AM{i}"].value = position["Pno"]
 
             # Давление полного открытия без противодавления
-            sheet[f"AN{i}"].value = position["Ppo"] - position["Pp"]
+            sheet[f"AN{i}"].value = position["Ppo"]
 
             # Давление настройки с противодавлением
-            sheet[f"AH{i}"].value = position["Pn"]
+            sheet[f"AH{i}"].value = position["Pn"] - position["Pp"]
 
             # Давление начала открытия с противодавлениемпротиводавлением
-            sheet[f"AI{i}"].value = position["Ppo"]
+            sheet[f"AI{i}"].value = position["Pno"] - position["Pp"]
 
             # Давление полного открытия с противодавлением
-            sheet[f"AJ{i}"].value = position["Ppo"]
+            sheet[f"AJ{i}"].value = position["Ppo"] - position["Pp"]
 
         # номерация
         sheet[f"A{i}"].value = int(sheet[f"A3"].value) + i - 3
