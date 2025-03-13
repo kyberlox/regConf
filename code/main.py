@@ -349,7 +349,7 @@ def migration():
             S = float(sheet[f"E{i}"].value)
         else:
             S = None
-            
+
 
 
         example = pakingParams(mark=mark, DN=DN, PN=PN, M=M, S=S)

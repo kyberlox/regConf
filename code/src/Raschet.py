@@ -183,13 +183,19 @@ def searchParams(DNS, Pn, PN, valve_type):
 def get_by_mark(mark, DN, PN):
     mark = mark[2:5]
     request = db.query(pakingParams).filter(pakingParams.mark == mark, pakingParams.DN == DN, pakingParams.PN == PN).first()
-    if request == None:
+    print(mark, DN, PN)
+    print(request, request.M, request.S)
+    if request is None:
         return ("Нет данных", "Нет данных")
     else:
-        if request.M == None:
-            return ("Нет данных", request.S) 
-        else:
-            return (request.M, request.S) 
+        M = "Нет данных"
+        S = "Нет данных"
+        if request.M is not None:
+            M = request.M
+        elif request.S is not None:
+            S = request.S
+
+        return (M, S)
 
 
 
