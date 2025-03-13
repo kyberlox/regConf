@@ -332,7 +332,7 @@ def migration():
     result.append(t10_result)
 
     wb3 = load_workbook("./files/paking_params.xlsx")
-    sheet = wb3["result"]
+    sheet = wb3["Лист1"]
 
     pak_res = {"added" : [], "exists" : []}
     for i in range(2, sheet.max_row):
