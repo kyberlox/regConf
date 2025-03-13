@@ -262,8 +262,8 @@ data_mean = {
     "assignment": "Назначенный срок службы, лет",
     "acceptance": "Приемка",
     "adapters": "Переходники",
-    "needKOF": "Наличие [Да/Нет]",
-    "need_ZIP": "Наличие ЗИП",
+    "needKOF": "Наличие КОФ [Да/Нет]",
+    "need_ZIP": "Наличие ЗИП [Да/Нет]",
     "reciprocal_connections": "Комплект ответных присоединительных частей",
     "pipe_material": "Материал трубы Материал и размер трубопровода",
     "quantity": "Количество",
@@ -402,6 +402,7 @@ def mixture(envs : list, climate : str):
         result["material"] = "20ГЛ"
 
     return result
+
 
 
 def Raschet(dt):
