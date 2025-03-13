@@ -78,9 +78,10 @@ export const getPressureParamsHandle = (stores) => {
                     paramsToGet.map((key) => {
                         if (key == 'need_bellows') {
                             if (data[key]) {
-                                if (typeof (data[key]) == 'string') {
+                                if (typeof (data[key]) == 'boolean') {
                                     questionsStore.setQuestionValue(key, data[key]);
                                     questionsStore.setQuestionDisabled('need_bellows', true);
+                                    helperStore.setErrorMessage('need_bellows', 'temporaryMessage');
                                 }
                             }
                             else {

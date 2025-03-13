@@ -74,7 +74,8 @@ export default {
             Api.delete(API_URL + '/delete_position_tkp/' + route.params.id + '/' + id)
                 .then(() => {
                     updateHistory();
-                    initPosHistory()});
+                    initPosHistory()
+                });
         }
 
         const handleClick = (type, item, index) => {
