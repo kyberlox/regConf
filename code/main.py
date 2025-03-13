@@ -340,11 +340,17 @@ def migration():
         DN = float(sheet[f"B{i}"].value)
         PN = float(sheet[f"C{i}"].value)
         M = sheet[f"D{i}"].value
-        S = float(sheet[f"E{i}"].value)
+        S = sheet[f"E{i}"].value
         if type(M) == type("") or type(M) == type(1.0):
             M = float(sheet[f"D{i}"].value)
         else:
             M = None
+        if type(S) == type("") or type(S) == type(1.0):
+            S = float(sheet[f"E{i}"].value)
+        else:
+            S = None
+            
+
 
         example = pakingParams(mark=mark, DN=DN, PN=PN, M=M, S=S)
         request = db.query(pakingParams).filter(pakingParams.mark == mark, pakingParams.DN == DN, pakingParams.PN == PN).first()
