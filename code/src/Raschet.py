@@ -68,7 +68,7 @@ db = SessionLocal()
 
 
 def searchT2(T, Pn):
-    #print(f"T2: {Pn}")
+    print(f"T2: {Pn}")
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Table2).filter(Table2.T >= T, Table2.Pn >= Pn).all()
 
@@ -93,7 +93,7 @@ def searchT2(T, Pn):
     return ans
     
 def searchT10(T, Pn):
-    #print(f"T10: {Pn}")
+    print(f"T10: {Pn}")
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Table10).filter(Table10.T >= T, Table10.Pn >= Pn).all()
 
@@ -114,7 +114,7 @@ def searchT10(T, Pn):
                 "Pn" : example.Pn, 
                 "PN" : example.P
             }
-    
+    print(ans)
     return ans
 
 def searchParams(DNS, Pn, PN, valve_type):
