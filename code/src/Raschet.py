@@ -594,9 +594,9 @@ def Raschet(dt):
     # Номинальное давление
     new_dt["PN"] = f"Невозмажно подобрать при сочитании параметров: \nТемпература рабочей среды = {T} \n Давление настройки = {Pn}"
     if dt["material"] == "20ГЛ" or dt["material"] == "25Л":
-        ex = searchT2(T, Pn)
+        ex = searchT2(T, Pn * 10.197162)
     else:
-        ex = searchT10(T, Pn)
+        ex = searchT10(T, Pn * 10.197162)
 
     if ex:
         PN = ex["PN"]
