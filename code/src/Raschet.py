@@ -67,8 +67,28 @@ db = SessionLocal()
 
 
 
+def linear_interpolation(x1, y1, x2, y2, x):
+    """
+    Функция для линейной интерполяции.
+
+    :param x1: x-координата первой точки
+    :param y1: y-координата первой точки
+    :param x2: x-координата второй точки
+    :param y2: y-координата второй точки
+    :param x: x-координата точки, для которой нужно найти y
+    :return: интерполированное значение y
+    """
+    if x1 == x2:
+        raise ValueError("x1 и x2 не должны быть равны, чтобы избежать деления на ноль.")
+
+    # Вычисляем y по формуле линейной интерполяции
+    y = y1 + (x - x1) * (y2 - y1) / (x2 - x1)
+    return y
+
+
+
 def searchT2(T, Pn):
-    print(f"T2: {Pn}")
+    #print(f"T2: {Pn}")
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Table2).filter(Table2.T >= T, Table2.Pn >= Pn).all()
 
@@ -89,11 +109,11 @@ def searchT2(T, Pn):
                 "Pn" : example.Pn * 10, 
                 "PN" : example.P
             }
-    print(ans)
+    #print(ans)
     return ans
     
 def searchT10(T, Pn):
-    print(f"T10: {Pn}")
+    #print(f"T10: {Pn}")
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Table10).filter(Table10.T >= T, Table10.Pn >= Pn).all()
 
@@ -114,11 +134,11 @@ def searchT10(T, Pn):
                 "Pn" : example.Pn, 
                 "PN" : example.P
             }
-    print(ans)
+    #print(ans)
     return ans
 
 def searchParams(DNS, Pn, PN, valve_type):
-    #print(DNS, PN, valve_type)
+    print(DNS, PN, valve_type)
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Params).filter(Params.DNS >= DNS, Params.PN == PN, Params.valve_type == valve_type).all()
 
@@ -475,6 +495,7 @@ def Raschet(dt):
     B = P2 / P1
 
     if dt["environment"] == "Газ":
+
         if "molar_mass" not in dt:
             return {"err": f"Не корректно определён или не орпеделён параметр \'f{data_mean['molar_mass']}\' "}
 
@@ -483,26 +504,52 @@ def Raschet(dt):
         p1 = P1 * 1000 * M / (R * (T + 273.15))
 
         alpha = 0.8
+        # (Д.22)
         if (Ppo / Pn) == 1.1:
             if (Pp / Pno) <= 0.3:
                 Kw = 1
             else:
                 Kw = 1.1027 + 0.4007 * (Pp / Pno) - 2.4577 * (Pp / Pno) ** 2
+        # (Д.23)
         elif (Ppo / Pn) == 1.15:
             if (Pp / Pno) <= 0.37:
                 Kw = 1
             else:
                 Kw = 1.2857 - 0.7603 * (Pp / Pno)
+        # (Д.24)
         elif ((Ppo / Pn) > 1.2) and ((Pp / Pno) >= 0.5):
             Kw = 1
+        # (Д.25)
         elif ((Ppo / Pn) > 1.1) and ((Ppo / Pn) <= 1.15):
             # Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.22) и (Д.23)
-            return {
-                "err": f"Нет возможности расчитать {data_mean['Kw']} для соотношения 1.1 < Ppo / Pn <= 1.15, при {data_mean['Ppo']} = {Ppo} и {data_mean['Pn']} = {Pn} "}
+            #return {"err": f"Нет возможности расчитать {data_mean['Kw']} для соотношения 1.1 < Ppo / Pn <= 1.15, при {data_mean['Ppo']} = {Ppo} и {data_mean['Pn']} = {Pn} "}
+
+            # (Д.22)
+            Ppo_Pn_1 = 1.1
+            Kw_1 = 1.1027 + 0.4007 * (Pp / Pno) - 2.4577 * (Pp / Pno) ** 2
+
+            # (Д.23)
+            Ppo_Pn_2 = 1.15
+            Kw_2 = 1.2857 - 0.7603 * (Pp / Pno)
+
+            Kw = linear_interpolation(Ppo_Pn_1, Kw_1, Ppo_Pn_2, Kw_2, Ppo / Pn)
+
+        # (Д.26)
         elif ((Ppo / Pn) > 1.15) and ((Ppo / Pn) <= 1.2):
             # Kw определяют линейной интерполяцией по (Ppo / Pn) между значениями, полученными по (Д.23) и (Д.24)
-            return {
-                "err": f"Нет возможности расчитать {data_mean['Kw']} для соотношения 1.1 < Ppo / Pn <= 1.15, при {data_mean['Ppo']} = {Ppo} и {data_mean['Pn']} = {Pn} "}
+            #return {"err": f"Нет возможности расчитать {data_mean['Kw']} для соотношения 1.1 < Ppo / Pn <= 1.15, при {data_mean['Ppo']} = {Ppo} и {data_mean['Pn']} = {Pn} "}
+
+            # (Д.23)
+            Ppo_Pn_1 = 1.15
+            Kw_1 = 1.2857 - 0.7603 * (Pp / Pno)
+
+            # (Д.24)
+            Ppo_Pn_2 = 1.21
+            Kw_2 = 1
+
+            Kw = linear_interpolation(Ppo_Pn_1, Kw_1, Ppo_Pn_2, Kw_2, Ppo / Pn)
+
+
 
         # показатель изоэнтропии
         # dt["isobaric_capacity"] / dt["isochoric_capacity"] = dt["adiabatic_index"]
@@ -534,6 +581,7 @@ def Raschet(dt):
                 "err": f"Одно из значений = 0:\n {data_mean['Ppo']} : {Ppo}\n {data_mean['Pno']} : {Pno}\n {Ppo}\n {data_mean['Kb']} : {Kb}\n {data_mean['Ppo']} : {Ppo}\n  {data_mean['Kp_kr']} : {Kp_kr}\n  {data_mean['Kw']} : {Kw}\n"}
 
     else:
+        #(Д.21)
         alpha = 0.6
         # p1 = dt["density"]
         if (Pp / Pno) <= 1.15:
