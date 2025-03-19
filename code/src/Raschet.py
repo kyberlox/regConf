@@ -119,8 +119,6 @@ def searchT10(T, Pn):
 
 def searchParams(DNS, Pn, PN, valve_type):
     #print(DNS, PN, valve_type)
-    PN = PN * 10
-    Pn = Pn * 10
     #найти все подходящие строки их DNS и P1 - больше искомых
     request = db.query(Params).filter(Params.DNS >= DNS, Params.PN == PN, Params.valve_type == valve_type).all()
 
@@ -606,7 +604,7 @@ def Raschet(dt):
 
     # Деаметр ПК
     new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
-    example = searchParams(DN_s, Pn, PN, dt["valve_type"])
+    example = searchParams(DN_s, Pn * 10.197162, PN, dt["valve_type"])
 
 
     if example:
