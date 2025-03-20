@@ -608,7 +608,7 @@ def Raschet(dt):
     while DN_s != pre_DN:
 
         pre_F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
-        print(pre_F, ":", alpha, Kv, Kw, Kc, Gideal, N)
+        print(pre_F, ":", Gab, alpha, Kv, Kw, Kc, Gideal, N)
         if pre_F == 0:
             return {"err": f"Одно из значений = 0:\n Kv : {Kv}\n {data_mean['Kw']} : {Kw}\n {data_mean['Kc']} : {Kc}\n {data_mean['Gideal']} : {Gideal}\n"}
         pre_DN = sqrt((4 * pre_F) / pi)
