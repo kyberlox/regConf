@@ -606,10 +606,10 @@ def Raschet(dt):
     Kv = 1
 
     while DN_s != pre_DN:
-        # print(3.6, alpha, Kv, Kw, Kc, Gideal, N)
+        print(3.6, alpha, Kv, Kw, Kc, Gideal, N)
         pre_F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
         if pre_F == 0:
-            return {"err": f"Одно из значений = 0:\n {data_mean['Kv']} : {Kv}\n {data_mean['Kw']} : {Kw}\n {data_mean['Kc']} : {Kc}\n {data_mean['Gideal']} : {Gideal}\n"}
+            return {"err": f"Одно из значений = 0:\n Kv : {Kv}\n {data_mean['Kw']} : {Kw}\n {data_mean['Kc']} : {Kc}\n {data_mean['Gideal']} : {Gideal}\n"}
         pre_DN = sqrt((4 * pre_F) / pi)
 
         Re = (Gideal * p1 * pre_DN) / u  # Gideal
