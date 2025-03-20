@@ -203,17 +203,17 @@ def get_by_mark(mark, DN, PN):
     mark = mark[2:5]
     request = db.query(pakingParams).filter(pakingParams.mark == mark, pakingParams.DN == DN, pakingParams.PN == PN).first()
     print(mark, DN, PN)
-    print(request, request.M, request.S)
     if request is None:
         return ("Нет данных", "Нет данных")
     else:
+
         M = "Нет данных"
         S = "Нет данных"
         if request.M is not None:
             M = request.M
         elif request.S is not None:
             S = request.S
-
+        print(M, S)
         return (M, S)
 
 
