@@ -622,6 +622,7 @@ def Raschet(dt):
 
         F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
         DN_s = sqrt((4 * F) / pi)
+        DN_s = math.ceil(DN_s * 10) / 10
 
     # перевести из МПа в кгс/см2
     new_dt = {
