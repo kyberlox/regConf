@@ -1,4 +1,4 @@
 #!/bin/bash
 git add .
-git commit -m "Подбор PN по Pn"
+git commit -m "Тестирование"
 git push origin main
