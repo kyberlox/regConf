@@ -68,7 +68,7 @@ export const getCompoundParamsHandle = (stores) => {
                 'id': Number(obj.id),
                 'r': Number(obj.value) / 100,
             }));
-            formattedData.push({ "climate": paramsToGetCompound.value.climate.value, "T": Number(paramsToGetCompound.value.T.value) })
+            formattedData.push({ "climate": paramsToGetCompound.value.climate.value }, { "T": Number(paramsToGetCompound.value.T.value) })
 
             // eslint-disable-next-line no-undef
             Api.post(API_URL + '/get_compound',
