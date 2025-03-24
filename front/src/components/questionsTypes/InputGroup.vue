@@ -33,10 +33,13 @@ export default {
         });
 
         const specialize = (answer) => {
-            if (!answer.value) return;
             if (answer.inputName == "compress_factor") {
                 return 1;
-            } else if (answer.inputName == "pre_DN") {
+            }
+            else if (!answer.value) {
+                return
+            }
+            else if (answer.inputName == "pre_DN") {
                 return answer.value.toFixed(1);
             } else if (answer.inputName == "viscosity") {
                 if (answer.value > 0.9) return answer.value.toFixed(2);
@@ -49,7 +52,6 @@ export default {
                         return (formattedAnswer = answer.value.toFixed(Number(i + 2)).slice(0, -1));
                     }
                 });
-
                 return formattedAnswer;
             } else
                 return answer.value;
