@@ -361,6 +361,7 @@ def mixture(envs : list, climate : str, T : float):
             pre_M = 0
             adiabatic_index = 0
             adiabatic_index_zn = 0
+            density_ns_zn = 0
             for env in envs:
                 r = env["r"]
                 result["name"] += f"{env['name']}:{r*100}% "
