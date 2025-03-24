@@ -390,7 +390,7 @@ def mixture(envs : list, climate : str, T : float):
             result["density_ns"] = result["density_ns"] / 22.4
 
             # плотность рабочая Менделлева_Клайперона
-            result["density"] = result["density_ns"] * ((273) / (273 + T))
+            result["density"] = result["density_ns"] * ((273.0) / (273.0 + T))
 
             print()
 
@@ -445,6 +445,8 @@ def mixture(envs : list, climate : str, T : float):
     #если климатика => то материал
     if ((climate == "ХЛ1") or (climate == "УХЛ1")) and (result["material"] == "25Л"):
         result["material"] = "20ГЛ"
+
+    result["T"] = T
 
     return result
 
