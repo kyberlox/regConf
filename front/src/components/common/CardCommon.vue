@@ -32,6 +32,7 @@ import { useQuestionsStore } from "@/store/questions";
 import TextAreaType from "../questionsTypes/TextAreaType.vue";
 import { computed, ref, onMounted } from "vue";
 import { usePageStore } from "@/store/page";
+import { findQuestion } from "@/utils/findQuestionInStore"
 export default {
     props: {
         question: {
@@ -72,9 +73,22 @@ export default {
         })
 
         const questionsStore = useQuestionsStore();
+
         const saveNewValue = (name, value, oneLine = false, subquestionId = null) => {
-            if (name == 'Pn' || name == 'Pp' || name == 'Pp_din' || name == 'Gab') {
+            if (name == 'Pn' || name == 'Pp' || name == 'Pp_din') {
                 convertedValue.value = { id: value.id, value: convert.value(value.id, value.value) };
+                questionsStore.setConvertedValue(name, convertedValue.value);
+            }
+            else if (name == 'Gab') {
+                if (value.id == 'м3/час') {
+                    convertedValue.value = { id: value.id, value: convert.value(value.id, value.value, findQuestion('envAnswersGroup', 'density').value) };
+                }
+                else if (value.id == 'Нм3/час') {
+                    convertedValue.value = { id: value.id, value: convert.value(value.id, value.value, findQuestion('envAnswersGroup', 'density_ns').value) };
+                }
+                else {
+                    convertedValue.value = { id: value.id, value: convert.value(value.id, value.value) };
+                }
                 questionsStore.setConvertedValue(name, convertedValue.value);
             }
 

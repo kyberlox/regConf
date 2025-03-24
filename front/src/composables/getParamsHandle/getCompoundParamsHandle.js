@@ -17,6 +17,7 @@ export const getCompoundParamsHandle = (stores) => {
         secondEnv: findQuestion('secondEnv'),
         bothEnvSumm: findQuestion('envAnswersGroup', 'bothEnvSumm'),
         climate: findQuestion('climate'),
+        T: findQuestion('T')
     }))
 
     // обновляю options у селекта состава при выборе др агрегатного
@@ -50,7 +51,9 @@ export const getCompoundParamsHandle = (stores) => {
 
     // запрос (#2, get_compound) на параметры для конкр сред (Вязкость, материал, молекулярная масса, вязкость)
     watch(paramsToGetCompound, (newVal) => {
-        if ((newVal.environment.value || newVal.secondEnv.value) && newVal.climate.value && noErrors.value) {
+        if ((newVal.environment.value || newVal.secondEnv.value) && newVal.climate.value && noErrors.value && newVal.T.value) {
+            Validator.validTemperature(newVal.T.value, helperStore);
+
             const envParamsToGet = ['molecular_weight', 'density', 'material', 'viscosity', 'density_ns'];
             let dataToSend = [];
 
@@ -64,6 +67,7 @@ export const getCompoundParamsHandle = (stores) => {
             const formattedData = dataToSend.map(obj => ({
                 'id': Number(obj.id),
                 'r': Number(obj.value) / 100,
+                "T": Number(newVal.T.value)
             }));
             formattedData.push({ "climate": paramsToGetCompound.value.climate.value })
 

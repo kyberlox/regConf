@@ -17,7 +17,7 @@ export const getPressureParamsHandle = (stores) => {
         n: findQuestion('N'),
         preKc: findQuestion('Pre_Kc'),
         climate: findQuestion('climate'),
-        T: findQuestion('T'),
+
         valveType: findQuestion('valve_type'),
         forceOpen: findQuestion('force_open'),
     }));
@@ -25,8 +25,6 @@ export const getPressureParamsHandle = (stores) => {
 
     // запрос (#3, get_pressure) на "Pno", "Ppo", "P1", "P2","Kw", "Gideal", "pre_DN","DN"
     watch(paramsToGetPressure, (newVal) => {
-        Validator.validTemperature(newVal.T.value, helperStore);
-
         // Проверка давления
         let settingPressure = { unit: newVal.pn.convertedValue?.id, value: newVal.pn.convertedValue?.value };
         let staticPressure = { unit: newVal.pp.convertedValue?.id, value: newVal.pp.convertedValue?.value };
@@ -47,7 +45,8 @@ export const getPressureParamsHandle = (stores) => {
         // Проверка расхода жидкости и газа
         Validator.validForNull(newVal.gab.value, newVal.gab.inputName, helperStore);
 
-        if (noErrors.value && newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.value && newVal.n.value && newVal.T.value && newVal.valveType.value) {
+
+        if (noErrors.value && newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.value && newVal.n.value && newVal.valveType.value) {
             const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', "DN_s", 'DN', "PN", "need_bellows", "PN2", "DN2", "S", "S_eff"];
 
             const formattedData = {
@@ -57,7 +56,6 @@ export const getPressureParamsHandle = (stores) => {
                 "Gab": Number(newVal.gab.convertedValue.value),
                 "N": Number(newVal.n.value),
                 "pre_Kc": newVal.preKc.value,
-                "T": Number(newVal.T.value),
                 "valve_type": newVal.valveType.value,
                 "force_open": newVal.forceOpen.value == null ? false : newVal.forceOpen.value,
                 "climate": newVal.climate.value,

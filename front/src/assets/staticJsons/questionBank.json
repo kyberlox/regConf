@@ -100,6 +100,15 @@
     ]
   },
   {
+    "id": 13,
+    "group": "compound",
+    "name": "Температура рабочей среды, в °С:",
+    "inputName": "T",
+    "type": "TextType",
+    "inputType": "number",
+    "placeholder": "Укажите значение"
+  },
+  {
     "id": 3,
     "group": "compound",
     "name": "Климатическое исполнение:",
@@ -467,15 +476,6 @@
         "checkToHide": 5
       }
     ]
-  },
-  {
-    "id": 13,
-    "group": "pressure",
-    "name": "Температура рабочей среды, в °С:",
-    "inputName": "T",
-    "type": "TextType",
-    "inputType": "number",
-    "placeholder": "Укажите значение"
   },
   {
     "id": 14,

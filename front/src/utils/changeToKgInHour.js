@@ -1,11 +1,11 @@
-export const changeToKgInHour = (unit, x) => {
+export const changeToKgInHour = (unit, x, density) => {
     switch (unit) {
         case 'Кг/час':
             return x;
         case 'м3/час':
-            return x * 1000;
+            return x * density;
         case 'Нм3/час':
-            return x * 1.225;
+            return x * density;
         case 'T/час':
             return x * 1000;
     }
