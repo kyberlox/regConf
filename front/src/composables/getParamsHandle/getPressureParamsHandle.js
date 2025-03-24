@@ -17,7 +17,6 @@ export const getPressureParamsHandle = (stores) => {
         n: findQuestion('N'),
         preKc: findQuestion('Pre_Kc'),
         climate: findQuestion('climate'),
-
         valveType: findQuestion('valve_type'),
         forceOpen: findQuestion('force_open'),
     }));
@@ -44,7 +43,6 @@ export const getPressureParamsHandle = (stores) => {
         Validator.validForNull(newVal.n.value, newVal.n.inputName, helperStore);
         // Проверка расхода жидкости и газа
         Validator.validForNull(newVal.gab.value, newVal.gab.inputName, helperStore);
-
 
         if (noErrors.value && newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.value && newVal.n.value && newVal.valveType.value) {
             const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', "DN_s", 'DN', "PN", "need_bellows", "PN2", "DN2", "S", "S_eff"];
