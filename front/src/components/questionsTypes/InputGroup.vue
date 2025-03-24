@@ -3,8 +3,8 @@
         <div class="card__results__result-block"
              v-for="answer in question.answers"
              :key="answer.id"
-             :class="{ 'hidden': answer.hidden }"
-             :ref="el => questionInGroup[answer.inputName] = el">
+             :class="{ hidden: answer.hidden }"
+             :ref="(el) => (questionInGroup[answer.inputName] = el)">
             <div class="card__results__result-title">
                 {{ answer.name }}
             </div>
@@ -17,7 +17,6 @@
             </div>
         </div>
     </div>
-
 </template>
 
 <script>
@@ -30,21 +29,36 @@ export default {
         const questionInGroup = ref({});
 
         onMounted(() => {
-            pageStore.pushToRefGroup(questionInGroup.value)
-        })
+            pageStore.pushToRefGroup(questionInGroup.value);
+        });
 
         const specialize = (answer) => {
-            if (answer.value > 0) { return answer.inputName == 'viscosity' ? answer.value : answer.value.toFixed(2) }
-            else {
-                return answer.inputName == 'compress_factor' ? 1 : answer.value;
-            }
+            if (!answer.value) return;
+            if (answer.inputName == "compress_factor") {
+                return 1;
+            } else if (answer.inputName == "pre_DN") {
+                return answer.value.toFixed(1);
+            } else if (answer.inputName == "viscosity") {
+                if (answer.value > 0.9) return answer.value.toFixed(2);
 
-        }
+                const valueToArray = String(answer.value).replace("0.", "").split("");
+
+                let formattedAnswer;
+                valueToArray.find((e, i) => {
+                    if (e !== "0") {
+                        return (formattedAnswer = answer.value.toFixed(Number(i + 2)).slice(0, -1));
+                    }
+                });
+
+                return formattedAnswer;
+            } else
+                return answer.value;
+        };
 
         return {
             questionInGroup,
-            specialize
-        }
-    }
-}
+            specialize,
+        };
+    },
+};
 </script>

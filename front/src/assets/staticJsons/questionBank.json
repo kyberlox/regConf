@@ -50,12 +50,13 @@
     ]
   },
   {
-    "id": 3,
+    "id": 3000,
     "group": "compound",
     "name": "Наличие растворенной среды в другом агрегатном состоянии:",
     "type": "CheckboxType",
     "inputName": "isSecondEnv",
     "value": false,
+    "hidden": true,
     "answers": [
       {
         "name": "Да",
@@ -65,7 +66,7 @@
     ]
   },
   {
-    "id": 3.1,
+    "id": 3001,
     "group": "compound",
     "name": "Другое агрегатное состояние, %:",
     "type": "oneLineType",
@@ -79,7 +80,7 @@
     "inner": [
       [
         {
-          "id": 3.2,
+          "id": 3000.2,
           "name": "",
           "type": "SelectType",
           "inputName": "environmentName",
@@ -87,7 +88,7 @@
           "answers": []
         },
         {
-          "id": 3.3,
+          "id": 3000.3,
           "name": "",
           "type": "TextType",
           "inputType": "number",
@@ -99,7 +100,7 @@
     ]
   },
   {
-    "id": 4,
+    "id": 3,
     "group": "compound",
     "name": "Климатическое исполнение:",
     "inputName": "climate",
@@ -125,63 +126,63 @@
     ]
   },
   {
-    "id": 5,
+    "id": 4,
     "group": "compound",
     "inputName": "envAnswersGroup",
     "type": "inputGroup",
     "answers": [
       {
-        "id": 5.1,
+        "id": 4.1,
         "name": "Суммарная доля состава рабочей среды, %:",
         "inputName": "envSumm",
         "hidden": false,
         "value": null
       },
       {
-        "id": 5.2,
+        "id": 4.2,
         "name": "Сумма газовой и жидкой фазы, %:",
         "inputName": "bothEnvSumm",
         "hidden": true,
         "value": null
       },
       {
-        "id": 5.3,
-        "name": "Молекулярная масса:",
+        "id": 4.3,
+        "name": "Молекулярная масса, г/моль:",
         "inputName": "molecular_weight",
         "hidden": false,
         "value": null
       },
       {
-        "id": 5.4,
-        "name": "Плотность:",
+        "id": 4.4,
+        "name": "Плотность, кг/нм³:",
         "inputName": "density",
         "hidden": false,
         "value": null
       },
       {
-        "id": 5.5,
+        "id": 4.5,
         "name": "Материал:",
         "inputName": "material",
         "hidden": false,
         "value": null
       },
       {
-        "id": 5.6,
+        "id": 4.6,
         "name": "Фактор сжимаемости:",
         "inputName": "compress_factor",
         "hidden": false,
         "defaultValue": 1
       },
       {
-        "id": 5.7,
-        "name": "Плотность несущей среды:",
+        "id": 4.7,
+        "name": "Плотность несущей среды, кг/нм³:",
         "inputName": "density_ns",
         "hidden": false,
         "value": null
       },
       {
-        "id": 5.8,
-        "name": "Вязкость:",
+        "id": 4.8,
+        "name": "Вязкость, Па*с:",
         "inputName": "viscosity",
         "hidden": false,
         "value": null
@@ -189,7 +190,7 @@
     ]
   },
   {
-    "id": 6,
+    "id": 5,
     "group": "pressure",
     "name": "Тип предохранительного клапана:",
     "type": "RadioType",
@@ -207,7 +208,7 @@
     ]
   },
   {
-    "id": 7,
+    "id": 6,
     "group": "pressure",
     "name": "Устройство принудительного открытия:",
     "type": "CheckboxType",
@@ -221,7 +222,7 @@
     ]
   },
   {
-    "id": 8,
+    "id": 7,
     "group": "pressure",
     "name": "Давление настройки:",
     "inputName": "Pn",
@@ -278,7 +279,7 @@
     ]
   },
   {
-    "id": 9,
+    "id": 8,
     "group": "pressure",
     "name": "Противодавление статическое:",
     "inputName": "Pp",
@@ -335,7 +336,7 @@
     ]
   },
   {
-    "id": 10,
+    "id": 9,
     "group": "pressure",
     "name": "Противодавление динамическое:",
     "inputName": "Pp_din",
@@ -392,7 +393,7 @@
     ]
   },
   {
-    "id": 11,
+    "id": 10,
     "group": "pressure",
     "name": "Максимальный аварийный расход жидкости и газа:",
     "inputName": "Gab",
@@ -444,7 +445,7 @@
     ]
   },
   {
-    "id": 12,
+    "id": 11,
     "group": "pressure",
     "name": "Количество параллельно установленных и одновременно работающих клапанов (шт):",
     "inputName": "N",
@@ -453,7 +454,7 @@
     "value": null
   },
   {
-    "id": 13,
+    "id": 12,
     "group": "pressure",
     "name": "Мембранно-предохранительное устройство:",
     "inputName": "Pre_Kc",
@@ -468,7 +469,7 @@
     ]
   },
   {
-    "id": 14,
+    "id": 13,
     "group": "pressure",
     "name": "Температура рабочей среды, в °С:",
     "inputName": "T",
@@ -477,7 +478,7 @@
     "placeholder": "Укажите значение"
   },
   {
-    "id": 15,
+    "id": 14,
     "group": "pressure",
     "inputName": "pressureAnswersGroup",
     "type": "inputGroup",
@@ -540,7 +541,7 @@
       },
       {
         "id": 15.9,
-        "name": "Диаметр предворительный, мм:",
+        "name": "Предворительный Диаметр седла клапана, мм:",
         "type": "DisabledType",
         "inputName": "pre_DN",
         "value": null
@@ -583,7 +584,7 @@
     ]
   },
   {
-    "id": 16,
+    "id": 15,
     "group": "mark",
     "name": "Тип присоединения:",
     "inputName": "joining_type",
@@ -597,39 +598,11 @@
       {
         "name": "Под приварку",
         "value": "Под приварку"
-      },
-      {
-        "name": "Штуцерное",
-        "value": "Штуцерное"
-      },
-      {
-        "name": "Штуцерно-торцовое",
-        "value": "Штуцерно-торцовое"
-      },
-      {
-        "name": "Муфтовое",
-        "value": "Муфтовое"
-      },
-      {
-        "name": "Ниппельное",
-        "value": "Ниппельное"
-      },
-      {
-        "name": "Кламповое",
-        "value": "Кламповое"
-      },
-      {
-        "name": "Комбинированное",
-        "value": "Комбинированное"
-      },
-      {
-        "name": "Цапковое",
-        "value": "Цапковое"
       }
     ]
   },
   {
-    "id": 17,
+    "id": 16,
     "group": "mark",
     "name": "Переменное противодавление или необходим сильфон на пружинные ПК по требованию ОЛ:",
     "type": "CheckboxType",
@@ -645,7 +618,7 @@
     ]
   },
   {
-    "id": 17.1,
+    "id": 16.1,
     "group": "hiddenMark",
     "name": "Маркировка",
     "inputName": "mark",
@@ -653,7 +626,7 @@
     "hidden": true
   },
   {
-    "id": 18,
+    "id": 17,
     "group": "mark",
     "inputName": "markAnswersGroup",
     "type": "inputGroup",
@@ -737,7 +710,7 @@
     ]
   },
   {
-    "id": 19,
+    "id": 18,
     "group": "hiddenMark",
     "name": "Дополнительные Испытания:",
     "inputName": "addTrials",
@@ -746,7 +719,7 @@
     "value": null
   },
   {
-    "id": 20,
+    "id": 19,
     "group": "tightness",
     "name": "Тип уплотнения затвора:",
     "inputName": "contact_type",
@@ -755,7 +728,7 @@
     "answers": []
   },
   {
-    "id": 20.1,
+    "id": 19.1,
     "group": "tightness",
     "name": "Фланец на входе:",
     "inputName": "inlet_flange",
@@ -765,7 +738,7 @@
     "answers": []
   },
   {
-    "id": 20.2,
+    "id": 19.2,
     "group": "tightness",
     "name": "Фланец на выходе:",
     "inputName": "outlet_flange",
@@ -775,7 +748,7 @@
     "answers": []
   },
   {
-    "id": 21,
+    "id": 20,
     "group": "tightness",
     "name": "Покраска:",
     "inputName": "color",
@@ -784,7 +757,7 @@
     "answers": []
   },
   {
-    "id": 21.1,
+    "id": 20.1,
     "group": "tightness",
     "name": "Покраска:",
     "inputName": "addColor",
@@ -793,7 +766,7 @@
     "value": null
   },
   {
-    "id": 22,
+    "id": 21,
     "group": "tightness",
     "name": "Упаковка:",
     "inputName": "packaging",
@@ -803,7 +776,7 @@
     "answers": []
   },
   {
-    "id": 23,
+    "id": 22,
     "group": "tightness",
     "name": "Герметичность затвора по ГОСТ 9544-2015:",
     "type": "SelectType",
@@ -812,7 +785,7 @@
     "answers": []
   },
   {
-    "id": 24,
+    "id": 23,
     "group": "additional",
     "inputName": "additionalAnswersGroup",
     "type": "CheckboxType",
@@ -880,7 +853,7 @@
     ]
   },
   {
-    "id": 25,
+    "id": 24,
     "group": "additional",
     "name": "Сопроводительная документация:",
     "type": "TextAreaType",
@@ -888,7 +861,7 @@
     "value": "Руководство по эксплуатации и паспорт изделия"
   },
   {
-    "id": 26,
+    "id": 25,
     "group": "additional",
     "name": "Материал и размер трубопровода:",
     "type": "TextAreaType",
@@ -896,7 +869,7 @@
     "value": null
   },
   {
-    "id": 27,
+    "id": 26,
     "group": "additional",
     "name": "Дополнительные требования:",
     "type": "TextAreaType",
@@ -904,7 +877,7 @@
     "value": null
   },
   {
-    "id": 28,
+    "id": 27,
     "group": "additional",
     "name": "Количество:",
     "type": "TextType",
@@ -913,7 +886,7 @@
     "value": null
   },
   {
-    "id": 29,
+    "id": 28,
     "group": "additional",
     "name": "Название опросного листа:",
     "type": "TextType",
