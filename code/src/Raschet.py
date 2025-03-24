@@ -373,8 +373,8 @@ def mixture(envs : list, climate : str, T : float):
                 adiabatic_index += env['adiabatic_index'] * r
 
                 # плотность при н.у.
-                result["density_ns"] += (result["molar_mass"] / 22.4)  * r
-                density_ns_zn += r
+                result["density_ns"] += (M_i * r)
+                #density_ns_zn += r
                 '''
                 if r > r_max:
                     # Плотность несущей среды
@@ -386,11 +386,11 @@ def mixture(envs : list, climate : str, T : float):
             result["viscosity"] = viscosity_сh / viscosity_zn
             result["adiabatic_index"] = adiabatic_index
 
-            # плотность рабочая Менделлева_Клайперона
-            R =  8.314
-            result["density"] = result["molar_mass"] * 22.4 / R * T
             # плотность при н.у.
-            result["density_ns"] = result["density_ns"] / density_ns_zn
+            result["density_ns"] = result["density_ns"] / 22.4
+
+            # плотность рабочая Менделлева_Клайперона
+            result["density"] = result["density_ns"] * ((273) / (273 + T))
 
             print()
 
