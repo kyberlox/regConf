@@ -805,7 +805,7 @@ def mark_params(dt):
 
     
 
-    material_bellows = "08Х18Р10Т" if dt["need_bellows"] else ""
+    material_bellows = "08Х18Н10Т" if dt["need_bellows"] else ""
 
 
 
