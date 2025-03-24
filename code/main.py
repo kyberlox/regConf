@@ -444,10 +444,12 @@ async def get_compound(data=Body()):
                     print(line.density, r)
 
                     environments.append(environment)
-        else:
+        elif "climate" in env:
             climate = env["climate"]
+        elif "T" in env:
+            T = env["T"]
 
-    return mixture(environments, climate)
+    return mixture(environments, climate, T)
 
 #получение осатльных параметров
 @app.post("/api/get_pressure", tags=["Подбор"])

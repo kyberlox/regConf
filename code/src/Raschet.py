@@ -298,7 +298,7 @@ data_mean = {
 }
 
 
-def mixture(envs : list, climate : str):
+def mixture(envs : list, climate : str, T : float):
     result = {
         "name" : "",
         "environment" : "",
@@ -335,12 +335,16 @@ def mixture(envs : list, climate : str):
                 zn_den += r
                 pre_viscosity += log10(env["viscosity"]) * r
 
+                '''
                 if r > r_max:
                     # Плотность несущей среды
                     r_max = r
                     result["density_ns"] = env["density"]
+                '''
+
 
             result["density"] = ch_den/zn_den
+            result["density_ns"] = result["density"]
             result["viscosity"] = 10**(pre_viscosity)
             
             '''
@@ -367,14 +371,27 @@ def mixture(envs : list, climate : str):
                 viscosity_zn += r * sqrt(M_i)
                 adiabatic_index += env['adiabatic_index'] * r
 
+                # плотность при н.у.
+                result["density_ns"] += (result["molar_mass"] / 22.4)  * r
+                density_ns_zn += r
+                '''
                 if r > r_max:
                     # Плотность несущей среды
                     r_max = r
                     result["density_ns"] = ((env["molar_mass"] / 22.4) * r) / r
+                '''
                 
             result["molar_mass"] = pre_M #/100
             result["viscosity"] = viscosity_сh / viscosity_zn
             result["adiabatic_index"] = adiabatic_index
+
+            # плотность рабочая Менделлева_Клайперона
+            R =  8.314
+            result["density"] = result["molar_mass"] * 22.4 / R * T
+            # плотность при н.у.
+            result["density_ns"] = result["density_ns"] / density_ns_zn
+
+            print()
 
 
     else:
@@ -397,13 +414,15 @@ def mixture(envs : list, climate : str):
                 M = env["molecular_weight"]
                 density_ch += env["density"] * r
                 density_zn += r
+
             pre_u += r * env["viscosity"] * M
 
             if r > r_max:
-                # Плотность несущей среды
+                # Плотность несущей среды при нормальных условиях
                 r_max = r
                 result["density_ns"] = density_ch / density_zn
 
+        #рабочая плотность
         result["density"] = density_ch / density_zn
         result["viscosity"] = pre_u
         # result["viscosity"] = 10**(pre_viscosity)
@@ -805,7 +824,7 @@ def mark_params(dt):
 
     
 
-    material_bellows = "08Х18Р10Т" if dt["need_bellows"] else ""
+    material_bellows = "08Х18Н10Т" if dt["need_bellows"] else ""
 
 
 
