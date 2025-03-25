@@ -596,7 +596,7 @@ def generate_OL(data = Body(), token: str = Header(None)):
         ip = token[3:]
         usr = User(ip=ip)
         token = usr.authenticate()
-        
+
     usr = User(token=token, jsn=data)
 
     if usr.create_OL():
