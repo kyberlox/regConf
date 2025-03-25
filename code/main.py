@@ -592,7 +592,13 @@ def generate(data = Body(), name = Header(default=None) , token = Header(default
 @app.post("/api/makeOL", tags=["Генерация документации"])
 def generate_OL(data = Body(), token: str = Header(None)):
     #запись в БД
+    if token[:3] == "ip:":
+        ip = token[3:]
+        usr = User(ip=ip)
+        token = usr.authenticate()
+        
     usr = User(token=token, jsn=data)
+
     if usr.create_OL():
 
         #сохранить json
