@@ -1043,7 +1043,8 @@ def make_XL(dt):
             position["material_bellows"] = ""
 
         if position["valve_type"] == 'Н':
-            position["spring_material"] = ""
+            position["spring_material"] = "--"
+            position["need_bellows"] = "--"
 
         position["Pn"] = float(position["Pn"]) * 10.197162
         position["Pp"] = float(position["Pp"]) * 10.197162
