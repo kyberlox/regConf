@@ -35,7 +35,10 @@ export const useEnvModuleStore = defineStore('envModule', {
         },
 
         pushToAfterGetCompoundValue(value) {
+            console.log(this.afterGetCompoundValue);
             Object.assign(this.afterGetCompoundValue, value);
+            console.log(this.afterGetCompoundValue);
+
         },
 
         pushToTkp() {

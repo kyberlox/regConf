@@ -25,7 +25,7 @@ export const getDocParamsHandle = (stores) => {
 
     // запрос №6, /generate подготовка параметров на отправку
     watch(paramsToGetDoc, (newVal) => {
-        if (noErrors.value && (newVal.docs.value || newVal.pipeMaterial.value || newVal.additionally.value || newVal.quantity.value || newVal.olNum.value)) {
+        if (noErrors.value && newVal.tightness.value && (newVal.docs.value || newVal.pipeMaterial.value || newVal.additionally.value || newVal.quantity.value || newVal.olNum.value)) {
             const formattedData = {
                 "tightness": newVal.tightness.value,
                 "docs": newVal.docs.value,
@@ -41,6 +41,7 @@ export const getDocParamsHandle = (stores) => {
                 "needKOF": newVal.needKof.value,
                 "abrasive_particles": newVal.abrasiveParticles.value,
             };
+
             envModuleStore.pushToAfterGetCompoundValue(formattedData);
         }
     }, { deep: true })

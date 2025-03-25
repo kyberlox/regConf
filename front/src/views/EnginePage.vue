@@ -79,10 +79,10 @@ export default {
         const modalHandle = (name, type) => {
             if (jsonError.value) { return }
             stores.envModuleStore.pushToTkp();
-            stores.questionsStore.resetQuestionGroup('all');
             stores.pageStore.goToQuestion('environmentType');
             closeModal();
             downloadHandle(name, type);
+            stores.questionsStore.resetQuestionGroup('all');
         }
 
         formParamsHandle(stores);

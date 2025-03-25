@@ -1,4 +1,4 @@
-import { computed, onMounted } from "vue";
+import { computed, onMounted, watch } from "vue";
 import { getCompoundParamsHandle } from '@/composables/getParamsHandle/getCompoundParamsHandle'
 import { getPressureParamsHandle } from "@/composables/getParamsHandle/getPressureParamsHandle";
 import { getMarkParamsHandle } from "@/composables/getParamsHandle/getMarkParamsHandle";
@@ -21,6 +21,7 @@ export const formParamsHandle = (stores) => {
             console.error('Failed to fetch table data:', error);
         }
     });
+
 
     getCompoundParamsHandle(stores);
     getPressureParamsHandle(stores);
