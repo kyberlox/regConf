@@ -593,6 +593,10 @@ def generate(data = Body(), name = Header(default=None) , token = Header(default
 def generate_OL(data = Body(), token: str = Header(None)):
     #запись в БД
     usr = User(token=token, jsn=data)
+    if not usr.check():
+        user.ip = token
+        usr.authenticate()
+
     if usr.create_OL():
 
         #сохранить json
