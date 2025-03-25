@@ -508,7 +508,7 @@ def Raschet(dt):
         #p1 = dt["density_ns"] * ((Ppo * 100000) / (101325 * 8.14))
         print(dt["molar_mass"])
         print(Ppo)
-        ch = dt["molar_mass"] * (Ppo + 1) * 100000
+        ch = dt["molar_mass"] * (Ppo*10 + 1) * 100000
         print(ch)
         zn = 8314 * (T + 273.15)
         print(zn)
