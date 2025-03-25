@@ -664,10 +664,10 @@ def Raschet(dt):
     new_dt = {
         "T_min": T_min,  # Минимальная рабочая температура
         "T_max": T_max,  # Максивальная рабочая температура
-        "Pno": round(Pno * 10.197162, 2),  # Давление начала открытия с противодавлением
-        "Ppo": round(Ppo * 10.197162, 2),  # Давление полного открытия с противодавлением
-        "P1": round(P1 * 10.197162, 2),  # Давление на входе
-        "P2": round(P2 * 10.197162, 2),  # Давление на выходе
+        "Pno": Pno * 10.197162,  # Давление начала открытия с противодавлением
+        "Ppo": Ppo * 10.197162,  # Давление полного открытия с противодавлением
+        "P1": P1 * 10.197162,  # Давление на входе
+        "P2": P2 * 10.197162,  # Давление на выходе
         "Kw": Kw,  # Коэффициент, учитывающий эффект неполного открытия разгруженных ПК из-за противодавления
         "Gideal": Gideal,  # Массовая скорость
         #"pre_DN": pre_DN,
@@ -1058,40 +1058,40 @@ def make_XL(dt):
                 position["valve_type"] == 'В' and position["open_close_type"] == "открытого типа") or (
                 position["valve_type"] == 'В' and position["need_bellows"]):
             # Давление настройки без противодавления
-            sheet[f"AL{i}"].value = position["Pn"]
+            sheet[f"AL{i}"].value = round(position["Pn"], 2)
 
             # Давление начала открытия без противодавления
-            sheet[f"AM{i}"].value = position["Pno"]
+            sheet[f"AM{i}"].value = round(position["Pno"], 2)
 
             # Давление полного открытия без противодавления
-            sheet[f"AN{i}"].value = position["Ppo"]
+            sheet[f"AN{i}"].value = round(position["Ppo"], 2)
 
             # Давление настройки с противодавлением
-            sheet[f"AH{i}"].value = position["Pn"]
+            sheet[f"AH{i}"].value = round(position["Pn"], 2)
 
             # Давление начала открытия с противодавлением
-            sheet[f"AI{i}"].value = position["Pno"]
+            sheet[f"AI{i}"].value = round(position["Pno"], 2)
 
             # Давление полного открытия с противодавлением
-            sheet[f"AJ{i}"].value = position["Ppo"]
+            sheet[f"AJ{i}"].value = round(position["Ppo"], 2)
         else:
             # Давление настройки без противодавления
-            sheet[f"AL{i}"].value = position["Pn"]
+            sheet[f"AL{i}"].value = round(position["Pn"], 2)
 
             # Давление начала открытия без противодавления
-            sheet[f"AM{i}"].value = position["Pno"]
+            sheet[f"AM{i}"].value = round(position["Pno"], 2)
 
             # Давление полного открытия без противодавления
-            sheet[f"AN{i}"].value = position["Ppo"]
+            sheet[f"AN{i}"].value = round(position["Ppo"], 2)
 
             # Давление настройки с противодавлением
-            sheet[f"AH{i}"].value = position["Pn"] - position["Pp"]
+            sheet[f"AH{i}"].value = round(position["Pn"] - position["Pp"], 2)
 
             # Давление начала открытия с противодавлениемпротиводавлением
-            sheet[f"AI{i}"].value = position["Pno"] - position["Pp"]
+            sheet[f"AI{i}"].value = round(position["Pno"] - position["Pp"], 2)
 
             # Давление полного открытия с противодавлением
-            sheet[f"AJ{i}"].value = position["Ppo"] - position["Pp"]
+            sheet[f"AJ{i}"].value = round(position["Ppo"] - position["Pp"], 2)
 
         # номерация
         sheet[f"A{i}"].value = int(sheet[f"A3"].value) + i - 3
