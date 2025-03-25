@@ -388,9 +388,7 @@ def mixture(envs : list, climate : str, T : float):
 
             # плотность при н.у.
             result["density_ns"] = result["density_ns"] / 22.4
-
-            # плотность рабочая Менделлева_Клайперона
-            result["density"] = result["density_ns"] * ((273.0) / (273.0 + T))
+            result["density"] = result["density_ns"] * (273.15) / (T + 273.15)
 
             print()
 
@@ -446,11 +444,25 @@ def mixture(envs : list, climate : str, T : float):
     if ((climate == "ХЛ1") or (climate == "УХЛ1")) and (result["material"] == "25Л"):
         result["material"] = "20ГЛ"
 
-    result["T"] = T
-
     return result
 
+'''def density_true(data):
+    T = data["T"]
+    Pn = data["Pn"]
+    density_ns = data["density_ns"]
+    P0 = 0.101325
 
+    if Pn <= 0.3:
+        Ppo = Pn + 0.05
+    elif (Pn > 0.3) and (Pn <= 6):
+        Ppo = 1.15 * Pn
+    elif Pn > 6:
+        Ppo = 1.1 * Pn
+
+    # плотность рабочая Менделлева_Клайперона
+    result["density"] = density_ns * (Ppo * 273.15) / (0.101325 * (T + 273.15))
+
+    return result'''
 
 def Raschet(dt):
     kys = ["viscosity", "Pn", "Pp", "Pp_din", "Gab", "N", "pre_Kc", "density", "climate", "material", "environment"]
@@ -469,7 +481,7 @@ def Raschet(dt):
     N = dt["N"]
     pre_Kc = dt["pre_Kc"]
 
-    p1 = dt["density"]
+
 
     climate = dt["climate"]
     model = {
@@ -503,6 +515,14 @@ def Raschet(dt):
         Ppo = 1.1 * Pn
     else:
         return {"err": f"Невозможно определить давление начала открытия и давление полного открытия, при давлении настройки = {Pn}"}
+
+    if dt["environment"] == "Газ" and dt["convertGab"]: # и размерность м3/час
+        p1 = dt["density"] * Ppo
+        # Домножить Gab
+        Gab *= p1
+    else:
+        p1 = dt["density"]
+    dt["density"] = p1
 
     # Максимально допустимое давление аварийного сброса;
     P_ab_max = 1.1 * Pno
