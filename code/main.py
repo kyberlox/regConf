@@ -594,7 +594,7 @@ def generate_OL(data = Body(), token: str = Header(None)):
     #запись в БД
     usr = User(token=token, jsn=data)
     if not usr.check():
-        user.ip = token
+        usr.ip = token
         usr.authenticate()
 
     if usr.create_OL():
