@@ -1017,7 +1017,6 @@ def make_XL(dt):
         "AE": "tightness",
         "AF": "spring_number",
         "AG": "Pnd",
-        "AK": "Pp",
         "AO": "needKOF",
         "AP": "need_ZIP",
         "AQ": "adapters",
@@ -1074,6 +1073,7 @@ def make_XL(dt):
 
             # Давление полного открытия с противодавлением
             sheet[f"AJ{i}"].value = round(position["Ppo"], 2)
+
         else:
             # Давление настройки без противодавления
             sheet[f"AL{i}"].value = round(position["Pn"], 2)
@@ -1092,6 +1092,9 @@ def make_XL(dt):
 
             # Давление полного открытия с противодавлением
             sheet[f"AJ{i}"].value = round(position["Ppo"] - position["Pp"], 2)
+
+        # Противодавление
+        sheet[f"AK{i}"].value = round(position["Pp"], 2)
 
         # номерация
         sheet[f"A{i}"].value = int(sheet[f"A3"].value) + i - 3
