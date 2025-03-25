@@ -112,7 +112,6 @@ export default class Validator {
         };
         const target = ref();
         target.value = questions.find((e) => (!conditions(e)));
-        console.log(target);
 
         if (!target.value && noErrors.value) {
             stores.helperStore.deleteErrorMessage('', 'emptyValueError')
