@@ -449,23 +449,7 @@ def mixture(envs : list, climate : str, T : float):
 
     return result
 
-'''def density_true(data):
-    T = data["T"]
-    Pn = data["Pn"]
-    density_ns = data["density_ns"]
-    P0 = 0.101325
 
-    if Pn <= 0.3:
-        Ppo = Pn + 0.05
-    elif (Pn > 0.3) and (Pn <= 6):
-        Ppo = 1.15 * Pn
-    elif Pn > 6:
-        Ppo = 1.1 * Pn
-
-    # плотность рабочая Менделлева_Клайперона
-    result["density"] = density_ns * (Ppo * 273.15) / (0.101325 * (T + 273.15))
-
-    return result'''
 
 def Raschet(dt):
     kys = ["viscosity", "Pn", "Pp", "Pp_din", "Gab", "N", "pre_Kc", "density", "climate", "material", "environment"]
@@ -521,7 +505,8 @@ def Raschet(dt):
 
     if dt["environment"] == "Газ":
         #p1 = dt["density_ns"]  * (Ppo * 273.15) / (0.101325 * (T + 273.15))
-        p1 = dt["density_ns"] * ((Ppo * 100000) / (101325 * 8.14))
+        #p1 = dt["density_ns"] * ((Ppo * 100000) / (101325 * 8.14))
+        p1 = (dt["molar_mass"] * Pno * 100000) / (T * 8.14)
 
         if  dt["convertGab"]:# и размерность м3/час
             # Домножить Gab
