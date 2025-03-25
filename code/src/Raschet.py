@@ -521,7 +521,7 @@ def Raschet(dt):
 
     if dt["environment"] == "Газ":
         #p1 = dt["density_ns"]  * (Ppo * 273.15) / (0.101325 * (T + 273.15))
-        p1 = dt["density_ns"] * (Ppo * 100000 * 273.15) / (101325)
+        p1 = dt["density_ns"] * ((Ppo * 100000 * 273.15) / (101325))
 
         if  dt["convertGab"]:# и размерность м3/час
             # Домножить Gab
