@@ -81,6 +81,7 @@ export default class Validator {
                 question.inputName == 'trials' ||
                 question.inputName == 'addTrials' ||
                 question.inputName == 'OL_num' ||
+                question.hidden == true ||
                 question.type == 'inputGroup') {
                 return true;
             }
@@ -111,6 +112,8 @@ export default class Validator {
         };
         const target = ref();
         target.value = questions.find((e) => (!conditions(e)));
+        console.log(target);
+
         if (!target.value && noErrors.value) {
             stores.helperStore.deleteErrorMessage('', 'emptyValueError')
             return jsonError.value = false;
