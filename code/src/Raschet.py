@@ -519,10 +519,13 @@ def Raschet(dt):
     else:
         return {"err": f"Невозможно определить давление начала открытия и давление полного открытия, при давлении настройки = {Pn}"}
 
-    if dt["environment"] == "Газ" and dt["convertGab"]: # и размерность м3/час
-        p1 = dt["density_ns"]  * (Ppo * 273.15) / (0.101325 * (T + 273.15))
-        # Домножить Gab
-        Gab *= p1
+    if dt["environment"] == "Газ":
+        #p1 = dt["density_ns"]  * (Ppo * 273.15) / (0.101325 * (T + 273.15))
+        p1 = dt["density_ns"] * (Ppo * 100000 * 273.15) / (101325 * (T + 273.15))
+
+        if  dt["convertGab"]:# и размерность м3/час
+            # Домножить Gab
+            Gab *= p1
     else:
         p1 = dt["density"]
     dt["density"] = p1
