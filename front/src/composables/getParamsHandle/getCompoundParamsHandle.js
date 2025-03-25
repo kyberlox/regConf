@@ -22,7 +22,8 @@ export const getCompoundParamsHandle = (stores) => {
 
     // обновляю options у селекта состава при выборе др агрегатного
     watch(() => paramsToGetCompound.value.environmentType, (newVal) => {
-        questionsStore.reloadEnvTypes(newVal.value)
+        questionsStore.reloadEnvTypes(newVal.value);
+        newVal.value == 'gas' ? findQuestion('pressureAnswersGroup', 'density').hidden = true : findQuestion('pressureAnswersGroup', 'density').hidden = false;
     }, { deep: true })
 
     const changeVisibility = (newVal) => {
