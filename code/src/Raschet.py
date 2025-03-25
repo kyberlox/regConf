@@ -449,23 +449,7 @@ def mixture(envs : list, climate : str, T : float):
 
     return result
 
-'''def density_true(data):
-    T = data["T"]
-    Pn = data["Pn"]
-    density_ns = data["density_ns"]
-    P0 = 0.101325
 
-    if Pn <= 0.3:
-        Ppo = Pn + 0.05
-    elif (Pn > 0.3) and (Pn <= 6):
-        Ppo = 1.15 * Pn
-    elif Pn > 6:
-        Ppo = 1.1 * Pn
-
-    # плотность рабочая Менделлева_Клайперона
-    result["density"] = density_ns * (Ppo * 273.15) / (0.101325 * (T + 273.15))
-
-    return result'''
 
 def Raschet(dt):
     kys = ["viscosity", "Pn", "Pp", "Pp_din", "Gab", "N", "pre_Kc", "density", "climate", "material", "environment"]
@@ -521,7 +505,10 @@ def Raschet(dt):
 
     if dt["environment"] == "Газ":
         #p1 = dt["density_ns"]  * (Ppo * 273.15) / (0.101325 * (T + 273.15))
-        p1 = dt["density_ns"] * (Ppo * 100000 * 273.15) / (101325 * (T + 273.15))
+        #p1 = dt["density_ns"] * ((Ppo * 100000) / (101325 * 8.14))
+        ch = dt["molar_mass"] * (Ppo*10 + 1) * 100000
+        zn = 8314 * (T + 273.15)
+        p1 = ch / zn
 
         if  dt["convertGab"]:# и размерность м3/час
             # Домножить Gab
@@ -1030,7 +1017,6 @@ def make_XL(dt):
         "AE": "tightness",
         "AF": "spring_number",
         "AG": "Pnd",
-        "AK": "Pp",
         "AO": "needKOF",
         "AP": "need_ZIP",
         "AQ": "adapters",
@@ -1071,40 +1057,44 @@ def make_XL(dt):
                 position["valve_type"] == 'В' and position["open_close_type"] == "открытого типа") or (
                 position["valve_type"] == 'В' and position["need_bellows"]):
             # Давление настройки без противодавления
-            sheet[f"AL{i}"].value = position["Pn"]
+            sheet[f"AL{i}"].value = round(position["Pn"], 2)
 
             # Давление начала открытия без противодавления
-            sheet[f"AM{i}"].value = position["Pno"]
+            sheet[f"AM{i}"].value = round(position["Pno"], 2)
 
             # Давление полного открытия без противодавления
-            sheet[f"AN{i}"].value = position["Ppo"]
+            sheet[f"AN{i}"].value = round(position["Ppo"], 2)
 
             # Давление настройки с противодавлением
-            sheet[f"AH{i}"].value = position["Pn"]
+            sheet[f"AH{i}"].value = round(position["Pn"], 2)
 
             # Давление начала открытия с противодавлением
-            sheet[f"AI{i}"].value = position["Pno"]
+            sheet[f"AI{i}"].value = round(position["Pno"], 2)
 
             # Давление полного открытия с противодавлением
-            sheet[f"AJ{i}"].value = position["Ppo"]
+            sheet[f"AJ{i}"].value = round(position["Ppo"], 2)
+
         else:
             # Давление настройки без противодавления
-            sheet[f"AL{i}"].value = position["Pn"]
+            sheet[f"AL{i}"].value = round(position["Pn"], 2)
 
             # Давление начала открытия без противодавления
-            sheet[f"AM{i}"].value = position["Pno"]
+            sheet[f"AM{i}"].value = round(position["Pno"], 2)
 
             # Давление полного открытия без противодавления
-            sheet[f"AN{i}"].value = position["Ppo"]
+            sheet[f"AN{i}"].value = round(position["Ppo"], 2)
 
             # Давление настройки с противодавлением
-            sheet[f"AH{i}"].value = position["Pn"] - position["Pp"]
+            sheet[f"AH{i}"].value = round(position["Pn"] - position["Pp"], 2)
 
             # Давление начала открытия с противодавлениемпротиводавлением
-            sheet[f"AI{i}"].value = position["Pno"] - position["Pp"]
+            sheet[f"AI{i}"].value = round(position["Pno"] - position["Pp"], 2)
 
             # Давление полного открытия с противодавлением
-            sheet[f"AJ{i}"].value = position["Ppo"] - position["Pp"]
+            sheet[f"AJ{i}"].value = round(position["Ppo"] - position["Pp"], 2)
+
+        # Противодавление
+        sheet[f"AK{i}"].value = round(position["Pp"], 2)
 
         # номерация
         sheet[f"A{i}"].value = int(sheet[f"A3"].value) + i - 3
