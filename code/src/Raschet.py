@@ -506,6 +506,8 @@ def Raschet(dt):
     if dt["environment"] == "Газ":
         #p1 = dt["density_ns"]  * (Ppo * 273.15) / (0.101325 * (T + 273.15))
         #p1 = dt["density_ns"] * ((Ppo * 100000) / (101325 * 8.14))
+        print(dt["molar_mass"])
+        print(Ppo)
         ch = dt["molar_mass"] * (Ppo + 1) * 100000
         print(ch)
         zn = 8314 * (T + 273.15)
