@@ -80,10 +80,7 @@ export default {
                 questionsStore.setConvertedValue(name, convertedValue.value);
             }
             else if (name == 'Gab') {
-                if (value.id == 'м3/час') {
-                    convertedValue.value = { id: value.id, value: convert.value(value.id, value.value, findQuestion('envAnswersGroup', 'density').value) };
-                }
-                else if (value.id == 'Нм3/час') {
+                if (value.id == 'Нм3/час') {
                     convertedValue.value = { id: value.id, value: convert.value(value.id, value.value, findQuestion('envAnswersGroup', 'density_ns').value) };
                 }
                 else {

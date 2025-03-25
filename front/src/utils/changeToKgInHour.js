@@ -3,7 +3,7 @@ export const changeToKgInHour = (unit, x, density) => {
         case 'Кг/час':
             return x;
         case 'м3/час':
-            return x * density;
+            return x;
         case 'Нм3/час':
             return x * density;
         case 'T/час':

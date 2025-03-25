@@ -53,7 +53,11 @@ export default {
                     }
                 });
                 return formattedAnswer;
-            } else
+            }
+            else if (String(answer.value).includes('.')) {
+                return answer.value.toFixed(2);
+            }
+            else
                 return answer.value;
         };
 

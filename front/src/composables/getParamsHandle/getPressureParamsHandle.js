@@ -19,6 +19,7 @@ export const getPressureParamsHandle = (stores) => {
         climate: findQuestion('climate'),
         valveType: findQuestion('valve_type'),
         forceOpen: findQuestion('force_open'),
+        convertGab: findQuestion('convertGab'),
     }));
 
 
@@ -42,10 +43,16 @@ export const getPressureParamsHandle = (stores) => {
         // Проверка работающих клапанов !== 0
         Validator.validForNull(newVal.n.value, newVal.n.inputName, helperStore);
         // Проверка расхода жидкости и газа
-        Validator.validForNull(newVal.gab.value, newVal.gab.inputName, helperStore);
+        Validator.validForNull(newVal.gab.convertedValue.value, newVal.gab.inputName, helperStore);
 
-        if (noErrors.value && newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.value && newVal.n.value && newVal.valveType.value) {
-            const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', "DN_s", 'DN', "PN", "need_bellows", "PN2", "DN2", "S", "S_eff"];
+        if (noErrors.value && newVal.pn.value && newVal.pp.value && newVal.ppDin.value && newVal.gab.convertedValue.value && newVal.n.value && newVal.valveType.value) {
+            const paramsToGet = ['Pno', 'Ppo', 'P1', 'P2', 'Kw', 'Gideal', 'pre_DN', "DN_s", 'DN', "PN", "need_bellows", "PN2", "DN2", "S", "S_eff", "density"];
+            if (newVal.gab.value[0] && newVal.gab.value[0].id == 'м3/час') {
+                findQuestion('convertGab').value = true;
+            }
+            else {
+                findQuestion('convertGab').value = false;
+            }
 
             const formattedData = {
                 "Pn": Number(newVal.pn.convertedValue.value),
@@ -57,6 +64,7 @@ export const getPressureParamsHandle = (stores) => {
                 "valve_type": newVal.valveType.value,
                 "force_open": newVal.forceOpen.value == null ? false : newVal.forceOpen.value,
                 "climate": newVal.climate.value,
+                "convertGab": newVal.convertGab.value,
             };
 
             envModuleStore.pushToAfterGetCompoundValue(formattedData);

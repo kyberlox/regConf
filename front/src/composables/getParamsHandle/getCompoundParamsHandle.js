@@ -54,7 +54,7 @@ export const getCompoundParamsHandle = (stores) => {
         if ((newVal.environment.value || newVal.secondEnv.value) && newVal.climate.value && noErrors.value && newVal.T.value) {
             Validator.validTemperature(newVal.T.value, helperStore);
 
-            const envParamsToGet = ['molecular_weight', 'density', 'material', 'viscosity', 'density_ns'];
+            const envParamsToGet = ['molecular_weight', 'material', 'viscosity', 'density_ns'];
             let dataToSend = [];
 
             if (paramsToGetCompound.value.isSecondEnv.value) {
