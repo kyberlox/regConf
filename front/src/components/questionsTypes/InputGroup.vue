@@ -39,9 +39,6 @@ export default {
             else if (!answer.value) {
                 return
             }
-            // else if (answer.inputName == "pre_DN") {
-            //     return answer.value.toFixed(1);
-            // }
             else if (typeof answer.value == 'number' && String(answer.value).includes('.')) {
                 const valueToArray = String(answer.value).replace(".", "").split("");
 
@@ -53,9 +50,6 @@ export default {
                 });
                 return formattedAnswer;
             }
-            // else if (String(answer.value).includes('.')) {
-            //     return answer.value.toFixed(2);
-            // }
             else
                 return answer.value;
         };
