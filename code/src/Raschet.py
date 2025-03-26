@@ -972,7 +972,7 @@ def get_tightness(dt):
         if dt["DN"] == 25.0:
             tightness = ["В", "С"]
         else:
-            tightness = ["В", "А", "С"]
+            tightness = ["В", "А", "AA", "С"]
     else:
         return {"error" : "Невозможно определить класс герметичнности", "value" : f"Некорректое значение типа ПК: {dt['valve_type']}"}
 
@@ -1043,7 +1043,7 @@ def make_XL(dt):
             position["material_bellows"] = ""
 
         if position["valve_type"] == 'Н':
-            position["spring_material"] = "--"
+            position["spring_material"] = "51ХФА"
             position["need_bellows"] = "--"
 
         position["Pn"] = float(position["Pn"]) * 10.197162
@@ -1143,7 +1143,7 @@ def make_XL(dt):
         sheet[f"AY{i}"].value = 12
 
         # T окр среды
-        sheet[f"J{i}"].value = f"{position['T_min']} ... {position['T_max']}"
+        sheet[f"J{i}"].value = f"{position['T_min']} ... +{position['T_max']}"
 
         sheet[f"BB{i}"].value = "АО \"НПО Регулятор\""
 
