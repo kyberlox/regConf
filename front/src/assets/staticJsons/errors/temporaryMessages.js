@@ -37,14 +37,14 @@ export const temporaryMessages = [
     {
         id: 6,
         class: 'attention',
-        inputName: 'need_bellows',
+        inputName: 'need_bellowsNoLight',
         type: 'temporaryMessage',
         text: 'Для данной конфигурации возможно только одно значение сильфона'
     },
     {
         id: 7,
         class: 'neutral',
-        inputName: 'n',
+        inputName: 'quantityNoLight',
         type: 'temporaryMessage',
         text: 'Обращаем внимание, что для обеспечения пропускной способности на одной позиции использовалось'
     }

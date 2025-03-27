@@ -102,6 +102,24 @@
   {
     "id": 3,
     "group": "compound",
+    "name": "Тип предохранительного клапана:",
+    "type": "RadioType",
+    "inputName": "valve_type",
+    "value": null,
+    "answers": [
+      {
+        "name": "Пилотный",
+        "value": "Н"
+      },
+      {
+        "name": "Пружинный",
+        "value": "В"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "group": "compound",
     "name": "Температура рабочей среды, в °С:",
     "inputName": "T",
     "type": "TextType",
@@ -109,7 +127,7 @@
     "placeholder": "Укажите значение"
   },
   {
-    "id": 4,
+    "id": 5,
     "group": "compound",
     "name": "Климатическое исполнение:",
     "inputName": "climate",
@@ -131,77 +149,59 @@
     ]
   },
   {
-    "id": 5,
+    "id": 6,
     "group": "compound",
     "inputName": "envAnswersGroup",
     "type": "inputGroup",
     "answers": [
       {
-        "id": 5.1,
+        "id": 6.1,
         "name": "Суммарная доля состава рабочей среды, %:",
         "inputName": "envSumm",
         "hidden": false,
         "value": null
       },
       {
-        "id": 5.2,
+        "id": 6.2,
         "name": "Сумма газовой и жидкой фазы, %:",
         "inputName": "bothEnvSumm",
         "hidden": true,
         "value": null
       },
       {
-        "id": 5.3,
+        "id": 6.3,
         "name": "Молекулярная масса, г/моль:",
         "inputName": "molecular_weight",
         "hidden": false,
         "value": null
       },
       {
-        "id": 5.4,
+        "id": 6.4,
         "name": "Материал:",
         "inputName": "material",
         "hidden": false,
         "value": null
       },
       {
-        "id": 5.5,
+        "id": 6.5,
         "name": "Фактор сжимаемости:",
         "inputName": "compress_factor",
         "hidden": false,
         "defaultValue": 1
       },
       {
-        "id": 5.6,
+        "id": 6.6,
         "name": "Плотность при нормальных условиях, кг/нм³:",
         "inputName": "density_ns",
         "hidden": false,
         "value": null
       },
       {
-        "id": 5.7,
+        "id": 6.7,
         "name": "Вязкость, Па*с:",
         "inputName": "viscosity",
         "hidden": false,
         "value": null
-      }
-    ]
-  },
-  {
-    "id": 6,
-    "group": "pressure",
-    "name": "Тип предохранительного клапана:",
-    "type": "RadioType",
-    "inputName": "valve_type",
-    "value": null,
-    "answers": [
-      {
-        "name": "Пилотный",
-        "value": "Н"
-      },
-      {
-        "name": "Пружинный",
-        "value": "В"
       }
     ]
   },

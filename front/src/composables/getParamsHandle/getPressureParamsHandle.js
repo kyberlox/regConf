@@ -42,10 +42,7 @@ export const getPressureParamsHandle = (stores) => {
 
         // Проверка работающих клапанов !== 0
         Validator.validForNull(newVal.n.value, newVal.n.inputName, helperStore);
-        // Ворнинг при клапанах > 1
-        if (newVal.n.value && newVal.n.value > 1) {
-            helperStore.setErrorMessage('n', 'temporaryMessage');
-        }
+
         // Проверка расхода жидкости и газа
         Validator.validForNull(newVal.gab.convertedValue.value, newVal.gab.inputName, helperStore);
 
@@ -89,7 +86,7 @@ export const getPressureParamsHandle = (stores) => {
                                 if (typeof (data[key]) == 'boolean') {
                                     questionsStore.setQuestionValue(key, data[key]);
                                     questionsStore.setQuestionDisabled('need_bellows', true);
-                                    helperStore.setErrorMessage('need_bellows', 'temporaryMessage');
+                                    helperStore.setErrorMessage('need_bellowsNoLight', 'temporaryMessage');
                                 }
                             }
                             else {

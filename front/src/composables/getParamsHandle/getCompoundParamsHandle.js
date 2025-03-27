@@ -17,14 +17,19 @@ export const getCompoundParamsHandle = (stores) => {
         secondEnv: findQuestion('secondEnv'),
         bothEnvSumm: findQuestion('envAnswersGroup', 'bothEnvSumm'),
         climate: findQuestion('climate'),
-        T: findQuestion('T')
+        T: findQuestion('T'),
+        valveType: findQuestion('valve_type'),
     }))
+
+
 
     // обновляю options у селекта состава при выборе др агрегатного
     watch(() => paramsToGetCompound.value.environmentType, (newVal) => {
         questionsStore.reloadEnvTypes(newVal.value);
         newVal.value == 'gas' ? findQuestion('pressureAnswersGroup', 'density').hidden = true : findQuestion('pressureAnswersGroup', 'density').hidden = false;
     }, { deep: true })
+
+
 
     const changeVisibility = (newVal) => {
         paramsToGetCompound.value.envSumm.hidden = newVal.value
@@ -52,9 +57,12 @@ export const getCompoundParamsHandle = (stores) => {
 
     // запрос (#2, get_compound) на параметры для конкр сред (Вязкость, материал, молекулярная масса, вязкость)
     watch(paramsToGetCompound, (newVal) => {
-        if (newVal.T.value) {
-            Validator.validTemperature(newVal.T.value, helperStore);
+
+        if (newVal.T.value && newVal.valveType.value) {
+            newVal.valveType.value == "Н" ?
+                Validator.validTemperature(findQuestion('T').value, helperStore, true) : Validator.validTemperature(findQuestion('T').value, helperStore, false);
         }
+
         if ((newVal.environment.value || newVal.secondEnv.value) && newVal.climate.value && noErrors.value && newVal.T.value) {
             const envParamsToGet = ['molecular_weight', 'material', 'viscosity', 'density_ns'];
             let dataToSend = [];

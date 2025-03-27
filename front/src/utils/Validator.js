@@ -3,8 +3,11 @@ import { ref, computed, watch } from "vue";
 import { findQuestion } from "./findQuestionInStore";
 
 export default class Validator {
-    static async validTemperature(value, store) {
-        if (value < -60 || value > 600) {
+    static async validTemperature(value, store, HCheck = false) {
+        if (!HCheck && (value < -60 || value > 600)) {
+            store.setErrorMessage('T', 'calcError');
+        }
+        else if (HCheck && (value < -60 || value > 250)) {
             store.setErrorMessage('T', 'calcError');
         }
         else {
