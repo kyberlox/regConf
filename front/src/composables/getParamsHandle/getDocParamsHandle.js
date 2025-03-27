@@ -26,7 +26,7 @@ export const getDocParamsHandle = (stores) => {
     // запрос №6, /generate подготовка параметров на отправку
     watch(paramsToGetDoc, (newVal) => {
         // Ворнинг при клапанах > 1
-        if (newVal.quantity.value && newVal.quantity.value > 0) {
+        if (findQuestion('N').value && newVal.quantity.value && newVal.quantity.value > 0) {
             helperStore.setErrorMessage('quantityNoLight', 'temporaryMessage');
         }
         if (noErrors.value && newVal.tightness.value && (newVal.docs.value || newVal.pipeMaterial.value || newVal.additionally.value || newVal.quantity.value || newVal.olNum.value)) {

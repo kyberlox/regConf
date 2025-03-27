@@ -29,7 +29,9 @@ export const useHelperStore = defineStore('helper', {
 
         handleTemporaryMessage(message) {
             if (message.inputName == 'quantityNoLight' && message.class == 'neutral') {
-                message.text = 'Обращаем внимание, что для обеспечения пропускной способности на одной позиции использовалось клапанов: ' + findQuestion('quantity').value + 'шт.'
+
+                message.text = 'Обращаем внимание, что для обеспечения пропускной способности на одной позиции использовалось клапанов: ' + findQuestion('N').value + 'шт.'
+
             }
 
             this.addMessage(message, 'temporaryMessage');
