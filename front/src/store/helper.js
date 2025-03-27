@@ -4,6 +4,7 @@ import { calcErrors } from '@/assets/staticJsons/errors/calcErrors';
 import { emptyValueErrors } from '@/assets/staticJsons/errors/emptyValueErrors';
 import { autorizeErrors } from '@/assets/staticJsons/errors/autorizeErrors';
 import { temporaryMessages } from '@/assets/staticJsons/errors/temporaryMessages';
+import { findQuestion } from '@/utils/findQuestionInStore';
 
 export const useHelperStore = defineStore('helper', {
     state: () => ({
@@ -27,6 +28,12 @@ export const useHelperStore = defineStore('helper', {
         },
 
         handleTemporaryMessage(message) {
+            if (message.inputName == 'n' && message.class == 'neutral') {
+                !message.text.includes('шт.') ?
+                    message.text += ' клапанов: ' + findQuestion('N').value + 'шт.'
+                    : '';
+            }
+
             this.addMessage(message, 'temporaryMessage');
             setTimeout(() => {
                 this.deleteErrorMessage(message.inputName, 'temporaryMessage');

@@ -40,5 +40,12 @@ export const temporaryMessages = [
         inputName: 'need_bellows',
         type: 'temporaryMessage',
         text: 'Для данной конфигурации возможно только одно значение сильфона'
+    },
+    {
+        id: 7,
+        class: 'neutral',
+        inputName: 'n',
+        type: 'temporaryMessage',
+        text: 'Обращаем внимание, что для обеспечения пропускной способности на одной позиции использовалось'
     }
 ]
