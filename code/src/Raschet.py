@@ -394,6 +394,7 @@ def mixture(envs : list, climate : str, T : float):
             print()
 
 
+
     else:
         result["environment"] = "Смесь"
         density_ch = 0
