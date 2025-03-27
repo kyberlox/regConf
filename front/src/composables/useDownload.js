@@ -29,9 +29,6 @@ export const useDownload = (stores) => {
         },
 
         add: async (docName) => {
-            console.log(tkpData.value);
-            console.log(olData.value);
-
             await Api.post(API_URL + '/set_data', tkpData.value, false, true, docName)
             await Api.post(API_URL + '/makeOL', olData.value, true, true, "Опросный лист " + docName)
             stores.helperStore.setErrorMessage('successAdd', 'temporaryMessage')

@@ -39,23 +39,16 @@ export default {
             else if (!answer.value) {
                 return
             }
-            else if (answer.inputName == "pre_DN") {
-                return answer.value.toFixed(1);
-            } else if (answer.inputName == "viscosity") {
-                if (answer.value > 0.9) return answer.value.toFixed(2);
-
-                const valueToArray = String(answer.value).replace("0.", "").split("");
+            else if (typeof answer.value == 'number' && String(answer.value).includes('.')) {
+                const valueToArray = String(answer.value).replace(".", "").split("");
 
                 let formattedAnswer;
                 valueToArray.find((e, i) => {
                     if (e !== "0") {
-                        return (formattedAnswer = answer.value.toFixed(Number(i + 2)).slice(0, -1));
+                        return (formattedAnswer = answer.value.toFixed(Number(i + 3)).slice(0, -1));
                     }
                 });
                 return formattedAnswer;
-            }
-            else if (String(answer.value).includes('.')) {
-                return answer.value.toFixed(2);
             }
             else
                 return answer.value;
