@@ -138,6 +138,9 @@ export default {
       if (paramToMark.value.inletFlange && paramToMark.value.outletFlange) {
         markArr.value[7] = '.' + paramToMark.value.inletFlange + '/' + paramToMark.value.outletFlange
       }
+      else if (paramToMark.value.joiningType == 'Под приварку') {
+        markArr.value[7] = ''
+      }
     }
 
     const updateMark = () => {
