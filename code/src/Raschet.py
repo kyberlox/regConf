@@ -443,7 +443,10 @@ def mixture(envs : list, climate : str, T : float):
 
     #если климатика => то материал
     if ((climate == "ХЛ1") or (climate == "УХЛ1")) and (result["material"] == "25Л"):
-        result["material"] = "20ГЛ"
+        if T < 350.0:
+            result["material"] = "20ГЛ"
+        elif T >= 350.0 and climate == "ХЛ1":
+            result["material"] = "12Х18Н9ТЛ"
 
     result["T"] = T
 
