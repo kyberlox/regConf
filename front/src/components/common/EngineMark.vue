@@ -60,17 +60,24 @@ export default {
           }
         }
       }
+      else {
+        markArr.value[0] = "X"
+      }
     };
 
     const checkSecondParam = () => {
       if (paramToMark.value.DN) {
         markArr.value[1] = paramToMark.value.DN;
+      } else {
+        markArr.value[1] = "X"
       }
     }
 
     const checkThirdParam = () => {
       if (paramToMark.value.PN) {
         markArr.value[2] = paramToMark.value.PN
+      } else {
+        markArr.value[2] = "X"
       }
     }
 
@@ -100,6 +107,9 @@ export default {
       if (paramToMark.value.valveType && paramToMark.value.joiningType) {
         markArr.value[3] = connectionParams[paramToMark.value.valveType][paramToMark.value.joiningType]
       }
+      else {
+        markArr.value[3] = "X"
+      }
     }
 
     const checkFifthParam = () => {
@@ -109,6 +119,9 @@ export default {
       }
       if (paramToMark.value.contactType) {
         markArr.value[4] = contactParams[paramToMark.value.contactType]
+      }
+      else {
+        markArr.value[4] = "X"
       }
     }
 
@@ -121,6 +134,8 @@ export default {
       }
       if (paramToMark.value.material) {
         markArr.value[5] = materialParams[paramToMark.value.material]
+      } else {
+        markArr.value[5] = "X"
       }
     }
 
@@ -131,14 +146,16 @@ export default {
       }
       if (paramToMark.value.openCloseType) {
         markArr.value[6] = openCloseType[paramToMark.value.openCloseType]
+      } else {
+        markArr.value[6] = "X"
       }
     }
 
     const checkEightParam = () => {
-      if (paramToMark.value.inletFlange && paramToMark.value.outletFlange) {
+      if (paramToMark.value.inletFlange && paramToMark.value.outletFlange && paramToMark.value.joiningType == 'Фланцевое') {
         markArr.value[7] = '.' + paramToMark.value.inletFlange + '/' + paramToMark.value.outletFlange
       }
-      else if (paramToMark.value.joiningType == 'Под приварку') {
+      else  {
         markArr.value[7] = ''
       }
     }
