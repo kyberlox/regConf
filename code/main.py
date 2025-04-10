@@ -337,11 +337,8 @@ def migration():
     pak_res = {"added" : [], "exists" : []}
     for i in range(2, sheet.max_row):
         mark = str(sheet[f"A{i}"].value)
-        try:
-            DN = float(sheet[f"B{i}"].value)
-            PN = float(sheet[f"C{i}"].value)
-        except:
-            print(i)
+        DN = float(sheet[f"B{i}"].value)
+        PN = float(sheet[f"C{i}"].value)
         M = sheet[f"D{i}"].value
         S = sheet[f"E{i}"].value
         if type(M) == type("") or type(M) == type(1.0):
