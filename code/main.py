@@ -472,20 +472,41 @@ async def web_get_tightness(data = Body()):
 
 
 
-#авторизазия => генерация токена, начало сессии
-@app.post("/api/auth", tags=["Активность пользователей"])
-async def login(jsn = Body()):
-    print(jsn)
-    uuid = jsn["uuid"]
-    fio = f"{jsn['fio'][1]} {jsn['fio'][0]} {jsn['fio'][2]}"
-    dep = ""
-    for dp in jsn["department"]:
-        dep += dp
-    #запрос на БД
-    usr = User(uuid=uuid, fio=fio, department=dep)
-    tkn = usr.authenticate()
 
-    return {"token" : tkn}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# #авторизазия => генерация токена, начало сессии
+# @app.post("/api/auth", tags=["Активность пользователей"])
+# async def login(jsn = Body()):
+#     print(jsn)
+#     uuid = jsn["uuid"]
+#     fio = f"{jsn['fio'][1]} {jsn['fio'][0]} {jsn['fio'][2]}"
+#     dep = ""
+#     for dp in jsn["department"]:
+#         dep += dp
+#     #запрос на БД
+#     usr = User(uuid=uuid, fio=fio, department=dep)
+#     tkn = usr.authenticate()
+
+#     return {"token" : tkn}
 
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
@@ -513,6 +534,9 @@ async def check_valid(token: str = Header(None)):
         else:
             return {"token_valid" : result}
 
+
+
+
 #записать json в Redis
 @app.post("/api/set_data", tags=["Активность пользователей"])
 def get_data(data = Body(), token = Header(None)):
@@ -533,6 +557,8 @@ async def outh_user(token = Header(default=None)):
     usr = User(token=token)
     usr.outh()
     return {'status' : 'ready'}
+
+
 
 @app.post("/api/history", tags=["Активность пользователей"])
 async def get_history(token = Header(None)):
