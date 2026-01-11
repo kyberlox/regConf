@@ -7,3 +7,4 @@ redis==5.2.1
 python-dotenv==1.0.1
 rsa==4.9
 PyJWT==2.10.1
+requests==2.31.0
