@@ -496,7 +496,7 @@ async def web_get_tightness(data = Body()):
 
 @app.post("/api/auth", tags=["Активность пользователей"])
 async def login(token: str):
-    print(jsn)
+    print(token, 'token')
     token_data = check_session_id(token)
     user_info = token_data['user']['user_info']
     uuid = user_info['uuid']
@@ -568,6 +568,7 @@ async def outh_user(token = Header(default=None)):
 
 @app.post("/api/history", tags=["Активность пользователей"])
 async def get_history(token = Header(None)):
+    print(token, 'token из Header')
     usr = User(token=token)
     if token[:3] != "ip:":
         return usr.history()
