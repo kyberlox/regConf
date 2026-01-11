@@ -142,10 +142,17 @@ app.add_middleware(
     allow_methods=["GET", "POST", "DELETE", "PUT", "OPTIONS", "PATH"],
     allow_headers=["*"]
     #allow_headers=["Content-Type", "Accept", "Authorization", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest", "Access-Control-Allow-Credentials"],
-
 )
 
 #app.mount("/", StaticFiles(directory="../front/dist", html=True), name="static")
+
+#Функция для получения данных о пользователе по session_id
+def check_session_id(token):
+    url = "http://intranet.emk.org.ru/api/auth_router/check"
+    # url = "https://intranet.emk.ru/api/auth_router/check"
+    cookies = { 'session_id': token}
+    res = requests.get(url, cookies=cookies)
+    return json.loads(res.text)
 
 #миграция и таблицы эксель
 @app.get("/api/migration", tags=["Подбор"])
@@ -472,28 +479,7 @@ async def web_get_tightness(data = Body()):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# #авторизазия => генерация токена, начало сессии
+#авторизазия => генерация токена, начало сессии
 # @app.post("/api/auth", tags=["Активность пользователей"])
 # async def login(jsn = Body()):
 #     print(jsn)
@@ -507,6 +493,25 @@ async def web_get_tightness(data = Body()):
 #     tkn = usr.authenticate()
 
 #     return {"token" : tkn}
+
+@app.post("/api/auth", tags=["Активность пользователей"])
+async def login(token: str):
+    print(jsn)
+    token_data = check_session_id(token)
+    user_info = token_data['user']
+    uuid = user_info['XML_ID'][3:]
+    fio = f"{user_info['LAST_NAME']} {user_info['NAME']} {user_info['SECOND_NAME']}"
+    dep = ""
+    for dp in user_info["UF_USR_1696592324977"]:
+        dep += dp
+    #запрос на БД
+    usr = User(uuid=uuid, fio=fio, department=dep)
+    tkn = usr.authenticate(sess_token=token)
+
+    return {"token" : token}
+
+
+
 
 #проверка авторизациии
 @app.post("/api/check", tags=["Активность пользователей"])
@@ -526,9 +531,10 @@ async def check_valid(token: str = Header(None)):
             return JSONResponse(content=content, headers={"token": usr_token})
 
     else:
-        usr = User(token=token)
+        # usr = User(token=token)
 
-        result = usr.check()
+        # result = usr.check()
+        result = check_session_id(token)
         if result is None:
             return {"error" : "invalid token"}
         else:
@@ -563,6 +569,8 @@ async def outh_user(token = Header(default=None)):
 @app.post("/api/history", tags=["Активность пользователей"])
 async def get_history(token = Header(None)):
     usr = User(token=token)
+    if token[:3] != "ip:":
+        return usr.history()
     if usr.check():
         return usr.history()
     else:
@@ -571,24 +579,32 @@ async def get_history(token = Header(None)):
 @app.delete("/api/delete_tkp/{tkp_id}", tags=["Активность пользователей"])
 async def delete_tkp_id(tkp_id, token = Header(None)):
     usr = User(token=token)
+    if token[:3] != "ip:":
+        return usr.deleteConfiguration(tkp_id)
     if usr.check():
         return usr.deleteConfiguration(tkp_id)
 
 @app.get("/api/upload_tkp/{tkp_id}", tags=["Активность пользователей"])
 async def upload_tkp_id(tkp_id, token = Header(None)):
     usr = User(token=token)
+    if token[:3] != "ip:":
+        return usr.uploadConfiguration(tkp_id)
     if usr.check():
         return usr.uploadConfiguration(tkp_id)
 
 @app.post("/api/add_position_tkp", tags=["Активность пользователей"])
 async def add_position_tkp_id(tkp_position = Body(), token = Header(None)):
     usr = User(token=token)
+    if token[:3] != "ip:":
+        return usr.addPosition(tkp_position)
     if usr.check():
         return usr.addPosition(tkp_position)
 
 @app.delete("/api/delete_position_tkp/{tkp_id}/{position_id}", tags=["Активность пользователей"])
 async def delete_position_tkp_id(tkp_id : int, position_id : int, token = Header(None)):
     usr = User(token=token)
+    if token[:3] != "ip:":
+        return usr.deletePosition(tkp_id, position_id)
     if usr.check():
         return usr.deletePosition(tkp_id, position_id)
 
@@ -598,12 +614,15 @@ async def delete_position_tkp_id(tkp_id : int, position_id : int, token = Header
 @app.post("/api/generate", tags=["Генерация документации"]) #проверка сессии
 def generate(data = Body(), name = Header(default=None) , token = Header(default=None)):
     usr = User(token=token)
-    if usr.check():
-        # получить название и сохранить в БД
-        #получить json для генерации из Redis
+    if token[:3] != "ip:":
         jsn = usr.create_TKP(name)
     else:
-        jsn = data
+        if usr.check():
+            # получить название и сохранить в БД
+            #получить json для генерации из Redis
+            jsn = usr.create_TKP(name)
+        else:
+            jsn = data
 
     #генерация файла
     res = make_XL(jsn)
