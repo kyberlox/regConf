@@ -17,6 +17,8 @@ from dotenv import load_dotenv
 
 import datetime
 
+import requests
+
 load_dotenv()
 
 user = os.getenv('user')
