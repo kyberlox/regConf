@@ -502,7 +502,7 @@ async def login(request: Request):
     print(token, 'token')
     token_data = check_session_id(token)
     print(token_data, 'че приходит')
-    user_info = token_data['user']['user_info']
+    user_info = token_data['user']
     uuid = user_info['uuid']
     fio = user_info['full_name']
     dep = ""

@@ -259,7 +259,7 @@ class User:
         #загрузить json
         if self.token[:3] != "ip:":
             user_info = check_session_id(self.token)
-            self.uuid = user_info['user']['user_info']['uuid']
+            self.uuid = user_info['user']['uuid']
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         self.Redis = UserRedis(user_id=self.uuid, jsn=self.current_json)
@@ -269,7 +269,7 @@ class User:
         #выгрузить json
         if self.token[:3] != "ip:":
             user_info = check_session_id(self.token)
-            self.uuid = user_info['user']['user_info']['uuid']
+            self.uuid = user_info['user']['uuid']
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         self.Redis = UserRedis(user_id=self.uuid)
@@ -280,7 +280,7 @@ class User:
         #разлогинить пользователя в redis
         if self.token[:3] != "ip:":
             user_info = check_session_id(self.token)
-            self.uuid = user_info['user']['user_info']['uuid']
+            self.uuid = user_info['user']['uuid']
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         try:
@@ -294,7 +294,7 @@ class User:
     def create_TKP(self, name):
         if self.token[:3] != "ip:":
             user_info = check_session_id(self.token)
-            self.uuid = user_info['user']['user_info']['uuid']
+            self.uuid = user_info['user']['uuid']
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
 
@@ -322,7 +322,7 @@ class User:
         #найти по токену uuid или ip
         if self.token[:3] != "ip:":
             user_info = check_session_id(self.token)
-            pre_id = user_info['user']['user_info']['uuid']
+            pre_id = user_info['user']['uuid']
         else:
             pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         #найти в БД
@@ -350,7 +350,7 @@ class User:
         # найти по токену uuid или ip
         if self.token[:3] != "ip:":
             user_info = check_session_id(self.token)
-            pre_id = user_info['user']['user_info']['uuid']
+            pre_id = user_info['user']['uuid']
         else:
             pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         # найти в БД
@@ -383,7 +383,7 @@ class User:
         # найти по токену uuid или ip
         if self.token[:3] != "ip:":
             user_info = check_session_id(self.token)
-            pre_id = user_info['user']['user_info']['uuid']
+            pre_id = user_info['user']['uuid']
         else:
             pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         # найти в БД пользователя по uuid
@@ -407,7 +407,7 @@ class User:
         #удаление ТПК из БД
         if self.token[:3] != "ip:":
             user_info = check_session_id(self.token)
-            pre_id = user_info['user']['user_info']['uuid']
+            pre_id = user_info['user']['uuid']
         else:
             pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         # найти в БД пользователя по uuid
@@ -426,7 +426,7 @@ class User:
     def addPosition(self, tkp_position):
         if self.token[:3] != "ip:":
             user_info = check_session_id(self.token)
-            self.uuid = user_info['user']['user_info']['uuid']
+            self.uuid = user_info['user']['uuid']
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         self.Redis = UserRedis(user_id=self.uuid)
@@ -445,7 +445,7 @@ class User:
     def deletePosition(self, tkp_id, position):
         if self.token[:3] != "ip:":
             user_info = check_session_id(self.token)
-            self.uuid = user_info['user']['user_info']['uuid']
+            self.uuid = user_info['user']['uuid']
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         self.Redis = UserRedis(user_id=self.uuid)
