@@ -501,6 +501,7 @@ async def login(request: Request):
     token = request.cookies["session_id"]
     print(token, 'token')
     token_data = check_session_id(token)
+    print(token_data, 'че приходит')
     user_info = token_data['user']['user_info']
     uuid = user_info['uuid']
     fio = user_info['full_name']
