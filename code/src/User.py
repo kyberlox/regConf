@@ -107,7 +107,6 @@ class User:
         uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         usr_uuid = db.query(UserData).filter_by(uuid=uuid).first()
         usr_ip = db.query(UserData).filter_by(ip=uuid).first()
-
         # или есть такой пользователь
         if uuid != "":
             #или он == uuid
