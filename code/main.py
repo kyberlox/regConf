@@ -498,11 +498,11 @@ async def web_get_tightness(data = Body()):
 async def login(token: str):
     print(jsn)
     token_data = check_session_id(token)
-    user_info = token_data['user']
-    uuid = user_info['XML_ID'][3:]
-    fio = f"{user_info['LAST_NAME']} {user_info['NAME']} {user_info['SECOND_NAME']}"
+    user_info = token_data['user']['user_info']
+    uuid = user_info['uuid']
+    fio = user_info['full_name']
     dep = ""
-    for dp in user_info["UF_USR_1696592324977"]:
+    for dp in user_info["department"]:
         dep += dp
     #запрос на БД
     usr = User(uuid=uuid, fio=fio, department=dep)
