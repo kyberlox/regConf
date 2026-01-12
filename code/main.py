@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body, Cookie, Header, Response, Request
+from fastapi import FastAPI, Body, Cookie, Header, Response, Request, Form
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -497,11 +497,11 @@ async def web_get_tightness(data = Body()):
 #     return {"token" : tkn}
 
 @app.post("/api/auth", tags=["Активность пользователей"])
-async def login(jsn = Body()):
+async def login(token: str = Form(...)):
     # token = request.cookies["session_id"]
-    print(jsn)
-    res = json.loads(jsn)
-    token = res['token']
+    # print(jsn)
+    # res = json.loads(jsn)
+    # token = res['token']
     print(token, 'token')
     token_data = check_session_id(token)
     print(token_data, 'че приходит')
