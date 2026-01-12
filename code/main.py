@@ -539,13 +539,21 @@ async def check_valid(token: str = Header(None) ): #
 
     else:
         # usr = User(token=token)
-
-        # result = usr.check()
-        result = check_session_id(token)
-        if result is None:
-            return {"error" : "invalid token"}
+        usr = User(token=token)
+        user_exist = usr.get_dt()
+        if user_exist:
+            return {"token_valid" : usr}
         else:
-            return {"token_valid" : result}
+            result = usr.authenticate()
+            if result:
+                return {"token_valid" : result}
+            return {"error" : "invalid token"}
+        # result = usr.check()
+        # result = check_session_id(token)
+        # if result is None:
+        #     return {"error" : "invalid token"}
+        # else:
+        #     return {"token_valid" : result}
 
 
 
