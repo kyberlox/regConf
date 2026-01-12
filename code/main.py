@@ -591,7 +591,6 @@ async def outh_user(token = Header(default=None)):
 
 @app.post("/api/history", tags=["Активность пользователей"])
 async def get_history(token = Header(None)):
-    print(token, 'token из Header')
     usr = User(token=token)
     if token[:3] != "ip:":
         return usr.history()

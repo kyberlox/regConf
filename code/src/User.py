@@ -270,6 +270,8 @@ class User:
 
     def get_dt(self):
         #выгрузить json
+        user_info = check_session_id(self.token)
+        print(user_info, 'че получаем если токен по ip')
         if self.token[:3] != "ip:":
             user_info = check_session_id(self.token)
             self.uuid = user_info['user']['uuid']
