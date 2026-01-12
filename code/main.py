@@ -499,7 +499,8 @@ async def web_get_tightness(data = Body()):
 @app.post("/api/auth", tags=["Активность пользователей"])
 async def login(jsn = Body()):
     # token = request.cookies["session_id"]
-    print(jsn['token'], 'token')
+    print(jsn, 'token')
+    print(json.load(jsn), 'token')
     token_data = check_session_id(token)
     print(token_data, 'че приходит')
     user_info = token_data['user']
