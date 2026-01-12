@@ -62,8 +62,8 @@ db = SessionLocal()
 
 #Функция для получения данных о пользователе по session_id
 def check_session_id(token):
-    url = "http://intranet.emk.org.ru/api/auth_router/check"
-    # url = "https://intranet.emk.ru/api/auth_router/check"
+    # url = "http://intranet.emk.org.ru/api/auth_router/check"
+    url = "https://intranet.emk.ru/api/auth_router/check"
     cookies = { 'session_id': token}
     res = requests.get(url, cookies=cookies)
     return json.loads(res.text)
