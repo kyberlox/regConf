@@ -521,7 +521,7 @@ async def login(token: str = Form(...)):
 
 
 #проверка авторизациии
-@app.post("/api/check/", tags=["Активность пользователей"])
+@app.post("/api/check", tags=["Активность пользователей"])
 async def check_valid(token: str = Header(None) ): # 
     print(token)
 
