@@ -504,7 +504,6 @@ async def login(request: Request):
     # token = res['token']
     print(token, 'token')
     token_data = check_session_id(token)
-    print(token_data, 'че приходит')
     user_info = token_data['user']
     uuid = user_info['uuid']
     fio = user_info['full_name']
@@ -544,7 +543,16 @@ async def check_valid(token: str = Header(None) ): #
         if user_exist:
             return {"token_valid" : usr}
         else:
-            result = usr.authenticate()
+            token_data = check_session_id(token)
+            user_info = token_data['user']
+            uuid = user_info['uuid']
+            fio = user_info['full_name']
+            dep = ""
+            for dp in user_info["department"]:
+                dep += dp
+            #запрос на БД
+            usr = User(uuid=uuid, fio=fio, department=dep)
+            result = usr.authenticate(sess_token=token)
             if result:
                 return {"token_valid" : result}
             return {"error" : "invalid token"}
