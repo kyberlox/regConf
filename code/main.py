@@ -538,25 +538,56 @@ async def check_valid(token: str = Header(None) ): #
 
     else:
         # usr = User(token=token)
-        usr = User(token=token)
-        user_exist = usr.get_dt()
-        if user_exist:
-            return {"token_valid" : usr}
+        token_data = check_session_id(token)
+        if 'authenticated' in token_data.keys() and token_data['authenticated'] is True:
+            usr = User(token=token)
+            user_exist = usr.get_dt()
+            if user_exist:
+                return {"token_valid" : usr}
+            else:
+                user_info = token_data['user']
+                uuid = user_info['uuid']
+                fio = user_info['full_name']
+                dep = ""
+                for dp in user_info["department"]:
+                    dep += dp
+                #запрос на БД
+                usr = User(uuid=uuid, fio=fio, department=dep)
+                result = usr.authenticate(sess_token=token)
+                if result:
+                    return {"token_valid" : result}
+                return {"error" : "invalid token"}
         else:
-            token_data = check_session_id(token)
-            user_info = token_data['user']
-            uuid = user_info['uuid']
-            fio = user_info['full_name']
-            dep = ""
-            for dp in user_info["department"]:
-                dep += dp
-            #запрос на БД
-            usr = User(uuid=uuid, fio=fio, department=dep)
-            result = usr.authenticate(sess_token=token)
-            if result:
-                return {"token_valid" : result}
-            return {"error" : "invalid token"}
-        # result = usr.check()
+            usr = User(token=token)
+
+            result = usr.check()
+            if result is None:
+                return {"error" : "invalid token"}
+            else:
+                content = {"token_valid": result}
+                return JSONResponse(content=content, headers={"token": token})
+
+
+
+        # usr = User(token=token)
+        # user_exist = usr.get_dt()
+        # if user_exist:
+        #     return {"token_valid" : usr}
+        # else:
+        #     token_data = check_session_id(token)
+        #     user_info = token_data['user']
+        #     uuid = user_info['uuid']
+        #     fio = user_info['full_name']
+        #     dep = ""
+        #     for dp in user_info["department"]:
+        #         dep += dp
+        #     #запрос на БД
+        #     usr = User(uuid=uuid, fio=fio, department=dep)
+        #     result = usr.authenticate(sess_token=token)
+        #     if result:
+        #         return {"token_valid" : result}
+        #     return {"error" : "invalid token"}
+        # # result = usr.check()
         # result = check_session_id(token)
         # if result is None:
         #     return {"error" : "invalid token"}
