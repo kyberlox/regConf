@@ -109,7 +109,6 @@ class User:
         usr_ip = db.query(UserData).filter_by(ip=uuid).first()
         # или есть такой пользователь
         if uuid != "":
-            print(123)
             #или он == uuid
             if usr_uuid is not None:
                 r = UserRedis(usr_uuid.uuid, self.current_json)
@@ -127,7 +126,6 @@ class User:
 
         #либо есть uuid, fio, department
         elif self.uuid != "" and self.fio != "" and self.department != "":
-            print(234)
             usr_uuid = db.query(UserData).filter_by(uuid=self.uuid).first()
 
             #или он уже есть
@@ -158,7 +156,6 @@ class User:
 
         #либо есть ip
         elif self.ip != "":
-            print(7545)
             usr = db.query(UserData).filter_by(ip=self.ip).first()
             #или такой ip уже был
             if usr is not None:
