@@ -260,8 +260,8 @@ class User:
 
     def set_dt(self):
         #загрузить json
-        if self.token[:3] != "ip:":
-            user_info = check_session_id(self.token)
+        user_info = check_session_id(self.token)
+        if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
             self.uuid = user_info['user']['uuid']
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
@@ -271,9 +271,7 @@ class User:
     def get_dt(self):
         #выгрузить json
         user_info = check_session_id(self.token)
-        print(user_info, 'че получаем если токен по ip')
-        if self.token[:3] != "ip:":
-            user_info = check_session_id(self.token)
+        if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
             self.uuid = user_info['user']['uuid']
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
@@ -283,8 +281,8 @@ class User:
 
     def outh(self):
         #разлогинить пользователя в redis
-        if self.token[:3] != "ip:":
-            user_info = check_session_id(self.token)
+        user_info = check_session_id(self.token)
+        if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
             self.uuid = user_info['user']['uuid']
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
@@ -297,8 +295,8 @@ class User:
 
 
     def create_TKP(self, name):
-        if self.token[:3] != "ip:":
-            user_info = check_session_id(self.token)
+        user_info = check_session_id(self.token)
+        if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
             self.uuid = user_info['user']['uuid']
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
@@ -325,8 +323,8 @@ class User:
 
     def create_OL(self):
         #найти по токену uuid или ip
-        if self.token[:3] != "ip:":
-            user_info = check_session_id(self.token)
+        user_info = check_session_id(self.token)
+        if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
             pre_id = user_info['user']['uuid']
         else:
             pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
@@ -353,8 +351,8 @@ class User:
     def history(self):
         #история запросов пользователя
         # найти по токену uuid или ip
-        if self.token[:3] != "ip:":
-            user_info = check_session_id(self.token)
+        user_info = check_session_id(self.token)
+        if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
             pre_id = user_info['user']['uuid']
         else:
             pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
@@ -386,8 +384,8 @@ class User:
         #загрузка ТКП из БД в redis
 
         # найти по токену uuid или ip
-        if self.token[:3] != "ip:":
-            user_info = check_session_id(self.token)
+        user_info = check_session_id(self.token)
+        if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
             pre_id = user_info['user']['uuid']
         else:
             pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
@@ -410,8 +408,8 @@ class User:
 
     def deleteConfiguration(self, ID):
         #удаление ТПК из БД
-        if self.token[:3] != "ip:":
-            user_info = check_session_id(self.token)
+        user_info = check_session_id(self.token)
+        if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
             pre_id = user_info['user']['uuid']
         else:
             pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
@@ -429,8 +427,8 @@ class User:
             return False
 
     def addPosition(self, tkp_position):
-        if self.token[:3] != "ip:":
-            user_info = check_session_id(self.token)
+        user_info = check_session_id(self.token)
+        if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
             self.uuid = user_info['user']['uuid']
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
@@ -448,8 +446,8 @@ class User:
         return jsn
 
     def deletePosition(self, tkp_id, position):
-        if self.token[:3] != "ip:":
-            user_info = check_session_id(self.token)
+        user_info = check_session_id(self.token)
+        if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
             self.uuid = user_info['user']['uuid']
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
