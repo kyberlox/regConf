@@ -545,12 +545,12 @@ async def check_valid(token: str = Header(None) ): #
                 return {"token_valid" : usr}
             else:
                 user_info = token_data['user']
-                if 'uuid' in user_info.keys()
+                if 'uuid' in user_info.keys():
                     uuid = user_info['uuid']
                 elif 'XML_ID' in user_info.keys():
                     uuid = user_info['XML_ID'][3:]
                 
-                if 'full_name' in user_info.keys()
+                if 'full_name' in user_info.keys():
                     fio = user_info['full_name']
                 else:
                     fio = f"{user_info['LAST_NAME']} {user_info['NAME']} {user_info['SECOND_NAME']}"
