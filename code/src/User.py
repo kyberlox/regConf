@@ -258,6 +258,7 @@ class User:
     def set_dt(self):
         #загрузить json
         user_info = check_session_id(self.token)
+        print(self.token, user_info, 'че приходит')
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
             self.uuid = user_info['user']['uuid']
         else:
