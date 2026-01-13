@@ -260,7 +260,7 @@ class User:
         user_info = check_session_id(self.token)
         
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            if 'uuid' in user_info['user'].keys()
+            if 'uuid' in user_info['user'].keys():
                 self.uuid = user_info['user']['uuid']
             elif 'XML_ID' in user_info['user'].keys():
                 self.uuid = user_info['user']['XML_ID'][3:]
@@ -273,7 +273,7 @@ class User:
         #выгрузить json
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            if 'uuid' in user_info['user'].keys()
+            if 'uuid' in user_info['user'].keys():
                 self.uuid = user_info['user']['uuid']
             elif 'XML_ID' in user_info['user'].keys():
                 self.uuid = user_info['user']['XML_ID'][3:]
@@ -287,7 +287,7 @@ class User:
         #разлогинить пользователя в redis
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            if 'uuid' in user_info['user'].keys()
+            if 'uuid' in user_info['user'].keys():
                 self.uuid = user_info['user']['uuid']
             elif 'XML_ID' in user_info['user'].keys():
                 self.uuid = user_info['user']['XML_ID'][3:]
@@ -304,7 +304,7 @@ class User:
     def create_TKP(self, name):
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            if 'uuid' in user_info['user'].keys()
+            if 'uuid' in user_info['user'].keys():
                 self.uuid = user_info['user']['uuid']
             elif 'XML_ID' in user_info['user'].keys():
                 self.uuid = user_info['user']['XML_ID'][3:]
@@ -335,7 +335,7 @@ class User:
         #найти по токену uuid или ip
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            if 'uuid' in user_info['user'].keys()
+            if 'uuid' in user_info['user'].keys():
                 pre_id = user_info['user']['uuid']
             elif 'XML_ID' in user_info['user'].keys():
                 pre_id = user_info['user']['XML_ID'][3:]
@@ -366,7 +366,7 @@ class User:
         # найти по токену uuid или ip
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            if 'uuid' in user_info['user'].keys()
+            if 'uuid' in user_info['user'].keys():
                 pre_id = user_info['user']['uuid']
             elif 'XML_ID' in user_info['user'].keys():
                 pre_id = user_info['user']['XML_ID'][3:]
@@ -402,7 +402,7 @@ class User:
         # найти по токену uuid или ip
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            if 'uuid' in user_info['user'].keys()
+            if 'uuid' in user_info['user'].keys():
                 pre_id = user_info['user']['uuid']
             elif 'XML_ID' in user_info['user'].keys():
                 pre_id = user_info['user']['XML_ID'][3:]
@@ -429,7 +429,7 @@ class User:
         #удаление ТПК из БД
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            if 'uuid' in user_info['user'].keys()
+            if 'uuid' in user_info['user'].keys():
                 pre_id = user_info['user']['uuid']
             elif 'XML_ID' in user_info['user'].keys():
                 pre_id = user_info['user']['XML_ID'][3:]
@@ -451,7 +451,7 @@ class User:
     def addPosition(self, tkp_position):
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            if 'uuid' in user_info['user'].keys()
+            if 'uuid' in user_info['user'].keys():
                 self.uuid = user_info['user']['uuid']
             elif 'XML_ID' in user_info['user'].keys():
                 self.uuid = user_info['user']['XML_ID'][3:]
@@ -473,7 +473,7 @@ class User:
     def deletePosition(self, tkp_id, position):
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            if 'uuid' in user_info['user'].keys()
+            if 'uuid' in user_info['user'].keys():
                 self.uuid = user_info['user']['uuid']
             elif 'XML_ID' in user_info['user'].keys():
                 self.uuid = user_info['user']['XML_ID'][3:]
