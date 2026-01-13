@@ -260,7 +260,10 @@ class User:
         user_info = check_session_id(self.token)
         
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            self.uuid = user_info['user']['uuid']
+            if 'uuid' in user_info['user'].keys()
+                self.uuid = user_info['user']['uuid']
+            elif 'XML_ID' in user_info['user'].keys():
+                self.uuid = user_info['user']['XML_ID'][3:]
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         self.Redis = UserRedis(user_id=self.uuid, jsn=self.current_json)
@@ -269,9 +272,11 @@ class User:
     def get_dt(self):
         #выгрузить json
         user_info = check_session_id(self.token)
-        print(self.token, user_info, 'че приходит')
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            self.uuid = user_info['user']['uuid']
+            if 'uuid' in user_info['user'].keys()
+                self.uuid = user_info['user']['uuid']
+            elif 'XML_ID' in user_info['user'].keys():
+                self.uuid = user_info['user']['XML_ID'][3:]
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         self.Redis = UserRedis(user_id=self.uuid)
@@ -282,7 +287,10 @@ class User:
         #разлогинить пользователя в redis
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            self.uuid = user_info['user']['uuid']
+            if 'uuid' in user_info['user'].keys()
+                self.uuid = user_info['user']['uuid']
+            elif 'XML_ID' in user_info['user'].keys():
+                self.uuid = user_info['user']['XML_ID'][3:]
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         try:
@@ -296,7 +304,10 @@ class User:
     def create_TKP(self, name):
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            self.uuid = user_info['user']['uuid']
+            if 'uuid' in user_info['user'].keys()
+                self.uuid = user_info['user']['uuid']
+            elif 'XML_ID' in user_info['user'].keys():
+                self.uuid = user_info['user']['XML_ID'][3:]
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
 
@@ -324,7 +335,10 @@ class User:
         #найти по токену uuid или ip
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            pre_id = user_info['user']['uuid']
+            if 'uuid' in user_info['user'].keys()
+                pre_id = user_info['user']['uuid']
+            elif 'XML_ID' in user_info['user'].keys():
+                pre_id = user_info['user']['XML_ID'][3:]
         else:
             pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         #найти в БД
@@ -352,7 +366,10 @@ class User:
         # найти по токену uuid или ip
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            pre_id = user_info['user']['uuid']
+            if 'uuid' in user_info['user'].keys()
+                pre_id = user_info['user']['uuid']
+            elif 'XML_ID' in user_info['user'].keys():
+                pre_id = user_info['user']['XML_ID'][3:]
         else:
             pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         # найти в БД
@@ -385,7 +402,10 @@ class User:
         # найти по токену uuid или ip
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            pre_id = user_info['user']['uuid']
+            if 'uuid' in user_info['user'].keys()
+                pre_id = user_info['user']['uuid']
+            elif 'XML_ID' in user_info['user'].keys():
+                pre_id = user_info['user']['XML_ID'][3:]
         else:
             pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         # найти в БД пользователя по uuid
@@ -409,7 +429,10 @@ class User:
         #удаление ТПК из БД
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            pre_id = user_info['user']['uuid']
+            if 'uuid' in user_info['user'].keys()
+                pre_id = user_info['user']['uuid']
+            elif 'XML_ID' in user_info['user'].keys():
+                pre_id = user_info['user']['XML_ID'][3:]
         else:
             pre_id = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         # найти в БД пользователя по uuid
@@ -428,7 +451,10 @@ class User:
     def addPosition(self, tkp_position):
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            self.uuid = user_info['user']['uuid']
+            if 'uuid' in user_info['user'].keys()
+                self.uuid = user_info['user']['uuid']
+            elif 'XML_ID' in user_info['user'].keys():
+                self.uuid = user_info['user']['XML_ID'][3:]
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         self.Redis = UserRedis(user_id=self.uuid)
@@ -447,7 +473,10 @@ class User:
     def deletePosition(self, tkp_id, position):
         user_info = check_session_id(self.token)
         if 'authenticated' in user_info.keys() and user_info['authenticated'] is True:
-            self.uuid = user_info['user']['uuid']
+            if 'uuid' in user_info['user'].keys()
+                self.uuid = user_info['user']['uuid']
+            elif 'XML_ID' in user_info['user'].keys():
+                self.uuid = user_info['user']['XML_ID'][3:]
         else:
             self.uuid = decode(self.token, key="emk", algorithms=["HS512"])['uuid']
         self.Redis = UserRedis(user_id=self.uuid)
