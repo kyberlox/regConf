@@ -121,7 +121,7 @@ r = redis.Redis(host='redis', port=6379, username=user, password=pswd, db=0)
 
 
 
-app = FastAPI()
+app = FastAPI(docs_url="/api/docs")
 
 
 
