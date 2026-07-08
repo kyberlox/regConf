@@ -371,6 +371,7 @@ def mixture(envs : list, climate : str, T : float):
                 viscosity_сh += u_i * r * sqrt(M_i)
                 viscosity_zn += r * sqrt(M_i)
                 adiabatic_index += env['adiabatic_index'] * r
+                print(env['adiabatic_index'], r, "ГАЗ")
                 
                 # плотность при н.у.
                 result["density_ns"] += (M_i * r)
@@ -391,7 +392,7 @@ def mixture(envs : list, climate : str, T : float):
             result["density"] = None
             #result["density"] = result["density_ns"] * (273.15) / (T + 273.15)
 
-            print(result['adiabatic_index'], "ЧЕ ПРИХОДИТ НА АДИАБАТУ НА СЕРВЕ В УСЛОВИИ ГДЕ ГАЗ")
+            # print(result['adiabatic_index'], "ЧЕ ПРИХОДИТ НА АДИАБАТУ НА СЕРВЕ В УСЛОВИИ ГДЕ ГАЗ")
 
 
 
@@ -429,7 +430,7 @@ def mixture(envs : list, climate : str, T : float):
         
         # result["viscosity"] = 10**(pre_viscosity)
 
-    
+   
     material = []
     for env in envs:
         if env['name'] == 'Сероводород' and r < 0.06 and result["environment"] == "Смесь":
