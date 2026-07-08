@@ -371,7 +371,7 @@ def mixture(envs : list, climate : str, T : float):
                 viscosity_сh += u_i * r * sqrt(M_i)
                 viscosity_zn += r * sqrt(M_i)
                 adiabatic_index += env['adiabatic_index'] * r
-                print(float(env['pokazatel_adiabaty']), r, "ЧЕ ПРИХОДИТ НА АДИАБАТУ НА СЕРВЕ")
+                
                 # плотность при н.у.
                 result["density_ns"] += (M_i * r)
                 #density_ns_zn += r
@@ -426,6 +426,7 @@ def mixture(envs : list, climate : str, T : float):
         #рабочая плотность
         result["density"] = density_ch / density_zn
         result["viscosity"] = pre_u
+        print(result['adiabatic_index'], "ЧЕ ПРИХОДИТ НА АДИАБАТУ НА СЕРВЕ")
         # result["viscosity"] = 10**(pre_viscosity)
 
 
