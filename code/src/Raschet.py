@@ -426,10 +426,10 @@ def mixture(envs : list, climate : str, T : float):
         #рабочая плотность
         result["density"] = density_ch / density_zn
         result["viscosity"] = pre_u
-        print(result['adiabatic_index'], "ЧЕ ПРИХОДИТ НА АДИАБАТУ НА СЕРВЕ")
+       
         # result["viscosity"] = 10**(pre_viscosity)
 
-
+    print(result['adiabatic_index'], "ЧЕ ПРИХОДИТ НА АДИАБАТУ НА СЕРВЕ")
     material = []
     for env in envs:
         if env['name'] == 'Сероводород' and r < 0.06 and result["environment"] == "Смесь":
