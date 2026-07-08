@@ -614,7 +614,7 @@ def Raschet(dt):
 
         # P1 * p1
         Gideal = Kp_kr * Kb * sqrt(P1 * p1)
-
+        print(Gideal, Kp_kr, Kb, P1, p1, 'Че получилось')
         if Gideal <= 0:
             return {
                 "err": f"Одно из значений = 0:\n {data_mean['Ppo']} : {Ppo}\n {data_mean['Pno']} : {Pno}\n {Ppo}\n {data_mean['Kb']} : {Kb}\n {data_mean['Ppo']} : {Ppo}\n  {data_mean['Kp_kr']} : {Kp_kr}\n  {data_mean['Kw']} : {Kw}\n"}
