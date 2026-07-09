@@ -153,7 +153,7 @@ def searchParams(DNS, Pn, PN, valve_type):
     ##print("###")
     for example in request:
 
-        #print(example.id, example.DNS, example.valve_type, example.DN, example.PN)
+        print(example.id, example.DNS, example.valve_type, example.DN, example.PN, "ЧТО ПОЛУЧАЕМ")
 
         try:
             Pn1 = str(example.Pnd).split("...")[0]
@@ -697,9 +697,7 @@ def Raschet(dt):
 
     # Деаметр ПК
     new_dt["DN"] = f"Невозмажно подобрать при сочитании параметров: \nДаметр седла клапана = {DN_s} \n Давление на входе = {PN}"
-    print(DN_s, Pn, PN, dt["valve_type"], 'ЧЕ ЗАКИДЫВАЕМ')
     example = searchParams(DN_s, Pn * 10.197162, PN, dt["valve_type"])
-    print(example, 'ЧЕ ПОЛУЧИЛИ')
 
 
     if example:
