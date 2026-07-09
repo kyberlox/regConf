@@ -651,12 +651,14 @@ def Raschet(dt):
     while DN_s != pre_DN:
 
         pre_F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
-        print(pre_F, ":", Gab, alpha, Kv, Kw, Kc, Gideal, N)
+        # print(pre_F, ":", Gab, alpha, Kv, Kw, Kc, Gideal, N)
+        print(Gab, alpha, Kv, Kw, Kc, Gideal, N, "pre_F")
         if pre_F == 0:
             return {"err": f"Одно из значений = 0:\n Kv : {Kv}\n {data_mean['Kw']} : {Kw}\n {data_mean['Kc']} : {Kc}\n {data_mean['Gideal']} : {Gideal}\n"}
         pre_DN = sqrt((4 * pre_F) / pi)
-
+        print(pre_F, "pre_DN")
         Re = (Gideal * p1 * pre_DN) / u  # Gideal
+        print(Gideal, p1, pre_DN, u, "Re")
         if (Re >= 1000) and (Re <= 100000):
             Kv = (0.9935 + (2.8780 / Re ** 0.5) + (342.75 / Re ** 1.5)) ** (-1)
         elif (Re < 1000):
@@ -665,6 +667,7 @@ def Raschet(dt):
             Kv = 1
 
         F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
+        print(Gab, alpha, Kv, Kw, Kc, Gideal, N, "F")
         DN_s = sqrt((4 * F) / pi)
     print(DN_s, "DN_s BEFORE")
     DN_s = math.ceil(DN_s * 10) / 10
