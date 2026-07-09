@@ -666,8 +666,9 @@ def Raschet(dt):
 
         F = Gab / (3.6 * alpha * Kv * Kw * Kc * Gideal * N)
         DN_s = sqrt((4 * F) / pi)
+    print(DN_s, "DN_s BEFORE")
     DN_s = math.ceil(DN_s * 10) / 10
-
+    print(DN_s, "DN_s AFTER")
     # перевести из МПа в кгс/см2
     new_dt = {
         "T_min": T_min,  # Минимальная рабочая температура
